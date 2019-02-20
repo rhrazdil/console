@@ -78,6 +78,14 @@ describe('Kubevirt create VM using wizard', () => {
     await vmView.nextButton.click();
   }
 
+  async function fillVMStorage(provisionSourceName: string){
+    if (provisionSourceName === 'URL'){
+      await vmView.setDiskAttribute(0, 'size', '1');
+    }
+    await vmView.nextButton.click();
+    await browser.wait(until.not(until.textToBePresentInElement(vmView.wizardContent, 'Creation of VM in progress')), VM_WIZARD_LOAD_TIMEOUT);
+  }
+
   beforeAll(async() => {
     execSync(`echo '${JSON.stringify(testNAD)}' | kubectl create -f -`);
   });
@@ -94,9 +102,7 @@ describe('Kubevirt create VM using wizard', () => {
       await createItemButton.click().then(() => vmView.createWithWizardLink.click());
       await fillBasicSettings(provisionMethod, methodName);
       await fillVMNetworking(methodName);
-      // Use default storage settings and create VM
-      await vmView.nextButton.click();
-      await browser.wait(until.not(until.textToBePresentInElement(vmView.wizardContent, 'Creation of VM in progress')), VM_WIZARD_LOAD_TIMEOUT);
+      await fillVMStorage(methodName);
       // Check for error and close wizard
       expect(errorMessage.isPresent()).toBe(false);
       await browser.wait(until.elementToBeClickable(vmView.nextButton), PAGE_LOAD_TIMEOUT).then(() => vmView.nextButton.click());
