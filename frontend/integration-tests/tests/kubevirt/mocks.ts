@@ -153,7 +153,7 @@ export const basicVmConfig = {
   workloadProfile: 'generic',
   sourceURL: 'https://download.cirros-cloud.net/0.4.0/cirros-0.4.0-x86_64-disk.img',
   sourceContainer: 'kubevirt/cirros-registry-disk-demo:latest',
-  cloudInitScript: '#cloud-config\nuser: username\npassword: atomic\nchpasswd: {expire: False}',
+  cloudInitScript: `#cloud-config\nuser: cloud-user\npassword: atomic\nchpasswd: {expire: False}\nhostname: vm-${testName}.example.com`,
 };
 
 export const networkInterface = {

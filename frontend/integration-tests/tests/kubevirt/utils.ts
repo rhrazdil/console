@@ -114,3 +114,16 @@ export const waitForCount = (elementArrayFinder, targetCount) => {
   };
 };
 
+export function exposeService(exposeSrv: Set<string>) {
+  const srvArray: Array<string> = [...exposeSrv];
+  if (srvArray.length > 0) {
+    srvArray.map(r => JSON.parse(r) as {name: string, kind: string, port: string, targetPort: string, exposeName: string, type: string})
+      .forEach(({name, kind, port, targetPort, exposeName, type}) => {
+        try {
+          execSync(`virtctl expose ${kind} ${name} --port=${port} --target-port=${targetPort} --name=${exposeName} --type=${type}`);
+        } catch (error) {
+          console.error(`Failed to expose ${kind} service ${name}:\n${error}`);
+        }
+      });
+  }
+}
