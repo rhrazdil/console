@@ -1,19 +1,19 @@
 /* eslint-disable no-undef */
 import { testName } from '../../protractor.conf';
 
-export function getVmManifest(provisionSource: string, namespace: string, name?: string) {
+export function getVmManifest(provisionSource: string, namespace: string, name?: string, cloudinit?: string) {
   const metadata = {
     name: name ? name : `${provisionSource.toLowerCase()}-${namespace.slice(-5)}`,
     annotations: {
-      'name.os.template.cnv.io/centos7.0': 'CentOS 7.0',
+      'name.os.template.cnv.io/rhel7.6': 'Red Hat Enterprise Linux 7.6',
       description: namespace,
     },
     namespace,
     labels: {
       'app': `vm-${provisionSource.toLowerCase()}-${namespace}`,
-      'flavor.template.cnv.io/Custom': 'true',
-      'os.template.cnv.io/centos7.0': 'true',
-      'vm.cnv.io/template': 'centos7-generic-medium',
+      'flavor.template.cnv.io/small': 'true',
+      'os.template.cnv.io/rhel7.6': 'true',
+      'vm.cnv.io/template': 'rhel7-generic-small',
       'vm.cnv.io/template-namespace': 'openshift',
       'workload.template.cnv.io/generic': 'true',
     },
@@ -53,9 +53,37 @@ export function getVmManifest(provisionSource: string, namespace: string, name?:
     },
     name: 'rootdisk',
   };
+  const cloudInitNoCloud = {
+    cloudInitNoCloud: {
+      userData: cloudinit,
+    },
+    name: 'cloudinitdisk',
+  };
+  const rootdisk = {
+    bootOrder: 1,
+    disk: {
+      bus: 'virtio',
+    },
+    name: 'rootdisk',
+  };
+  const cloudinitdisk = {
+    bootOrder: 3,
+    disk: {
+      bus: 'virtio',
+    },
+    name: 'cloudinitdisk',
+  };
 
   const dataVolumeTemplates = [];
   const volumes = [];
+  const disks = [];
+
+  disks.push(rootdisk);
+
+  if (cloudinit) {
+     volumes.push(cloudInitNoCloud);
+     disks.push(cloudinitdisk);
+  }
 
   switch (provisionSource) {
     case 'URL':
@@ -96,18 +124,11 @@ export function getVmManifest(provisionSource: string, namespace: string, name?:
               threads: 1,
             },
             devices: {
-              disks: [
-                {
-                  bootOrder: 1,
-                  disk: {
-                    bus: 'virtio',
-                  },
-                  name: 'rootdisk',
-                },
-              ],
+              disks,
               interfaces: [
                 {
-                  bridge: {},
+                  bootOrder: 2,
+                  masquerade: {},
                   name: 'nic0',
                 },
               ],
@@ -115,7 +136,7 @@ export function getVmManifest(provisionSource: string, namespace: string, name?:
             },
             resources: {
               requests: {
-                memory: '1G',
+                memory: '2G',
               },
             },
           },

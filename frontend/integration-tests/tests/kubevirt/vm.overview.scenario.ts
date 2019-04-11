@@ -5,41 +5,23 @@ import { OrderedMap } from 'immutable';
 
 import { appHost, testName } from '../../protractor.conf';
 import { isLoaded } from '../../views/crud.view';
-import { basicVmConfig, cloudInitCustomScriptConfig } from './mocks';
+import { getVmManifest, basicVmConfig } from './mocks';
 import * as vmView from '../../views/kubevirt/virtualMachine.view';
 import { fillInput, removeLeakedResources, exposeService, selectDropdownOption } from './utils';
-import Wizard from './models/wizard';
 import { VirtualMachine } from './models/virtualMachine';
 
 describe('Test VM overview page', () => {
   const leakedResources = new Set<string>();
-  const wizard = new Wizard();
   const vmName = `vm-${testName}`;
   const vm = new VirtualMachine(vmName, testName);
+  const cloudInit = `#cloud-config\nuser: cloud-user\npassword: atomic\nchpasswd: {expire: False}\nhostname: vm-${testName}.example.com`
 
   beforeAll(async() => {
-    const provisionSource = {method: 'Container', source: basicVmConfig.sourceContainer};
-
-    await browser.get(`${appHost}/k8s/ns/${testName}/virtualmachines`);
-    await isLoaded();
-    await wizard.openWizard();
-
-    // Basic Settings for VM
-    await wizard.fillName(vmName);
-    await wizard.fillDescription(testName);
-    await wizard.selectProvisionSource(provisionSource);
-    await wizard.selectFlavor(basicVmConfig.flavor);
-    await wizard.selectOperatingSystem(basicVmConfig.operatingSystem);
-    await wizard.selectWorkloadProfile(basicVmConfig.workloadProfile);
-    await wizard.useCloudInit(cloudInitCustomScriptConfig);
-    await wizard.next();
-
-    // Networking
-    await wizard.next();
-    // Storage
-    await wizard.next();
-    // Create VM
-    await wizard.next();
+    try {
+      execSync(`echo '${JSON.stringify(getVmManifest('Container', testName, vmName, cloudInit))}' | kubectl create -f -`);
+    } catch (error) {
+      console.error(`failed create vm ${vmName} in namespace ${testName}`); 
+    };
 
     leakedResources.add(JSON.stringify({name: vmName, namespace: testName, kind: 'vm'}));
   });
@@ -55,6 +37,7 @@ describe('Test VM overview page', () => {
 
   it('Check VM details in overview when vm is off', async() => {
 
+    await browser.sleep(20000);
     // Non empty fields when vm is off
     expect(vmView.vmDetailNameID(testName, vmName).getText()).toEqual(vmName);
     expect(vmView.vmDetailDesID(testName, vmName).getText()).toEqual(testName);
