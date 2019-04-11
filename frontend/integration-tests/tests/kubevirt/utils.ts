@@ -114,8 +114,8 @@ export const waitForCount = (elementArrayFinder, targetCount) => {
   };
 };
 
-export function exposeService(exposeSrv: Set<string>) {
-  const srvArray: Array<string> = [...exposeSrv];
+export function exposeService(exposeServices: Set<string>) {
+  const srvArray: Array<string> = [...exposeServices];
   if (srvArray.length > 0) {
     srvArray.map(r => JSON.parse(r) as {name: string, kind: string, port: string, targetPort: string, exposeName: string, type: string})
       .forEach(({name, kind, port, targetPort, exposeName, type}) => {

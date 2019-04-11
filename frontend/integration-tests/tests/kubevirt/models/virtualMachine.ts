@@ -109,7 +109,4 @@ export class VirtualMachine extends DetailView {
     await vmView.selectKebabOption(name, 'Delete');
     await confirmAction();
   }
-  async selectFlavor(flavor: string) {
-    await selectDropdownOption(vmView.detailViewFlavorDropdownID, flavor);
-  }
 }

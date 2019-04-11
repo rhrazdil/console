@@ -1,6 +1,5 @@
 /* eslint-disable no-unused-vars, no-undef */
 import { $, by, element, browser, ExpectedConditions as until } from 'protractor';
-import { testName } from '../../protractor.conf';
 
 import { resourceRows } from '../crud.view';
 
@@ -53,24 +52,30 @@ export const selectKebabOption = async(name: string, option: string) => {
 };
 
 // VM detail view
-export const detailViewName = $(`#${testName}-vm-${testName}-name`);
-export const detailViewDescription = $(`#${testName}-vm-${testName}-description`);
-export const detailViewOS = $(`#${testName}-vm-${testName}-os`);
-export const detailViewIP = $(`#${testName}-vm-${testName}-ip-addresses`);
-export const detailViewWLP = $(`#${testName}-vm-${testName}-workload-profile`);
-export const detailViewTemplate = $(`#${testName}-vm-${testName}-template`);
-export const detailViewFQDN = $(`#${testName}-vm-${testName}-fqdn`);
-export const detailViewNS = $(`#${testName}-vm-${testName}-namespace`).$('a');
-export const detailViewPod = $(`#${testName}-vm-${testName}-pod`);
-export const detailViewNode = $(`#${testName}-vm-${testName}-node`);
-export const detailViewFlavor = $(`#${testName}-vm-${testName}-flavor`);
-export const detailViewFlavorDropdownID = `#${testName}-vm-${testName}-flavor-dropdown`;
-export const detailViewFlavorDes = $(`#${testName}-vm-${testName}-flavor-description`);
-export const detailViewFlavorCPU = $(`#${testName}-vm-${testName}-flavor-cpu`);
-export const detailViewFlavorMemory = $(`#${testName}-vm-${testName}-flavor-memory`);
-export const bootOrder = $(`#${testName}-vm-${testName}-boot-order`).$('.kubevirt-boot-order__list').$$('li');
-export const detailViewDesTextarea = $(`#${testName}-vm-${testName}-description-textarea`);
+export const vmDetailItemId = (namespace, vmName, itemName) => `#${namespace}-${vmName}-${itemName}`;
+
+export const vmDetailNameID = (namespace, vmName) => $(vmDetailItemId(namespace, vmName, 'name'));
+export const vmDetailDesID = (namespace, vmName) => $(vmDetailItemId(namespace, vmName, 'description'));
+export const vmDetailOSID = (namespace, vmName) => $(vmDetailItemId(namespace, vmName, 'os'));
+export const vmDetailIPID = (namespace, vmName) => $(vmDetailItemId(namespace, vmName, 'ip-addresses'));
+export const vmDetailWorkloadProfileID = (namespace, vmName) => $(vmDetailItemId(namespace, vmName, 'workload-profile'));
+export const vmDetailTemplateID = (namespace, vmName) => $(vmDetailItemId(namespace, vmName, 'template'));
+export const vmDetailHostnameID = (namespace, vmName) => $(vmDetailItemId(namespace, vmName, 'fqdn'));
+export const vmDetailNSID = (namespace, vmName) => $(vmDetailItemId(namespace, vmName, 'namespace'));
+export const vmDetailPodID = (namespace, vmName) => $(vmDetailItemId(namespace, vmName, 'pod'));
+export const vmDetailNodeID = (namespace, vmName) => $(vmDetailItemId(namespace, vmName, 'node'));
+export const vmDetailFlavorID = (namespace, vmName) => $(vmDetailItemId(namespace, vmName, 'flavor'));
+export const vmDetailFlavorDropdown = (namespace, vmName) => vmDetailItemId(namespace, vmName, 'flavor-dropdown');
+export const vmDetailFlavorDropdownID = (namespace, vmName) => $(vmDetailFlavorDropdown(namespace, vmName));
+export const vmDetailFlavorDesID = (namespace, vmName) => $(vmDetailItemId(namespace, vmName, 'flavor-description'));
+export const vmDetailFlavorCPUID = (namespace, vmName) => $(vmDetailItemId(namespace, vmName, 'flavor-cpu'));
+export const vmDetailFlavorMemoryID = (namespace, vmName) => $(vmDetailItemId(namespace, vmName, 'flavor-memory'));
+export const vmDetailDesTextareaID = (namespace, vmName) => $(vmDetailItemId(namespace, vmName, 'description-textarea'));
+export const bootOrder = (namespace, vmName) => $(vmDetailItemId(namespace, vmName, 'boot-order')).$('.kubevirt-boot-order__list').$$('li');
 
 export const detailViewEditBtn = element(by.buttonText('Edit'));
 export const detailViewSaveBtn = element(by.buttonText('Save'));
 export const detailViewCancelBtn = element(by.buttonText('Cancel'));
+
+export const vmDetailServiceItem = (namespace, serviceName) => `[href="/k8s/ns/${namespace}/services/${serviceName}"]`;
+export const vmDetailService = (namespace, serviceName) => $(vmDetailServiceItem(namespace, serviceName));

@@ -1,12 +1,13 @@
 /* eslint-disable no-undef */
-import { $, browser } from 'protractor';
+import { browser } from 'protractor';
 import { execSync } from 'child_process';
+import { OrderedMap } from 'immutable';
 
 import { appHost, testName } from '../../protractor.conf';
 import { isLoaded } from '../../views/crud.view';
 import { basicVmConfig, cloudInitCustomScriptConfig } from './mocks';
 import * as vmView from '../../views/kubevirt/virtualMachine.view';
-import { fillInput, removeLeakedResources, exposeService } from './utils';
+import { fillInput, removeLeakedResources, exposeService, selectDropdownOption } from './utils';
 import Wizard from './models/wizard';
 import { VirtualMachine } from './models/virtualMachine';
 
@@ -41,13 +42,6 @@ describe('Test VM overview page', () => {
     await wizard.next();
 
     leakedResources.add(JSON.stringify({name: vmName, namespace: testName, kind: 'vm'}));
-
-    // Expose VM services
-    execSync(`oc project ${testName}`);
-    const srvList = new Set<string>();
-    srvList.add(JSON.stringify({name: vmName, kind: 'vm', port: '22', targetPort: 20022, exposeName: `${vmName}-service-ssh`, type: 'NodePort'}));
-    srvList.add(JSON.stringify({name: vmName, kind: 'vm', port: '25', targetPort: 20025, exposeName: `${vmName}-service-smtp`, type: 'NodePort'}));
-    exposeService(srvList);
   });
 
   afterAll(async() => {
@@ -62,22 +56,22 @@ describe('Test VM overview page', () => {
   it('Check VM details in overview when vm is off', async() => {
 
     // Non empty fields when vm is off
-    expect(vmView.detailViewName.getText()).toEqual(vmName);
-    expect(vmView.detailViewDescription.getText()).toEqual(testName);
+    expect(vmView.vmDetailNameID(testName, vmName).getText()).toEqual(vmName);
+    expect(vmView.vmDetailDesID(testName, vmName).getText()).toEqual(testName);
     expect(vmView.statusIcon(vmView.statusIcons.off).isPresent()).toBeTruthy();
-    expect(vmView.detailViewOS.getText()).toEqual(basicVmConfig.operatingSystem);
-    expect(vmView.detailViewWLP.getText()).toEqual(basicVmConfig.workloadProfile);
-    expect(vmView.detailViewTemplate.getText()).toEqual('openshift/rhel7-generic-small');
-    expect(vmView.detailViewNS.getText()).toEqual(testName);
-    expect(vmView.bootOrder.getText()).toEqual(['rootdisk', 'nic0', 'cloudinitdisk']);
-    expect(vmView.detailViewFlavor.getText()).toEqual(basicVmConfig.flavor);
-    expect(vmView.detailViewFlavorDes.getText()).toEqual('1 CPU, 2G Memory');
+    expect(vmView.vmDetailOSID(testName, vmName).getText()).toEqual(basicVmConfig.operatingSystem);
+    expect(vmView.vmDetailWorkloadProfileID(testName, vmName).getText()).toEqual(basicVmConfig.workloadProfile);
+    expect(vmView.vmDetailTemplateID(testName, vmName).getText()).toEqual('openshift/rhel7-generic-small');
+    expect(vmView.vmDetailNSID(testName, vmName).$('a').getText()).toEqual(testName);
+    expect(vmView.bootOrder(testName, vmName).getText()).toEqual(['rootdisk', 'nic0', 'cloudinitdisk']);
+    expect(vmView.vmDetailFlavorID(testName, vmName).getText()).toEqual(basicVmConfig.flavor);
+    expect(vmView.vmDetailFlavorDesID(testName, vmName).getText()).toEqual('1 CPU, 2G Memory');
 
     // Empty fields when vm is off
-    expect(vmView.detailViewIP.getText()).toEqual('---');
-    expect(vmView.detailViewPod.getText()).toEqual('---');
-    expect(vmView.detailViewFQDN.getText()).toEqual('---');
-    expect(vmView.detailViewNode.getText()).toEqual('---');
+    expect(vmView.vmDetailIPID(testName, vmName).getText()).toEqual('---');
+    expect(vmView.vmDetailPodID(testName, vmName).getText()).toEqual('---');
+    expect(vmView.vmDetailHostnameID(testName, vmName).getText()).toEqual('---');
+    expect(vmView.vmDetailNodeID(testName, vmName).getText()).toEqual('---');
 
     // Edit button is enabled when VM is off
     expect(vmView.detailViewEditBtn.isEnabled()).toBe(true);
@@ -88,11 +82,11 @@ describe('Test VM overview page', () => {
     expect(vmView.statusIcon(vmView.statusIcons.running).isPresent()).toBeTruthy();
 
     // Empty fields turn into non-empty
-    expect(vmView.detailViewIP.getText()).toContain('10');
-    // Known issue for FQDN: https://bugzilla.redhat.com/show_bug.cgi?id=1688124
-    expect(vmView.detailViewFQDN.getText()).toEqual(vmName);
-    expect(vmView.detailViewPod.$('a').getText()).toContain('virt-launcher');
-    expect(vmView.detailViewNode.$('a').getText()).not.toEqual('---');
+    expect(vmView.vmDetailIPID(testName, vmName).getText()).toContain('10');
+    // Known issue for hostname: https://bugzilla.redhat.com/show_bug.cgi?id=1688124
+    expect(vmView.vmDetailHostnameID(testName, vmName).getText()).toEqual(vmName);
+    expect(vmView.vmDetailPodID(testName, vmName).$('a').getText()).toContain('virt-launcher');
+    expect(vmView.vmDetailNodeID(testName, vmName).$('a').getText()).not.toEqual('---');
 
     // Edit button is disabled when VM is running
     expect(vmView.detailViewEditBtn.isEnabled()).toBe(false);
@@ -105,37 +99,53 @@ describe('Test VM overview page', () => {
 
     // Cancel edit
     await vmView.detailViewEditBtn.click();
-    await fillInput(vmView.detailViewDesTextarea, newVMDescription);
-    await vm.selectFlavor('Custom');
-    await fillInput(vmView.detailViewFlavorCPU, '2');
-    await fillInput(vmView.detailViewFlavorMemory, '4');
+    await fillInput(vmView.vmDetailDesTextareaID(testName, vmName), newVMDescription);
+    await selectDropdownOption(vmView.vmDetailFlavorDropdown(testName, vmName), 'Custom');
+    await fillInput(vmView.vmDetailFlavorCPUID(testName, vmName), '2');
+    await fillInput(vmView.vmDetailFlavorMemoryID(testName, vmName), '4');
     await vmView.detailViewCancelBtn.click();
-    expect(vmView.detailViewDescription.getText()).toEqual(testName);
-    expect(vmView.detailViewFlavorDes.getText()).toEqual('1 CPU, 2G Memory');
+    expect(vmView.vmDetailDesID(testName, vmName).getText()).toEqual(testName);
+    expect(vmView.vmDetailFlavorDesID(testName, vmName).getText()).toEqual('1 CPU, 2G Memory');
 
     // Save edit
     await vmView.detailViewEditBtn.click();
-    await fillInput(vmView.detailViewDesTextarea, newVMDescription);
-    await vm.selectFlavor('Custom');
-    await fillInput(vmView.detailViewFlavorCPU, '2');
-    await fillInput(vmView.detailViewFlavorMemory, '4');
+    await fillInput(vmView.vmDetailDesTextareaID(testName, vmName), newVMDescription);
+    await selectDropdownOption(vmView.vmDetailFlavorDropdown(testName, vmName), 'Custom');
+    await fillInput(vmView.vmDetailFlavorCPUID(testName, vmName), '2');
+    await fillInput(vmView.vmDetailFlavorMemoryID(testName, vmName), '4');
     await vmView.detailViewSaveBtn.click();
     await isLoaded();
-    expect(vmView.detailViewDescription.getText()).toEqual(newVMDescription);
-    expect(vmView.detailViewFlavorDes.getText()).toEqual('2 CPU, 4G Memory');
+    expect(vmView.vmDetailDesID(testName, vmName).getText()).toEqual(newVMDescription);
+    expect(vmView.vmDetailFlavorDesID(testName, vmName).getText()).toEqual('2 CPU, 4G Memory');
   });
 
-  it('Expose some VM services', async() => {
-    expect($(`[href="/k8s/ns/${testName}/services/${vmName}-service-ssh"]`).getText()).toEqual(`${vmName}-service-ssh`);
-    expect($(`[href="/k8s/ns/${testName}/services/${vmName}-service-smtp"]`).getText()).toEqual(`${vmName}-service-smtp`);
+  it('Check exposed VM services', async() => {
+    const exposeServices = new Set<string>();
 
-    $(`[href="/k8s/ns/${testName}/services/${vmName}-service-ssh"]`).click();
-    expect(browser.getCurrentUrl()).toEqual(`${appHost}/k8s/ns/${testName}/services/${vmName}-service-ssh`);
+    const sshService = `${vmName}-service-ssh`;
+    const smtpService = `${vmName}-service-smtp`;
+    const httpService = `${vmName}-service-http`;
 
-    await vm.navigateToTab(vmView.overviewTab);
-    await isLoaded();
+    const srvList = OrderedMap<string, {name: string, port: string, targetPort: string}>()
+      .set('ssh service', {name: `${sshService}`, port: '22', targetPort: '20022'})
+      .set('smtp service', {name: `${smtpService}`, port: '25', targetPort: '20025'})
+      .set('http service', {name: `${httpService}`, port: '80', targetPort: '20080'});
 
-    $(`[href="/k8s/ns/${testName}/services/${vmName}-service-smtp"]`).click();
-    expect(browser.getCurrentUrl()).toEqual(`${appHost}/k8s/ns/${testName}/services/${vmName}-service-smtp`);
+    srvList.forEach(srv => {
+      exposeServices.add(JSON.stringify({name: vmName, kind: 'vm', port: srv.port, targetPort: srv.targetPort, exposeName: srv.name, type: 'NodePort'}));
+    });
+
+    // Expose VM services
+    execSync(`oc project ${testName}`);
+    exposeService(exposeServices);
+
+    srvList.forEach(srv => {
+      expect(vmView.vmDetailService(testName, srv.name).getText()).toEqual(srv.name);
+      vmView.vmDetailService(testName, srv.name).click();
+      expect(browser.getCurrentUrl()).toEqual(`${appHost}/k8s/ns/${testName}/services/${srv.name}`);
+
+      browser.get(`${appHost}/k8s/ns/${testName}/virtualmachines/${vmName}`);
+      isLoaded();
+    });
   });
 });
