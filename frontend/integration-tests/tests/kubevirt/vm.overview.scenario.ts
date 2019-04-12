@@ -10,7 +10,7 @@ import * as vmView from '../../views/kubevirt/virtualMachine.view';
 import { fillInput, execCommandFromCli, exposeService, selectDropdownOption } from './utils';
 import { VirtualMachine } from './models/virtualMachine';
 
-describe('Test VM overview page', () => {
+describe('Test vm overview page', () => {
   const vmName = `vm-${testName}`;
   const vm = new VirtualMachine(vmName, testName);
   const cloudInit = `#cloud-config\nuser: cloud-user\npassword: atomic\nchpasswd: {expire: False}\nhostname: vm-${testName}.example.com`;
@@ -29,7 +29,7 @@ describe('Test VM overview page', () => {
     await isLoaded();
   });
 
-  it('Check VM details in overview when vm is off', async() => {
+  it('Check vm details in overview when vm is off', async() => {
 
     // Non empty fields when vm is off
     expect(vmView.vmDetailNameID(testName, vmName).getText()).toEqual(vmName);
@@ -53,7 +53,7 @@ describe('Test VM overview page', () => {
     expect(vmView.detailViewEditBtn.isEnabled()).toBe(true);
   });
 
-  it('Check VM details in overview when vm is running', async() => {
+  it('Check vm details in overview when vm is running', async() => {
     await vm.action('Start');
     expect(vmView.statusIcon(vmView.statusIcons.running).isPresent()).toBeTruthy();
 
@@ -68,7 +68,7 @@ describe('Test VM overview page', () => {
     expect(vmView.detailViewEditBtn.isEnabled()).toBe(false);
   });
 
-  it('Edit VM flavor', async() => {
+  it('Edit vm flavor', async() => {
     const newVMDescription = 'edited vm description';
     await vm.action('Stop');
     await isLoaded();
@@ -95,7 +95,7 @@ describe('Test VM overview page', () => {
     expect(vmView.vmDetailFlavorDesID(testName, vmName).getText()).toEqual('2 CPU, 4G Memory');
   });
 
-  it('Check exposed VM services', async() => {
+  describe('Check exposed vm services', () => {
     const exposeServices = new Set<string>();
 
     const sshService = `${vmName}-service-ssh`;
@@ -107,21 +107,24 @@ describe('Test VM overview page', () => {
       .set('smtp service', {name: `${smtpService}`, port: '25', targetPort: '20025'})
       .set('http service', {name: `${httpService}`, port: '80', targetPort: '20080'});
 
-    srvList.forEach(srv => {
-      exposeServices.add(JSON.stringify({name: vmName, kind: 'vm', port: srv.port, targetPort: srv.targetPort, exposeName: srv.name, type: 'NodePort'}));
+    beforeAll(async() => {
+      srvList.forEach(srv => {
+        exposeServices.add(JSON.stringify({name: vmName, kind: 'vm', port: srv.port, targetPort: srv.targetPort, exposeName: srv.name, type: 'NodePort'}));
+      });
+
+      execSync(`oc project ${testName}`);
+      exposeService(exposeServices);
     });
 
-    // Expose VM services
-    execSync(`oc project ${testName}`);
-    exposeService(exposeServices);
-
     srvList.forEach(srv => {
-      expect(vmView.vmDetailService(testName, srv.name).getText()).toEqual(srv.name);
-      vmView.vmDetailService(testName, srv.name).click();
-      expect(browser.getCurrentUrl()).toEqual(`${appHost}/k8s/ns/${testName}/services/${srv.name}`);
+      it(`Check vm service ${srv.name}`, async() => {
+        expect(vmView.vmDetailService(testName, srv.name).getText()).toEqual(srv.name);
+        await vmView.vmDetailService(testName, srv.name).click();
+        expect(browser.getCurrentUrl()).toEqual(`${appHost}/k8s/ns/${testName}/services/${srv.name}`);
 
-      browser.get(`${appHost}/k8s/ns/${testName}/virtualmachines/${vmName}`);
-      isLoaded();
+        await browser.get(`${appHost}/k8s/ns/${testName}/virtualmachines/${vmName}`);
+        await isLoaded();
+      });
     });
   });
 });
