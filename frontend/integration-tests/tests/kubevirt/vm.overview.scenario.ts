@@ -1,13 +1,12 @@
 /* eslint-disable no-undef */
 import { browser } from 'protractor';
 import { execSync } from 'child_process';
-import { OrderedMap } from 'immutable';
 
 import { appHost, testName } from '../../protractor.conf';
 import { isLoaded } from '../../views/crud.view';
 import { getVmManifest, basicVmConfig } from './mocks';
 import * as vmView from '../../views/kubevirt/virtualMachine.view';
-import { fillInput, execCommandFromCli, exposeService, selectDropdownOption } from './utils';
+import { fillInput, execCommandFromCli, exposeService, selectDropdownOption, asyncForEach } from './utils';
 import { VirtualMachine } from './models/virtualMachine';
 
 describe('Test vm overview page', () => {
@@ -95,32 +94,29 @@ describe('Test vm overview page', () => {
     expect(vmView.vmDetailFlavorDesID(testName, vmName).getText()).toEqual('2 CPU, 4G Memory');
   });
 
-  describe('Check exposed vm services', () => {
-    const exposeServices = new Set<string>();
-
-    const sshService = `${vmName}-service-ssh`;
-    const smtpService = `${vmName}-service-smtp`;
-    const httpService = `${vmName}-service-http`;
-
-    const srvList = OrderedMap<string, {name: string, port: string, targetPort: string}>()
-      .set('ssh service', {name: `${sshService}`, port: '22', targetPort: '20022'})
-      .set('smtp service', {name: `${smtpService}`, port: '25', targetPort: '20025'})
-      .set('http service', {name: `${httpService}`, port: '80', targetPort: '20080'});
+  describe('VM Services', () => {
+    const serviceTemplate = {name: vmName, kind: 'vm', type: 'NodePort'}
+    const exposeServices = new Set<any>();
+    exposeServices.add({exposeName: `${vmName}-service-ssh`, port: '22', targetPort: '20022', ...serviceTemplate});
+    exposeServices.add({exposeName: `${vmName}-service-smtp`, port: '25', targetPort: '20025', ...serviceTemplate});
+    exposeServices.add({exposeName: `${vmName}-service-http`, port: '80', targetPort: '20080', ...serviceTemplate});
 
     beforeAll(async() => {
-      srvList.forEach(srv => {
-        exposeServices.add(JSON.stringify({name: vmName, kind: 'vm', port: srv.port, targetPort: srv.targetPort, exposeName: srv.name, type: 'NodePort'}));
-      });
-
       execSync(`oc project ${testName}`);
       exposeService(exposeServices);
     });
 
-    srvList.forEach(srv => {
-      it(`Check vm service ${srv.name}`, async() => {
-        expect(vmView.vmDetailService(testName, srv.name).getText()).toEqual(srv.name);
-        await vmView.vmDetailService(testName, srv.name).click();
-        expect(browser.getCurrentUrl()).toEqual(`${appHost}/k8s/ns/${testName}/services/${srv.name}`);
+    afterAll(async() => {
+      exposeServices.forEach((service) => {
+        execCommandFromCli(`kubectl delete service ${service.exposeName} -n ${testName}`);
+      });
+    });
+
+    it(`Check vm overview page services`, async() => {
+      await asyncForEach(exposeServices, async(srv) => {
+        expect(vmView.vmDetailService(testName, srv.exposeName).getText()).toEqual(srv.exposeName);
+        await vmView.vmDetailService(testName, srv.exposeName).click();
+        expect(browser.getCurrentUrl()).toEqual(`${appHost}/k8s/ns/${testName}/services/${srv.exposeName}`);
 
         await browser.get(`${appHost}/k8s/ns/${testName}/virtualmachines/${vmName}`);
         await isLoaded();

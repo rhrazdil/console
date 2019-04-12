@@ -114,10 +114,10 @@ export const waitForCount = (elementArrayFinder, targetCount) => {
   };
 };
 
-export function exposeService(exposeServices: Set<string>) {
-  const srvArray: Array<string> = [...exposeServices];
+export function exposeService(exposeServices: Set<any>) {
+  const srvArray: Array<any> = [...exposeServices];
   if (srvArray.length > 0) {
-    srvArray.map(r => JSON.parse(r) as {name: string, kind: string, port: string, targetPort: string, exposeName: string, type: string})
+    srvArray
       .forEach(({name, kind, port, targetPort, exposeName, type}) => {
         try {
           execSync(`virtctl expose ${kind} ${name} --port=${port} --target-port=${targetPort} --name=${exposeName} --type=${type}`);
@@ -133,5 +133,12 @@ export function execCommandFromCli(command: string) {
     execSync(command);
   } catch (error) {
     console.error(`Failed to run ${command}:\n${error}`);
+  }
+}
+
+export async function asyncForEach(iterable, callback) {
+  const array = [...iterable]
+  for (let index = 0; index < array.length; index++) {
+    await callback(array[index], index, array);
   }
 }
