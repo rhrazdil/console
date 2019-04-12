@@ -7,27 +7,21 @@ import { appHost, testName } from '../../protractor.conf';
 import { isLoaded } from '../../views/crud.view';
 import { getVmManifest, basicVmConfig } from './mocks';
 import * as vmView from '../../views/kubevirt/virtualMachine.view';
-import { fillInput, removeLeakedResources, exposeService, selectDropdownOption } from './utils';
+import { fillInput, execCommandFromCli, exposeService, selectDropdownOption } from './utils';
 import { VirtualMachine } from './models/virtualMachine';
 
 describe('Test VM overview page', () => {
-  const leakedResources = new Set<string>();
   const vmName = `vm-${testName}`;
   const vm = new VirtualMachine(vmName, testName);
-  const cloudInit = `#cloud-config\nuser: cloud-user\npassword: atomic\nchpasswd: {expire: False}\nhostname: vm-${testName}.example.com`
+  const cloudInit = `#cloud-config\nuser: cloud-user\npassword: atomic\nchpasswd: {expire: False}\nhostname: vm-${testName}.example.com`;
+  const testVm = getVmManifest('Container', testName, vmName, cloudInit);
 
   beforeAll(async() => {
-    try {
-      execSync(`echo '${JSON.stringify(getVmManifest('Container', testName, vmName, cloudInit))}' | kubectl create -f -`);
-    } catch (error) {
-      console.error(`failed create vm ${vmName} in namespace ${testName}`); 
-    };
-
-    leakedResources.add(JSON.stringify({name: vmName, namespace: testName, kind: 'vm'}));
+    execCommandFromCli(`echo '${JSON.stringify(testVm)}' | kubectl create -f -`);
   });
 
   afterAll(async() => {
-    removeLeakedResources(leakedResources);
+    execCommandFromCli(`echo '${JSON.stringify(testVm)}' | kubectl delete -f -`);
   });
 
   beforeEach(async() => {
@@ -37,7 +31,6 @@ describe('Test VM overview page', () => {
 
   it('Check VM details in overview when vm is off', async() => {
 
-    await browser.sleep(20000);
     // Non empty fields when vm is off
     expect(vmView.vmDetailNameID(testName, vmName).getText()).toEqual(vmName);
     expect(vmView.vmDetailDesID(testName, vmName).getText()).toEqual(testName);

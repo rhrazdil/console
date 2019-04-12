@@ -81,8 +81,8 @@ export function getVmManifest(provisionSource: string, namespace: string, name?:
   disks.push(rootdisk);
 
   if (cloudinit) {
-     volumes.push(cloudInitNoCloud);
-     disks.push(cloudinitdisk);
+    volumes.push(cloudInitNoCloud);
+    disks.push(cloudinitdisk);
   }
 
   switch (provisionSource) {

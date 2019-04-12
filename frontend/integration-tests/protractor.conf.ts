@@ -184,7 +184,6 @@ export const config: Config = {
       'tests/kubevirt/template.wizard.scenario.ts',
       'tests/kubevirt/clone.vm.scenario.ts',
       'tests/kubevirt/vm.yaml.scenario.ts',
-      'tests/kubevirt/vm.overview.scenario.ts',
     ],
     e2e: [
       'tests/login.scenario.ts',

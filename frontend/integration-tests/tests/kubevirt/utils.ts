@@ -127,3 +127,11 @@ export function exposeService(exposeServices: Set<string>) {
       });
   }
 }
+
+export function execCommandFromCli(command: string) {
+  try {
+    execSync(command);
+  } catch (error) {
+    console.error(`Failed to run ${command}:\n${error}`);
+  }
+}
