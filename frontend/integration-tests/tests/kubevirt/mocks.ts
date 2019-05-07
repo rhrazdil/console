@@ -66,7 +66,7 @@ export const testNAD = {
   apiVersion: 'k8s.cni.cncf.io/v1',
   kind: 'NetworkAttachmentDefinition',
   metadata: {
-    name: `ovs-net-1${testName}-${testName}`,
+    name: `ovs-net-1`,
     namespace: testName,
     labels: {[testLabel]: testName},
   },

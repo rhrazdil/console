@@ -11,7 +11,7 @@ import * as failFast from 'protractor-fail-fast';
 const tap = !!process.env.TAP;
 
 export const appHost = `${process.env.BRIDGE_BASE_ADDRESS || 'http://localhost:9000'}${(process.env.BRIDGE_BASE_PATH || '/').replace(/\/$/, '')}`;
-export const testName = `test-${Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 5)}`;
+export const testName = 'test'; //`test-${Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 5)}`;
 
 const htmlReporter = new HtmlScreenshotReporter({dest: './gui_test_screenshots', inlineImages: true, captureOnlyFailedSpecs: true, filename: 'test-gui-report.html'});
 const browserLogs: logging.Entry[] = [];

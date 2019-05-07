@@ -13,12 +13,12 @@ import * as vmView from '../../views/kubevirt/vm.view';
 describe('Kubevirt create VM using wizard', () => {
   const leakedResources = new Set<string>();
   const vmName = `vm-${testName}`;
-  const operatingSystem = 'fedora28';
+  const operatingSystem = 'Red Hat Enterprise Linux 7.6';
   const flavor = 'small';
   const workloadProfile = 'generic';
   const sourceURL = 'https://download.cirros-cloud.net/0.4.0/cirros-0.4.0-x86_64-disk.img';
   const sourceContainer = 'kubevirt/cirros-registry-disk-demo:latest';
-  const pxeInterface = 'eth1';
+  const pxeInterface = 'nic1';
   const provisionMethods = OrderedMap<string, (provisionSource: string) => void>()
     .set('PXE', async function(provisionSource) {
       await vmView.provisionSourceButton.click();
@@ -75,11 +75,11 @@ describe('Kubevirt create VM using wizard', () => {
   }
 
   beforeAll(async() => {
-    execSync(`echo '${JSON.stringify(testNAD)}' | kubectl create -f -`);
+    //execSync(`echo '${JSON.stringify(testNAD)}' | kubectl create -f -`);
   });
 
   afterAll(async() => {
-    execSync(`kubectl delete -n ${testName} net-attach-def ${testNAD.metadata.name}`);
+    //execSync(`kubectl delete -n ${testName} net-attach-def ${testNAD.metadata.name}`);
     removeLeakedResources(leakedResources);
   });
 
