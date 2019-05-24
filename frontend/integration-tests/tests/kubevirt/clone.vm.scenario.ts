@@ -4,7 +4,7 @@ import { $, browser, ExpectedConditions as until } from 'protractor';
 import * as _ from 'lodash';
 
 // eslint-disable-next-line no-unused-vars
-import { removeLeakedResources, waitForCount, searchYAML, searchJSON, getResourceObject, addLeakableResource, removeLeakableResource, deleteResource, createResources, deleteResources } from './utils/utils';
+import { removeLeakedResources, waitForCount, searchYAML, searchJSON, getResourceObject, addLeakableResource, removeLeakableResource, deleteResource, createResources, deleteResources, createResource } from './utils/utils';
 import { CLONE_VM_TIMEOUT, VM_BOOTUP_TIMEOUT, PAGE_LOAD_TIMEOUT, VM_STOP_TIMEOUT, TABS } from './utils/consts';
 import { appHost, testName } from '../../protractor.conf';
 import { filterForName, isLoaded, resourceRowsPresent, resourceRows } from '../../views/crud.view';
@@ -30,15 +30,11 @@ describe('Test clone VM.', () => {
   describe('Test Clone VM wizard dialog.', () => {
     beforeAll(() => {
       execSync(`oc new-project ${nameValidationNamespace} --skip-config-write=true`);
-      execSync(`echo '${JSON.stringify(testContainerVm)}' | kubectl create -f -`);
-      execSync(`echo '${JSON.stringify(testNad)}' | kubectl create -f -`);
-      execSync(`echo '${JSON.stringify(testNameValidationVm)}' | kubectl create -f -`);
+      createResources([testContainerVm, testNad, testNameValidationVm]);
     });
 
     afterAll(() => {
-      execSync(`kubectl delete -n ${testNad.metadata.namespace} net-attach-def ${testNad.metadata.name}`);
-      execSync(`kubectl delete -n ${testContainerVm.metadata.namespace} vm ${testContainerVm.metadata.name}`);
-      execSync(`kubectl delete -n ${testNameValidationVm.metadata.namespace} vm ${testNameValidationVm.metadata.name}`);
+      deleteResources([testContainerVm, testNameValidationVm, testNad]);
       execSync(`oc delete project ${nameValidationNamespace}`);
     });
 
@@ -52,13 +48,13 @@ describe('Test clone VM.', () => {
       // Clone the VM
       await wizard.next();
       const clonedVm = new VirtualMachine(clonedVmConf);
-      leakedResources.add(JSON.stringify({name: clonedVm.name, namespace: clonedVm.namespace, kind: 'vm'}));
+      addLeakableResource(leakedResources, clonedVm.asResource());
 
       // Verify that the original VM is stopped
       await vm.waitForStatusIcon(statusIcons.off, VM_STOP_TIMEOUT);
 
       await clonedVm.action('Delete');
-      leakedResources.delete(JSON.stringify({name: clonedVm.name, namespace: clonedVm.namespace, kind: 'vm'}));
+      removeLeakableResource(leakedResources, clonedVm.asResource());
     }, CLONE_VM_TIMEOUT);
 
     it('Prefill correct data in the clone VM dialog.', async() => {
@@ -110,11 +106,11 @@ describe('Test clone VM.', () => {
     });
 
     beforeEach(async() => {
-      execSync(`echo '${JSON.stringify(testContainerVm)}' | kubectl create -f -`);
+      createResource(testContainerVm);
     });
 
     afterEach(async() => {
-      execSync(`kubectl delete -n ${testName} vm ${vm.name}`);
+      deleteResource(testContainerVm);
     }, VM_BOOTUP_TIMEOUT);
 
     it('Start cloned VM on creation', async() => {
@@ -123,17 +119,15 @@ describe('Test clone VM.', () => {
       await wizard.next();
 
       const clonedVm = new VirtualMachine(clonedVmConf);
-      leakedResources.add(JSON.stringify({name: clonedVm.name, namespace: clonedVm.namespace, kind: 'vm'}));
-
-      await browser.get(`${appHost}/k8s/ns/${testName}/virtualmachines`);
-      await isLoaded();
+      addLeakableResource(leakedResources, clonedVm.asResource());
+      await clonedVm.navigateToListView();
 
       await filterForName(`${testContainerVm.metadata.name}-clone`);
       await resourceRowsPresent();
       await browser.wait(until.textToBePresentInElement(wizardView.firstRowVMStatus, 'Running'), VM_BOOTUP_TIMEOUT);
 
       await clonedVm.action('Delete');
-      leakedResources.delete(JSON.stringify({name: clonedVm.name, namespace: clonedVm.namespace, kind: 'vm'}));
+      removeLeakableResource(leakedResources, clonedVm.asResource());
     }, VM_BOOTUP_TIMEOUT);
 
     it('Cloned VM has cleared MAC addresses.', async() => {
@@ -142,7 +136,7 @@ describe('Test clone VM.', () => {
       await wizard.next();
 
       const clonedVm = new VirtualMachine(clonedVmConf);
-      leakedResources.add(JSON.stringify({name: clonedVm.name, namespace: clonedVm.namespace, kind: 'vm'}));
+      addLeakableResource(leakedResources, clonedVm.asResource());
       await clonedVm.navigateToTab(TABS.NICS);
 
       await browser.wait(until.and(waitForCount(resourceRows, 2)), PAGE_LOAD_TIMEOUT);
@@ -151,7 +145,7 @@ describe('Test clone VM.', () => {
       expect(mac === emptyStr).toBe(true, 'MAC address should be cleared');
 
       await clonedVm.action('Delete');
-      leakedResources.delete(JSON.stringify({name: clonedVm.name, namespace: clonedVm.namespace, kind: 'vm'}));
+      removeLeakableResource(leakedResources, clonedVm.asResource());
       await vm.removeNic(networkInterface.name);
     }, VM_BOOTUP_TIMEOUT);
 
@@ -160,12 +154,13 @@ describe('Test clone VM.', () => {
       await wizard.next();
 
       const clonedVm = new VirtualMachine(clonedVmConf);
-      leakedResources.add(JSON.stringify({name: clonedVm.name, namespace: clonedVm.namespace, kind: 'vm'}));
+      addLeakableResource(leakedResources, clonedVm.asResource());
+
       expect(searchYAML(`vm.kubevirt.io/name: ${vm.name}`, clonedVm.name, clonedVm.namespace, 'vm'))
         .toBeTruthy('Cloned VM should have vm.kubevirt.io/name label.');
 
       await clonedVm.action('Delete');
-      leakedResources.delete(JSON.stringify({name: clonedVm.name, namespace: clonedVm.namespace, kind: 'vm'}));
+      removeLeakableResource(leakedResources, clonedVm.asResource());
     }, VM_BOOTUP_TIMEOUT);
 
     it('Clone VM with Container source.', async() => {
@@ -173,13 +168,14 @@ describe('Test clone VM.', () => {
       await wizard.next();
 
       const clonedVm = new VirtualMachine(clonedVmConf);
-      leakedResources.add(JSON.stringify({name: clonedVm.name, namespace: clonedVm.namespace, kind: 'vm'}));
+      addLeakableResource(leakedResources, clonedVm.asResource());
+
       expect(searchYAML('kubevirt/cirros-registry-disk-demo', clonedVm.name, clonedVm.namespace, 'vm'))
         .toBeTruthy('Cloned VM should have container image.');
 
       await clonedVm.action('Start');
       await clonedVm.action('Delete');
-      leakedResources.delete(JSON.stringify({name: clonedVm.name, namespace: clonedVm.namespace, kind: 'vm'}));
+      removeLeakableResource(leakedResources, clonedVm.asResource());
     }, CLONE_VM_TIMEOUT);
 
     it('Clone VM with URL source.', async() => {
@@ -188,7 +184,8 @@ describe('Test clone VM.', () => {
       await wizard.next();
 
       const clonedVm = new VirtualMachine({name: `${urlVm.name}-clone`, namespace: urlVm.namespace});
-      leakedResources.add(JSON.stringify({name: clonedVm.name, namespace: clonedVm.namespace, kind: 'vm'}));
+      addLeakableResource(leakedResources, clonedVm.asResource());
+
       await clonedVm.action('Start');
 
       // Check cloned PVC exists
@@ -203,7 +200,7 @@ describe('Test clone VM.', () => {
         .toBeTruthy('Cloned VM should have container image.');
 
       await clonedVm.action('Delete');
-      leakedResources.delete(JSON.stringify({name: clonedVm.name, namespace: clonedVm.namespace, kind: 'vm'}));
+      removeLeakableResource(leakedResources, clonedVm.asResource());
     }, CLONE_VM_TIMEOUT);
 
     it('Clone VM with URL source and Cloud Init.', async() => {
