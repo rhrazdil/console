@@ -3,7 +3,7 @@ import { browser, ExpectedConditions as until } from 'protractor';
 
 import { appHost, testName } from '../../protractor.conf';
 import { isLoaded } from '../../views/crud.view';
-import { getVmManifest, basicVmConfig, emptyStr } from './mocks';
+import { getVmManifest, basicVmConfig, emptyStr } from './utils/mocks';
 import { activeTab } from '../../views/horizontal-nav.view';
 import * as vmView from '../../views/kubevirt/virtualMachine.view';
 import { fillInput, exposeService, selectDropdownOption, asyncForEach, createResource, deleteResource } from './utils/utils';
@@ -48,7 +48,7 @@ describe('Test vm overview', () => {
     expect(vmView.statusIcon(vmView.statusIcons.off).isPresent()).toBeTruthy();
     expect(vmView.vmDetailOS(testName, vmName).getText()).toEqual(basicVmConfig.operatingSystem);
     expect(vmView.vmDetailWorkloadProfile(testName, vmName).getText()).toEqual(basicVmConfig.workloadProfile);
-    expect(vmView.vmDetailTemplate(testName, vmName).getText()).toEqual('openshift/rhel7-generic-small');
+    expect(vmView.vmDetailTemplate(testName, vmName).getText()).toEqual('openshift/rhel7-desktop-small');
     expect(vmView.vmDetailNamespace(testName, vmName).$('a').getText()).toEqual(testName);
     expect(vmView.vmDetailBootOrder(testName, vmName).getText()).toEqual(['rootdisk', 'nic0', 'cloudinitdisk']);
     expect(vmView.vmDetailFlavor(testName, vmName).getText()).toEqual(basicVmConfig.flavor);
@@ -70,8 +70,6 @@ describe('Test vm overview', () => {
 
     // Empty fields turn into non-empty
     expect(vmView.vmDetailIP(testName, vmName).getText()).not.toEqual(emptyStr);
-    // Known issue for hostname: https://bugzilla.redhat.com/show_bug.cgi?id=1688124
-    expect(vmView.vmDetailHostname(testName, vmName).getText()).toEqual(vmName);
     expect(vmView.vmDetailPod(testName, vmName).$('a').getText()).toContain('virt-launcher');
     expect(vmView.vmDetailNode(testName, vmName).$('a').getText()).not.toEqual(emptyStr);
 
@@ -132,12 +130,12 @@ describe('Test vm overview', () => {
       expect(vmView.vmDetailDesc(testName, vmName).getText()).toEqual(newVMDescription);
       expect(vmView.vmDetailOS(testName, vmName).getText()).toEqual(basicVmConfig.operatingSystem);
       expect(vmView.statusIcon(vmView.statusIcons.running).isPresent()).toBeTruthy();
-      expect(vmView.vmDetailTemplate(testName, vmName).getText()).toEqual('openshift/rhel7-generic-small');
+      expect(vmView.vmDetailTemplate(testName, vmName).getText()).toEqual('openshift/rhel7-desktop-small');
       expect(vmView.vmDetailNamespace(testName, vmName).$('a').getText()).toEqual(testName);
       expect(vmView.vmDetailBootOrder(testName, vmName).getText()).toEqual(['rootdisk', 'nic0', 'cloudinitdisk']);
       expect(vmView.vmDetailFlavorDesc(testName, vmName).getText()).toEqual('2 CPU, 4G Memory');
       expect(vmView.vmDetailIP(testName, vmName).getText()).not.toEqual(emptyStr);
-      expect(vmView.vmDetailHostname(testName, vmName).getText()).toEqual(vmName);
+      expect(vmView.vmDetailHostname(testName, vmName).getText()).toEqual(emptyStr);
       expect(vmView.vmDetailPod(testName, vmName).$('a').getText()).toContain('virt-launcher');
       expect(vmView.vmDetailNode(testName, vmName).$('a').getText()).not.toEqual(emptyStr);
 
@@ -147,23 +145,23 @@ describe('Test vm overview', () => {
     }, VM_BOOTUP_TIMEOUT);
 
     it('Click vm link', async() => {
-      virtualMachineLink(0).click();
+      await virtualMachineLink(0).click();
       expect(browser.getCurrentUrl()).toEqual(`${appHost}/k8s/ns/${testName}/virtualmachines/${vmName}`);
     });
 
     it('Click vm status when vm is running', async() => {
-      vmStatusLink(0).click();
+      await vmStatusLink(0).click();
       expect(activeTab.first().getText()).toEqual('Overview');
       expect(browser.getCurrentUrl()).toContain('pods');
     });
 
-    it('Click vm status when vm is pending', async() => {
+    xit('BZ(1717462) Click vm status when vm is pending', async() => {
       await itemVirtualMachine.click();
       await isLoaded();
       await detailViewAction('Restart', true);
       await browser.wait(until.presenceOf(vmView.statusIcon(vmView.statusIcons.starting)), VM_BOOTUP_TIMEOUT);
       await browser.wait(until.presenceOf(vmStatusLink(0)), VM_BOOTUP_TIMEOUT);
-      vmStatusLink(0).click();
+      await vmStatusLink(0).click();
       expect(activeTab.first().getText()).toEqual('Events');
       const currentUrl = await browser.getCurrentUrl();
       expect(currentUrl).toContain('pods');

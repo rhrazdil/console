@@ -2,10 +2,11 @@
 import { OrderedMap } from 'immutable';
 
 // eslint-disable-next-line no-unused-vars
-import { networkResource, provisionOption, deleteResource, removeLeakedResources, storageResource, addLeakableResource, createResource, removeLeakableResource } from './utils/utils';
+import { networkResource, storageResource, provisionOption } from './utils/types';
+import { deleteResource, removeLeakedResources, createResource, withResource } from './utils/utils';
 import { VM_BOOTUP_TIMEOUT } from './utils/consts';
 import { testName } from '../../protractor.conf';
-import { basicVmConfig, rootDisk, networkInterface, testNad, hddDisk } from './mocks';
+import { basicVmConfig, rootDisk, networkInterface, multusNad, hddDisk } from './utils/mocks';
 import { VirtualMachine } from './models/virtualMachine';
 
 describe('Kubevirt create VM using wizard', () => {
@@ -47,11 +48,11 @@ describe('Kubevirt create VM using wizard', () => {
     });
 
   beforeAll(async() => {
-    createResource(testNad);
+    createResource(multusNad);
   });
 
   afterAll(async() => {
-    deleteResource(testNad);
+    deleteResource(multusNad);
     removeLeakedResources(leakedResources);
   });
 
@@ -65,11 +66,9 @@ describe('Kubevirt create VM using wizard', () => {
         networkResources: provisionConfig.networkResources,
       };
       const vm = new VirtualMachine(vmConfig);
-
-      addLeakableResource(leakedResources, vm.asResource());
-      await vm.create(vmConfig);
-      deleteResource(vm.asResource());
-      removeLeakableResource(leakedResources, vm.asResource());
+      await withResource(leakedResources, vm.asResource(), async() => {
+        await vm.create(vmConfig);
+      });
     }, VM_BOOTUP_TIMEOUT);
   });
 });

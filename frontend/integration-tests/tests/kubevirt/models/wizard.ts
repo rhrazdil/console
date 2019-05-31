@@ -2,7 +2,8 @@
 import { $, browser, ExpectedConditions as until } from 'protractor';
 
 import { createItemButton, isLoaded } from '../../../views/crud.view';
-import { fillInput, selectDropdownOption, click, cloudInitConfig, storageResource } from '../utils/utils';
+import { fillInput, selectDropdownOption, click } from '../utils/utils';
+import { cloudInitConfig, storageResource } from '../utils/types';
 import { PAGE_LOAD_TIMEOUT } from '../utils/consts';
 import * as wizardView from '../../../views/kubevirt/wizard.view';
 

@@ -1,22 +1,10 @@
 /* eslint-disable no-undef */
-import { testName } from '../../protractor.conf';
+import { testName } from '../../../protractor.conf';
 // eslint-disable-next-line no-unused-vars
-import { cloudInitConfig } from './utils/utils';
+import { cloudInitConfig } from './types';
 
 export const emptyStr = '---';
-
-export const testNad = {
-  apiVersion: 'k8s.cni.cncf.io/v1',
-  kind: 'NetworkAttachmentDefinition',
-  metadata: {
-    name: `ovs-net-1-${testName}`,
-    namespace: testName,
-    labels: {['automatedTest']: testName},
-  },
-  spec: {
-    config: '{ "cniVersion": "0.3.1", "type": "ovs", "bridge": "br0" }',
-  },
-};
+export const testStorage = process.env.STORAGE_CLASS;
 
 export const multusNad = {
   apiVersion: 'k8s.cni.cncf.io/v1',
@@ -27,7 +15,7 @@ export const multusNad = {
     labels: {['automatedTest']: testName},
   },
   spec: {
-    config: '{ "cniVersion": "0.3.1", "type": "bridge", "bridge": "testbridge", "ipam": {} }',
+    config: '{ "cniVersion": "0.3.1", "type": "cnv-bridge", "bridge": "testbridge", "ipam": {} }',
   },
 };
 
@@ -87,7 +75,7 @@ export const localStoragePersistentVolume = {
 export const basicVmConfig = {
   operatingSystem: 'Red Hat Enterprise Linux 7.0',
   flavor: 'small',
-  workloadProfile: 'generic',
+  workloadProfile: 'desktop',
   sourceURL: 'https://download.cirros-cloud.net/0.4.0/cirros-0.4.0-x86_64-disk.img',
   sourceContainer: 'kubevirt/cirros-registry-disk-demo:latest',
   cloudInitScript: `#cloud-config\nuser: cloud-user\npassword: atomic\nchpasswd: {expire: False}\nhostname: vm-${testName}.example.com`,
@@ -96,7 +84,7 @@ export const basicVmConfig = {
 export const windowsVmConfig = {
   operatingSystem: 'Microsoft Windows Server 2012 R2',
   flavor: 'medium',
-  workloadProfile: 'generic',
+  workloadProfile: 'desktop',
   sourceURL: `http://${process.env.SERVER_IP}:${process.env.SERVER_PORT}/images/windows2012R2/disk.img`,
 };
 
@@ -104,7 +92,7 @@ export const networkInterface = {
   name: `nic1-${testName.slice(-5)}`,
   mac: 'fe:fe:fe:fe:fe:fe',
   binding: 'bridge',
-  networkDefinition: testNad.metadata.name,
+  networkDefinition: multusNad.metadata.name,
 };
 
 export const multusNetworkInterface = {
@@ -114,57 +102,22 @@ export const multusNetworkInterface = {
   networkDefinition: multusNad.metadata.name,
 };
 
-export const networkBindingMethod = {
+export const networkBindingMethods = {
   masquerade: 'masquerade',
   bridge: 'bridge',
   sriov: 'sriov',
 };
 
-export const networkWizardTabCol = {
-  name: 0,
-  mac: 1,
-  networkDefinition: 2,
-  binding: 3,
-};
-
-export const networkTabCol = {
-  name: 0,
-  model: 1,
-  networkDefinition: 2,
-  binding: 3,
-  mac: 4,
-};
-
-export const diskWizardTabCol = {
-  name: 0,
-  size: 1,
-  storageClass: 2,
-};
-
-export const diskTabCol = {
-  name: 0,
-  size: 1,
-  interface: 2,
-  storageClass: 3,
-};
-
 export const rootDisk = {
   name: 'rootdisk',
   size: '1',
-  storageClass: 'hdd',
+  storageClass: `${testStorage}`,
 };
 
 export const hddDisk = {
-  name: `hdd-${testName.slice(-5)}`,
+  name: `disk-${testName.slice(-5)}`,
   size: '2',
-  storageClass: 'hdd',
-};
-
-export const glusterfsDisk = {
-  name: `glusterfs-${testName.slice(-5)}`,
-  size: '1',
-  storageClass: 'glusterfs-storage',
-
+  storageClass: `${testStorage}`,
 };
 
 export const localStorageDisk = {
@@ -219,9 +172,9 @@ export function getVmManifest(provisionSource: string, namespace: string, name?:
       'app': `vm-${provisionSource.toLowerCase()}-${namespace}`,
       'flavor.template.kubevirt.io/small': 'true',
       'os.template.kubevirt.io/rhel7.0': 'true',
-      'vm.kubevirt.io/template': 'rhel7-generic-small',
+      'vm.kubevirt.io/template': 'rhel7-desktop-small',
       'vm.kubevirt.io/template-namespace': 'openshift',
-      'workload.template.kubevirt.io/generic': 'true',
+      'workload.template.kubevirt.io/desktop': 'true',
     },
   };
   const urlSource = {
@@ -373,9 +326,9 @@ metadata:
   labels:
     flavor.template.kubevirt.io/small: 'true'
     os.template.kubevirt.io/rhel7.6: 'true'
-    template.kubevirt.ui: openshift_rhel7-generic-small
-    vm.kubevirt.io/template: rhel7-generic-small
-    workload.template.kubevirt.io/generic: 'true'
+    template.kubevirt.ui: openshift_rhel7-desktop-small
+    vm.kubevirt.io/template: rhel7-desktop-small
+    workload.template.kubevirt.io/desktop: 'true'
 spec:
   dataVolumeTemplates:
     - metadata:
@@ -387,7 +340,7 @@ spec:
           resources:
             requests:
               storage: 1Gi
-          storageClassName: hdd
+          storageClassName: ${testStorage}
         source:
           blank: {}
   running: false
@@ -423,7 +376,7 @@ spec:
         - name: nic0
           pod: {}
         - multus:
-            networkName: ovs-net-1-${testName}
+            networkName: multus-${testName}
           name: nic1
       terminationGracePeriodSeconds: 0
       volumes:

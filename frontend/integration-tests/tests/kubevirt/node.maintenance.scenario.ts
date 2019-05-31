@@ -2,9 +2,9 @@
 import { browser, ExpectedConditions as until } from 'protractor';
 
 // eslint-disable-next-line no-unused-vars
-import { waitForCount, removeLeakedResources, createResource, deleteResource, addLeakableResource, removeLeakableResource, waitForStringInElement } from './utils/utils';
+import { waitForCount, removeLeakedResources, createResource, addLeakableResource, removeLeakableResource, waitForStringInElement, withResource } from './utils/utils';
 import { POD_CREATE_DELETE_TIMEOUT, POD_CREATION_TIMEOUT, WAIT_TIMEOUT_ERROR, POD_TERMINATION_TIMEOUT, NODE_MAINTENANCE_STATUS, NODE_STOP_MAINTENANCE_TIMEOUT, NODE_READY_STATUS, PAGE_LOAD_TIMEOUT, TABS } from './utils/consts';
-import { examplePod } from './mocks';
+import { examplePod } from './utils/mocks';
 import { appHost, testName } from '../../protractor.conf';
 import { isLoaded, filterForName, resourceRows, resourceTitle } from '../../views/crud.view';
 import { listViewMaintenanceStatusForNode, listViewReadyStatusForNode } from '../../views/kubevirt/node.view';
@@ -43,13 +43,13 @@ describe('Test Node Maintenance Mode', () => {
   beforeEach(async() => {
     await browser.get(computeNodeURL);
     await isLoaded;
-    await detailViewAction('Start Maintenance', true);
+    await detailViewAction('Start Maintenance');
   });
 
   afterEach(async() => {
     await browser.get(computeNodeURL);
     await isLoaded;
-    await detailViewAction('Stop Maintenance', true);
+    await detailViewAction('Stop Maintenance');
 
     await browser.get(`${appHost}/k8s/cluster/nodes`);
     await isLoaded();
@@ -60,7 +60,7 @@ describe('Test Node Maintenance Mode', () => {
     removeLeakedResources(leakedResources);
   });
 
-  it('Terminates running pod on maintenance node', async() => {
+  xit('BZ(1717036) Terminates running pod on maintenance node', async() => {
     await browser.get(`${appHost}/k8s/ns/${testName}/pods`);
     await isLoaded();
 
@@ -69,27 +69,24 @@ describe('Test Node Maintenance Mode', () => {
     removeLeakableResource(leakedResources, podResource);
   }, POD_CREATE_DELETE_TIMEOUT);
 
-  it('Node in Maintenance mode is not schedulable', async() => {
+  xit('BZ(1717036) Node in Maintenance mode is not schedulable', async() => {
     podResourceOpts.nodeSelector = {'kubernetes.io/hostname': computeNodeHostname};
     createResource(examplePod(podResourceOpts));
-    addLeakableResource(leakedResources, podResource);
+    await withResource(leakedResources, podResource.metadata, async() => {
+      // Verify Node is marked as in maintenance
+      await browser.get(`${appHost}/k8s/cluster/nodes`);
+      await isLoaded();
+      await browser.wait(until.presenceOf(listViewMaintenanceStatusForNode(computeNodeName)))
+        .then(() => browser.wait(waitForStringInElement(listViewMaintenanceStatusForNode(computeNodeName), NODE_MAINTENANCE_STATUS), PAGE_LOAD_TIMEOUT));
 
-    // Verify Node is marked as in maintenance
-    await browser.get(`${appHost}/k8s/cluster/nodes`);
-    await isLoaded();
-    await browser.wait(until.presenceOf(listViewMaintenanceStatusForNode(computeNodeName)))
-      .then(() => browser.wait(waitForStringInElement(listViewMaintenanceStatusForNode(computeNodeName), NODE_MAINTENANCE_STATUS), PAGE_LOAD_TIMEOUT));
-
-    await pod.navigateToTab(TABS.OVERVIEW);
-    let errorMessage: string;
-    try {
-      await pod.waitForStatusIcon(podView.statusIcons.running, PAGE_LOAD_TIMEOUT);
-    } catch (error) {
-      errorMessage = error.message;
-    }
-    expect(errorMessage).toBe(WAIT_TIMEOUT_ERROR);
-
-    deleteResource(podResource);
-    removeLeakableResource(leakedResources, podResource);
+      await pod.navigateToTab(TABS.OVERVIEW);
+      let errorMessage: string;
+      try {
+        await pod.waitForStatusIcon(podView.statusIcons.running, PAGE_LOAD_TIMEOUT);
+      } catch (error) {
+        errorMessage = error.message;
+      }
+      expect(errorMessage).toBe(WAIT_TIMEOUT_ERROR);
+    });
   }, POD_CREATE_DELETE_TIMEOUT);
 });

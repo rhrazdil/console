@@ -7,31 +7,6 @@ import { config } from '../../../protractor.conf';
 import { nameInput as loginNameInput, passwordInput as loginPasswordInput, submitButton as loginSubmitButton } from '../../../views/login.view';
 import { PAGE_LOAD_TIMEOUT } from './consts';
 
-export type provisionOption = {
-  method: string,
-  source?: string,
-};
-
-export type networkResource = {
-  name: string,
-  mac: string,
-  binding: string,
-  networkDefinition: string,
-};
-
-export type storageResource = {
-  name: string,
-  size: string,
-  storageClass: string,
-};
-
-export type cloudInitConfig = {
-  useCloudInit: boolean,
-  useCustomScript?: boolean,
-  customScript?: string,
-  hostname?: string,
-  sshKey?: string,
-};
 
 export function removeLeakedResources(leakedResources: Set<string>) {
   const leakedArray: Array<string> = [...leakedResources];
@@ -78,7 +53,16 @@ export function deleteResources(resources) {
   resources.forEach(deleteResource);
 }
 
-export async function click(elem: ElementFinder, timeout?: number, conditionFunc?) {
+export async function withResource(resourceSet: Set<string>, resource: any, callback: Function, keepResource: boolean = false) {
+  addLeakableResource(resourceSet, resource);
+  await callback();
+  if (!keepResource) {
+    deleteResource(resource);
+    removeLeakableResource(resourceSet, resource);
+  }
+}
+
+export async function click(elem: ElementFinder, timeout?: number, conditionFunc?: Function) {
   const _timeout = timeout !== undefined ? timeout : config.jasmineNodeOpts.defaultTimeoutInterval;
   if (conditionFunc === undefined) {
     await browser.wait(until.elementToBeClickable(elem), _timeout);
@@ -202,3 +186,6 @@ export const waitForStringInElement = (element: ElementFinder, needle: string) =
     return content.includes(needle);
   };
 };
+
+// eslint-disable-next-line eqeqeq
+export const resolveTimeout = (timeout, defaultTimeout) => timeout != undefined ? timeout : defaultTimeout;

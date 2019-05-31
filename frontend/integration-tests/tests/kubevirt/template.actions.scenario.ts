@@ -1,8 +1,8 @@
 import { $ } from 'protractor';
 import { testName } from '../../protractor.conf';
 
-import { createResource, click, fillInput, getInputValue, selectDropdownOption, deleteResource, addLeakableResource, removeLeakableResource } from './utils/utils';
-import { testNad, networkInterface, basicVmConfig, hddDisk } from './mocks';
+import { createResource, click, fillInput, getInputValue, selectDropdownOption, deleteResource, withResource } from './utils/utils';
+import { multusNad, networkInterface, basicVmConfig, hddDisk } from './utils/mocks';
 import { vmDetailDesc as detailDesc, vmDetailName as detailName, vmDetailOS as detailOS, detailViewEditBtn, detailViewSaveBtn,
   vmDetailFlavorDropdownId as detailFlavorDropdownId, vmDetailFlavorCPU as detailFlavorCPU, vmDetailFlavorMemory as detailFlavorMemory } from '../../views/kubevirt/virtualMachine.view';
 import { VM_ACTIONS_TIMEOUT, TABS } from './utils/consts';
@@ -47,35 +47,31 @@ describe('Test adding discs/nics to template', () => {
   const wizard = new Wizard();
 
   beforeAll(async() => {
-    createResource(testNad);
+    createResource(multusNad);
     await template.create(templateConfig);
   });
 
   afterAll(() => {
-    deleteResource(testNad);
+    deleteResource(multusNad);
     deleteResource(template.asResource());
   });
 
   it('Add/remove disk to template', async() => {
     await template.addDisk(hddDisk);
     await vm.create(vmConfig);
-    addLeakableResource(leakedResources, vm.asResource());
-    const addedDisk = (await vm.getAttachedDisks()).find(disk => disk.name === hddDisk.name);
-    expect(addedDisk).toEqual(hddDisk);
-
-    deleteResource(vm.asResource());
-    removeLeakableResource(leakedResources, vm.asResource());
+    await withResource(leakedResources, vm.asResource(), async() => {
+      const addedDisk = (await vm.getAttachedDisks()).find(disk => disk.name === hddDisk.name);
+      expect(addedDisk).toEqual(hddDisk);
+    });
   }, VM_ACTIONS_TIMEOUT);
 
   it('Add/remove nic to template', async() => {
     await template.addNic(networkInterface);
     await vm.create(vmConfig);
-    addLeakableResource(leakedResources, vm.asResource());
-    const addedNic = (await vm.getAttachedNics()).find(nic => nic.name === networkInterface.name);
-    expect(addedNic).toEqual(networkInterface);
-
-    deleteResource(vm.asResource());
-    removeLeakableResource(leakedResources, vm.asResource());
+    await withResource(leakedResources, vm.asResource(), async() => {
+      const addedNic = (await vm.getAttachedNics()).find(nic => nic.name === networkInterface.name);
+      expect(addedNic).toEqual(networkInterface);
+    });
   }, VM_ACTIONS_TIMEOUT);
 
   it('Test template Overview page', async() => {

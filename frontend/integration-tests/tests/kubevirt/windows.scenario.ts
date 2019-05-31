@@ -2,10 +2,10 @@
 import { execSync } from 'child_process';
 import { browser, ExpectedConditions as until } from 'protractor';
 // eslint-disable-next-line no-unused-vars
-import { removeLeakedResources, waitForStringInElement, deleteResource, createResources, removeLeakableResource, addLeakableResource } from './utils/utils';
+import { removeLeakedResources, waitForStringInElement, deleteResource, createResources, withResource } from './utils/utils';
 import { VM_IP_ASSIGNMENT_TIMEOUT, WINDOWS_IMPORT_TIMEOUT, VM_BOOTUP_TIMEOUT, TABS } from './utils/consts';
 import { testName } from '../../protractor.conf';
-import { windowsVmConfig, localStorageDisk, multusNetworkInterface, multusNad, localStorageClass, localStoragePersistentVolume } from './mocks';
+import { windowsVmConfig, localStorageDisk, multusNetworkInterface, multusNad, localStorageClass, localStoragePersistentVolume } from './utils/mocks';
 import { VirtualMachine } from './models/virtualMachine';
 import { overviewIpAddresses } from '../../views/kubevirt/virtualMachine.view';
 
@@ -48,21 +48,18 @@ describe('Windows VM', () => {
 
   it('Windows L2 RDP', async() => {
     await vm.create(vmConfig);
-    addLeakableResource(leakedResources, vm.asResource());
+    await withResource(leakedResources, vm.asResource(), async() => {
+      // Wait for IP assignment
+      await vm.navigateToTab(TABS.OVERVIEW);
+      await browser.wait(until.and(waitForStringInElement(overviewIpAddresses(vm.name, vm.namespace), vmIp)), VM_IP_ASSIGNMENT_TIMEOUT);
 
-    // Wait for IP assignment
-    await vm.navigateToTab(TABS.OVERVIEW);
-    await browser.wait(until.and(waitForStringInElement(overviewIpAddresses(vm.name, vm.namespace), vmIp)), VM_IP_ASSIGNMENT_TIMEOUT);
+      // Select Desktop Viewer
+      await vm.navigateToTab(TABS.CONSOLES);
+      await vm.selectConsole('Desktop Viewer');
 
-    // Select Desktop Viewer
-    await vm.navigateToTab(TABS.CONSOLES);
-    await vm.selectConsole('Desktop Viewer');
-
-    // Verify that multus nic is selected by default and console page displays correct addresses
-    expect(vm.getConsoleVmIpAddress()).toEqual(vmIp);
-    expect(vm.getConsoleRdpPort()).toEqual(rdpPort);
-
-    await vm.action('Delete');
-    removeLeakableResource(leakedResources, vm.asResource());
+      // Verify that multus nic is selected by default and console page displays correct addresses
+      expect(vm.getConsoleVmIpAddress()).toEqual(vmIp);
+      expect(vm.getConsoleRdpPort()).toEqual(rdpPort);
+    });
   }, WINDOWS_RDP_TIMEOUT);
 });

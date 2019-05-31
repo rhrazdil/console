@@ -3,10 +3,11 @@ import { OrderedMap } from 'immutable';
 import * as _ from 'lodash';
 
 // eslint-disable-next-line no-unused-vars
-import { networkResource, provisionOption, addLeakableResource, deleteResource, removeLeakableResource, removeLeakedResources, storageResource, createResource, getResourceObject } from './utils/utils';
+import { networkResource, storageResource, provisionOption } from './utils/types';
+import { addLeakableResource, deleteResource, removeLeakableResource, removeLeakedResources, createResource, getResourceObject, withResource } from './utils/utils';
 import { VM_BOOTUP_TIMEOUT } from './utils/consts';
 import { testName } from '../../protractor.conf';
-import { basicVmConfig, networkInterface, testNad, rootDisk } from './mocks';
+import { basicVmConfig, networkInterface, multusNad, rootDisk } from './utils/mocks';
 import { VirtualMachine } from './models/virtualMachine';
 import { Template } from './models/template';
 
@@ -50,11 +51,11 @@ describe('Kubevirt create VM template using wizard', () => {
   const leakedResources = new Set<string>();
 
   beforeAll(async() => {
-    createResource(testNad);
+    createResource(multusNad);
   });
 
   afterAll(async() => {
-    deleteResource(testNad);
+    deleteResource(multusNad);
   });
 
   afterEach(async() => {
@@ -80,20 +81,12 @@ describe('Kubevirt create VM template using wizard', () => {
     const vm = new VirtualMachine(vmConfig);
 
     it(`Create VM template using ${configName}.`, async() => {
-      addLeakableResource(leakedResources, template.asResource());
       await template.create(templateConfig);
-
-      // Verify the template can be used to create VM
-      addLeakableResource(leakedResources, vm.asResource());
-      await vm.create(vmConfig);
-
-      // Remove VM
-      deleteResource(vm.asResource());
-      removeLeakableResource(leakedResources, vm.asResource());
-
-      // Remove template
-      deleteResource(template.asResource());
-      removeLeakableResource(leakedResources, template.asResource());
+      await withResource(leakedResources, template.asResource(), async() => {
+        // Verify template can be used to create a VM
+        await vm.create(vmConfig);
+        deleteResource(vm.asResource());
+      });
     }, VM_BOOTUP_TIMEOUT * 2);
   });
 });
@@ -130,6 +123,8 @@ describe('Test template datavolume cloning', () => {
     removeLeakableResource(leakedResources, vm.asResource());
     deleteResource(template.asResource());
     removeLeakableResource(leakedResources, template.asResource());
+
+    removeLeakedResources(leakedResources);
   });
 
   it('Datavolume is cloned for VM created from template', async() => {
