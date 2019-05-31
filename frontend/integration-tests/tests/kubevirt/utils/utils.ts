@@ -7,31 +7,6 @@ import { config } from '../../../protractor.conf';
 import { nameInput as loginNameInput, passwordInput as loginPasswordInput, submitButton as loginSubmitButton } from '../../../views/login.view';
 import { PAGE_LOAD_TIMEOUT } from './consts';
 
-export type provisionOption = {
-  method: string,
-  source?: string,
-};
-
-export type networkResource = {
-  name: string,
-  mac: string,
-  binding: string,
-  networkDefinition: string,
-};
-
-export type storageResource = {
-  name: string,
-  size: string,
-  storageClass: string,
-};
-
-export type cloudInitConfig = {
-  useCloudInit: boolean,
-  useCustomScript?: boolean,
-  customScript?: string,
-  hostname?: string,
-  sshKey?: string,
-};
 
 export function removeLeakedResources(leakedResources: Set<string>) {
   const leakedArray: Array<string> = [...leakedResources];
@@ -59,6 +34,12 @@ export function removeLeakableResource(leakedResources: Set<string>, resource) {
   leakedResources.delete(
     JSON.stringify({name: resource.metadata.name, namespace: resource.metadata.namespace, kind: resource.kind})
   );
+}
+
+export async function withResource(resourceSet: Set<string>, resource: any, callback: Function) {
+  addLeakableResource(resourceSet, resource);
+  await callback();
+  removeLeakableResource(resourceSet, resource);
 }
 
 export function createResource(resource) {

@@ -31,7 +31,7 @@ export const vmDetailOS = (namespace, vmName) => $(vmDetailItemId(namespace, vmN
 export const vmDetailIP = (namespace, vmName) => $(vmDetailItemId(namespace, vmName, 'ip-addresses'));
 export const vmDetailWorkloadProfile = (namespace, vmName) => $(vmDetailItemId(namespace, vmName, 'workload-profile'));
 export const vmDetailTemplate = (namespace, vmName) => $(vmDetailItemId(namespace, vmName, 'template'));
-export const vmDetailHostname = (namespace, vmName) => $(vmDetailItemId(namespace, vmName, 'fqdn'));
+export const vmDetailHostname = (namespace, vmName) => $(vmDetailItemId(namespace, vmName, 'hostname'));
 export const vmDetailNamespace = (namespace, vmName) => $(vmDetailItemId(namespace, vmName, 'namespace'));
 export const vmDetailPod = (namespace, vmName) => $(vmDetailItemId(namespace, vmName, 'pod'));
 export const vmDetailNode = (namespace, vmName) => $(vmDetailItemId(namespace, vmName, 'node'));

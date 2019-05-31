@@ -3,7 +3,7 @@ import { browser } from 'protractor';
 
 import { testName } from '../../../protractor.conf';
 import { filterForName, resourceRowsPresent } from '../../../views/crud.view';
-import { provisionOption, networkResource, storageResource, cloudInitConfig } from '../utils/utils';
+import { provisionOption, networkResource, storageResource, cloudInitConfig } from '../utils/types';
 import { WIZARD_CREATE_TEMPLATE_ERROR, WIZARD_TABLE_FIRST_ROW } from '../utils/consts';
 import Wizard from './wizard';
 import { errorMessage } from '../../../views/kubevirt/wizard.view';

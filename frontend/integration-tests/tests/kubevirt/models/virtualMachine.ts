@@ -5,7 +5,8 @@ import { testName } from '../../../protractor.conf';
 import * as vmView from '../../../views/kubevirt/virtualMachine.view';
 import { nameInput, errorMessage } from '../../../views/kubevirt/wizard.view';
 import { resourceTitle, isLoaded, filterForName, resourceRowsPresent } from '../../../views/crud.view';
-import { selectDropdownOption, provisionOption, networkResource, storageResource, cloudInitConfig } from '../utils/utils';
+import { selectDropdownOption } from '../utils/utils';
+import { provisionOption, networkResource, storageResource, cloudInitConfig } from '../utils/types';
 import { PAGE_LOAD_TIMEOUT, VM_BOOTUP_TIMEOUT, VM_STOP_TIMEOUT, VM_ACTIONS_TIMEOUT, WIZARD_CREATE_VM_ERROR, UNEXPECTED_ACTION_ERROR, TABS, WIZARD_TABLE_FIRST_ROW } from '../utils/consts';
 import { VirtualMachineInstance } from './virtualMachineInstance';
 import { detailViewAction } from '../../../views/kubevirt/vm.actions.view';
@@ -27,7 +28,7 @@ export class VirtualMachine extends KubevirtDetailView {
     return vmi;
   }
 
-  async action(action: string, waitForAction?: boolean) {
+  async action(action: string, waitForAction?: boolean, timeout?: number) {
     await this.navigateToTab(TABS.OVERVIEW);
 
     let confirmDialog = true;
@@ -39,29 +40,29 @@ export class VirtualMachine extends KubevirtDetailView {
     if (waitForAction !== false) {
       switch (action) {
         case 'Start':
-          await this.waitForStatusIcon(vmView.statusIcons.running, VM_BOOTUP_TIMEOUT);
+          await this.waitForStatusIcon(vmView.statusIcons.running, timeout !== undefined ? timeout : VM_BOOTUP_TIMEOUT);
           break;
         case 'Restart':
-          await this.waitForStatusIcon(vmView.statusIcons.starting, VM_BOOTUP_TIMEOUT);
-          await this.waitForStatusIcon(vmView.statusIcons.running, VM_BOOTUP_TIMEOUT);
+          await this.waitForStatusIcon(vmView.statusIcons.starting, timeout !== undefined ? timeout : VM_BOOTUP_TIMEOUT);
+          await this.waitForStatusIcon(vmView.statusIcons.running, timeout !== undefined ? timeout : VM_BOOTUP_TIMEOUT);
           break;
         case 'Stop':
-          await this.waitForStatusIcon(vmView.statusIcons.off, VM_STOP_TIMEOUT);
+          await this.waitForStatusIcon(vmView.statusIcons.off, timeout !== undefined ? timeout : VM_STOP_TIMEOUT);
           break;
         case 'Clone':
-          await browser.wait(until.presenceOf(nameInput), PAGE_LOAD_TIMEOUT);
+          await browser.wait(until.presenceOf(nameInput), timeout !== undefined ? timeout : PAGE_LOAD_TIMEOUT);
           await browser.sleep(500); // Wait until the fade in effect is finished, otherwise we may misclick
           break;
         case 'Migrate':
-          await this.waitForStatusIcon(vmView.statusIcons.migrating, PAGE_LOAD_TIMEOUT);
-          await this.waitForStatusIcon(vmView.statusIcons.running, VM_ACTIONS_TIMEOUT);
+          await this.waitForStatusIcon(vmView.statusIcons.migrating, timeout !== undefined ? timeout : PAGE_LOAD_TIMEOUT);
+          await this.waitForStatusIcon(vmView.statusIcons.running, timeout !== undefined ? timeout : VM_ACTIONS_TIMEOUT);
           break;
         case 'Cancel':
-          await this.waitForStatusIcon(vmView.statusIcons.running, PAGE_LOAD_TIMEOUT);
+          await this.waitForStatusIcon(vmView.statusIcons.running, timeout !== undefined ? timeout : PAGE_LOAD_TIMEOUT);
           break;
         case 'Delete':
           // wait for redirect
-          await browser.wait(until.textToBePresentInElement(resourceTitle, 'Virtual Machines'), PAGE_LOAD_TIMEOUT);
+          await browser.wait(until.textToBePresentInElement(resourceTitle, 'Virtual Machines'), timeout !== undefined ? timeout : PAGE_LOAD_TIMEOUT);
           break;
         default:
           throw Error(UNEXPECTED_ACTION_ERROR);

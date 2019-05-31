@@ -7,7 +7,7 @@ import { appHost, testName } from '../../protractor.conf';
 import { isLoaded, resourceRowsPresent, textFilter } from '../../views/crud.view';
 import { listViewAction, getDetailActionDropdownOptions } from '../../views/kubevirt/vm.actions.view';
 import { createNic, networkTypeDropdownId } from '../../views/kubevirt/kubevirtDetailView.view';
-import { testNad, hddDisk, networkInterface, getVmManifest } from './mocks';
+import { multusNad, hddDisk, networkInterface, getVmManifest } from './utils/mocks';
 import { click, removeLeakedResources, deleteResources, createResources, fillInput, searchYAML, waitForCount, getResourceObject, getDropdownOptions } from './utils/utils';
 import { VM_BOOTUP_TIMEOUT, VM_STOP_TIMEOUT, VM_ACTIONS_TIMEOUT, PAGE_LOAD_TIMEOUT, TABS } from './utils/consts';
 import { statusIcon, statusIcons, vmDetailNode } from '../../views/kubevirt/virtualMachine.view';
@@ -68,7 +68,7 @@ describe('Test VM actions', () => {
     });
   });
 
-  describe('Test VM detail view kebab actions', () => {
+  describe('Test VM detail view actions dropdown', () => {
     const vmName = `vm-detail-view-actions-${testName}`;
     const vm = new VirtualMachine({name: vmName, namespace: testName});
 
@@ -117,7 +117,7 @@ describe('Test VM Migration', () => {
     deleteResources([testVm]);
   });
 
-  it('Migrate VM action button is displayed appropriately', async() => {
+  xit('BZ(1717262) Migrate VM action button is displayed appropriately', async() => {
     await vm.navigateToTab(TABS.OVERVIEW);
     expect(await getDetailActionDropdownOptions()).not.toContain(MIGRATE_VM);
     expect(await getDetailActionDropdownOptions()).not.toContain(CANCEL_MIGRATION);
@@ -131,7 +131,7 @@ describe('Test VM Migration', () => {
     expect(await getDetailActionDropdownOptions()).toContain(CANCEL_MIGRATION);
   }, VM_BOOTUP_TIMEOUT);
 
-  it('Migrate VM', async() => {
+  xit('BZ(1717262) Migrate VM', async() => {
     await vm.action('Start');
     const sourceNode = await vmDetailNode(vm.namespace, vm.name).getText();
 
@@ -139,7 +139,7 @@ describe('Test VM Migration', () => {
     expect((await vmDetailNode(vm.namespace, vm.name).getText())).not.toBe(sourceNode);
   }, VM_ACTIONS_TIMEOUT);
 
-  it('Migrate already migrated VM', async() => {
+  xit('BZ(1717262) Migrate already migrated VM', async() => {
     await vm.action('Start');
     const sourceNode = await vmDetailNode(vm.namespace, vm.name).getText();
 
@@ -150,7 +150,7 @@ describe('Test VM Migration', () => {
     expect((await vmDetailNode(vm.namespace, vm.name).getText())).toBe(sourceNode);
   }, VM_ACTIONS_TIMEOUT);
 
-  it('Cancel ongoing VM migration', async() => {
+  xit('BZ(1717262) Cancel ongoing VM migration', async() => {
     await vm.action('Start');
     const sourceNode = await vmDetailNode(vm.namespace, vm.name).getText();
 
@@ -168,12 +168,12 @@ describe('Add/remove disks and NICs on respective VM pages', () => {
   const vm = new VirtualMachine(testVm.metadata);
 
   beforeAll(async() => {
-    createResources([testNad, testVm]);
+    createResources([multusNad, testVm]);
     await vm.action('Start');
   });
 
   afterAll(async() => {
-    deleteResources([testNad, testVm]);
+    deleteResources([multusNad, testVm]);
   });
 
   it('Add/remove disk on VM disks page', async() => {

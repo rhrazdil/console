@@ -2,10 +2,11 @@
 // TIMEOUTS
 const SEC = 1000;
 export const CLONE_VM_TIMEOUT = 300 * SEC;
+export const CLONED_VM_BOOTUP_TIMEOUT = 150 * SEC;
 export const PAGE_LOAD_TIMEOUT = 15 * SEC;
-export const VM_ACTIONS_TIMEOUT = 120 * SEC;
-export const VM_BOOTUP_TIMEOUT = 90 * SEC;
-export const VM_STOP_TIMEOUT = 6 * SEC;
+export const VM_ACTIONS_TIMEOUT = 130 * SEC;
+export const VM_BOOTUP_TIMEOUT = 120 * SEC;
+export const VM_STOP_TIMEOUT = 10 * SEC;
 export const VM_IP_ASSIGNMENT_TIMEOUT = 180 * SEC;
 export const WINDOWS_IMPORT_TIMEOUT = 150 * SEC;
 
@@ -39,4 +40,36 @@ export const TABS = {
   EVENTS: 'Events',
   DISKS: 'Disks',
   NICS: 'Network Interfaces',
+};
+
+// Network tab columns in VM Wizard
+export const networkWizardTabCol = {
+  name: 0,
+  mac: 1,
+  networkDefinition: 2,
+  binding: 3,
+};
+
+// Network tab columns in detail view
+export const networkTabCol = {
+  name: 0,
+  model: 1,
+  networkDefinition: 2,
+  binding: 3,
+  mac: 4,
+};
+
+// Storage tab columns in VM Wizard
+export const diskWizardTabCol = {
+  name: 0,
+  size: 1,
+  storageClass: 2,
+};
+
+// Network tab columns in detail view
+export const diskTabCol = {
+  name: 0,
+  size: 1,
+  interface: 2,
+  storageClass: 3,
 };

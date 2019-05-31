@@ -1,10 +1,10 @@
 // eslint-disable-next-line no-unused-vars
-import { fillInput, selectDropdownOption, click, networkResource, storageResource } from '../utils/utils';
+import { storageResource, networkResource } from '../utils/types';
+import { fillInput, selectDropdownOption, click } from '../utils/utils';
 import * as kubevirtDetailView from '../../../views/kubevirt/kubevirtDetailView.view';
 import { confirmAction, isLoaded, resourceRows } from '../../../views/crud.view';
 import { DetailView } from './detailView';
-import { TABS } from '../utils/consts';
-import { diskTabCol, networkTabCol } from '../mocks';
+import { TABS, diskTabCol, networkTabCol } from '../utils/consts';
 import { browser } from 'protractor';
 
 
