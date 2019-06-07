@@ -2,9 +2,8 @@
 import { testName } from '../../../protractor.conf';
 // eslint-disable-next-line no-unused-vars
 import { cloudInitConfig } from './types';
+import { STORAGE_CLASS } from './consts';
 
-export const emptyStr = '---';
-export const testStorage = process.env.STORAGE_CLASS;
 
 export const multusNad = {
   apiVersion: 'k8s.cni.cncf.io/v1',
@@ -72,6 +71,36 @@ export const localStoragePersistentVolume = {
   },
 };
 
+export const dataVolumeManifest = ({name, namespace, sourceURL}) => {
+  return {
+    apiVersion: 'cdi.kubevirt.io/v1alpha1',
+    kind: 'DataVolume',
+    metadata: {
+      name,
+      namespace,
+    },
+    spec: {
+      pvc: {
+        accessModes: [
+          'ReadWriteOnce',
+        ],
+        dataSource: null,
+        resources: {
+          requests: {
+            storage: '5Gi',
+          },
+        },
+        storageClassName: STORAGE_CLASS,
+      },
+      source: {
+        http: {
+          url: sourceURL,
+        },
+      },
+    },
+  };
+};
+
 export const basicVmConfig = {
   operatingSystem: 'Red Hat Enterprise Linux 7.0',
   flavor: 'small',
@@ -111,13 +140,13 @@ export const networkBindingMethods = {
 export const rootDisk = {
   name: 'rootdisk',
   size: '1',
-  storageClass: `${testStorage}`,
+  storageClass: `${STORAGE_CLASS}`,
 };
 
 export const hddDisk = {
   name: `disk-${testName.slice(-5)}`,
   size: '2',
-  storageClass: `${testStorage}`,
+  storageClass: `${STORAGE_CLASS}`,
 };
 
 export const localStorageDisk = {
@@ -340,7 +369,7 @@ spec:
           resources:
             requests:
               storage: 1Gi
-          storageClassName: ${testStorage}
+          storageClassName: ${STORAGE_CLASS}
         source:
           blank: {}
   running: false

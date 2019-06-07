@@ -1,3 +1,5 @@
+export const DASHES = '---';
+export const STORAGE_CLASS = process.env.STORAGE_CLASS;
 
 // TIMEOUTS
 const SEC = 1000;

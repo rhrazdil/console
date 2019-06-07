@@ -3,12 +3,12 @@ import { browser, ExpectedConditions as until } from 'protractor';
 
 import { appHost, testName } from '../../protractor.conf';
 import { isLoaded } from '../../views/crud.view';
-import { getVmManifest, basicVmConfig, emptyStr } from './utils/mocks';
+import { getVmManifest, basicVmConfig } from './utils/mocks';
 import { activeTab } from '../../views/horizontal-nav.view';
 import * as vmView from '../../views/kubevirt/virtualMachine.view';
 import { fillInput, exposeService, selectDropdownOption, asyncForEach, createResource, deleteResource } from './utils/utils';
 import { VirtualMachine } from './models/virtualMachine';
-import { TABS, VM_BOOTUP_TIMEOUT } from './utils/consts';
+import { TABS, VM_BOOTUP_TIMEOUT, DASHES } from './utils/consts';
 import { itemVirtualMachine, virtualMachineLink, vmStatusLink } from '../../views/kubevirt/project.view';
 import { detailViewAction } from '../../views/kubevirt/vm.actions.view';
 
@@ -55,10 +55,10 @@ describe('Test vm overview', () => {
     expect(vmView.vmDetailFlavorDesc(testName, vmName).getText()).toEqual('1 CPU, 2G Memory');
 
     // Empty fields when vm is off
-    expect(vmView.vmDetailIP(testName, vmName).getText()).toEqual(emptyStr);
-    expect(vmView.vmDetailPod(testName, vmName).getText()).toEqual(emptyStr);
-    expect(vmView.vmDetailHostname(testName, vmName).getText()).toEqual(emptyStr);
-    expect(vmView.vmDetailNode(testName, vmName).getText()).toEqual(emptyStr);
+    expect(vmView.vmDetailIP(testName, vmName).getText()).toEqual(DASHES);
+    expect(vmView.vmDetailPod(testName, vmName).getText()).toEqual(DASHES);
+    expect(vmView.vmDetailHostname(testName, vmName).getText()).toEqual(DASHES);
+    expect(vmView.vmDetailNode(testName, vmName).getText()).toEqual(DASHES);
 
     // Edit button is enabled when VM is off
     expect(vmView.detailViewEditBtn.isEnabled()).toBe(true);
@@ -69,9 +69,9 @@ describe('Test vm overview', () => {
     expect(vmView.statusIcon(vmView.statusIcons.running).isPresent()).toBeTruthy();
 
     // Empty fields turn into non-empty
-    expect(vmView.vmDetailIP(testName, vmName).getText()).not.toEqual(emptyStr);
+    expect(vmView.vmDetailIP(testName, vmName).getText()).not.toEqual(DASHES);
     expect(vmView.vmDetailPod(testName, vmName).$('a').getText()).toContain('virt-launcher');
-    expect(vmView.vmDetailNode(testName, vmName).$('a').getText()).not.toEqual(emptyStr);
+    expect(vmView.vmDetailNode(testName, vmName).$('a').getText()).not.toEqual(DASHES);
 
     // Edit button is disabled when VM is running
     expect(vmView.detailViewEditBtn.isEnabled()).toBe(false);
@@ -134,10 +134,10 @@ describe('Test vm overview', () => {
       expect(vmView.vmDetailNamespace(testName, vmName).$('a').getText()).toEqual(testName);
       expect(vmView.vmDetailBootOrder(testName, vmName).getText()).toEqual(['rootdisk', 'nic0', 'cloudinitdisk']);
       expect(vmView.vmDetailFlavorDesc(testName, vmName).getText()).toEqual('2 CPU, 4G Memory');
-      expect(vmView.vmDetailIP(testName, vmName).getText()).not.toEqual(emptyStr);
-      expect(vmView.vmDetailHostname(testName, vmName).getText()).toEqual(emptyStr);
+      expect(vmView.vmDetailIP(testName, vmName).getText()).not.toEqual(DASHES);
+      expect(vmView.vmDetailHostname(testName, vmName).getText()).toEqual(DASHES);
       expect(vmView.vmDetailPod(testName, vmName).$('a').getText()).toContain('virt-launcher');
-      expect(vmView.vmDetailNode(testName, vmName).$('a').getText()).not.toEqual(emptyStr);
+      expect(vmView.vmDetailNode(testName, vmName).$('a').getText()).not.toEqual(DASHES);
 
       await asyncForEach(exposeServices, async(srv) => {
         expect(vmView.vmDetailService(testName, srv.exposeName).getText()).toEqual(srv.exposeName);
