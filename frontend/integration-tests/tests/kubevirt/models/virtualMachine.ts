@@ -163,6 +163,8 @@ export class VirtualMachine extends KubevirtDetailView {
         // Rootdisk is present by default, only edit specific properties
         await wizard.editDiskAttribute(WIZARD_TABLE_FIRST_ROW, 'size', resource.size);
         await wizard.editDiskAttribute(WIZARD_TABLE_FIRST_ROW, 'storage', resource.storageClass);
+      } else if (resource.attached === true) {
+        await wizard.attachDisk(resource);
       } else {
         await wizard.addDisk(resource);
       }

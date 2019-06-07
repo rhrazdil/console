@@ -16,6 +16,7 @@ export type storageResource = {
   name: string,
   size: string,
   storageClass: string,
+  attached?: boolean,
 };
 
 export type cloudInitConfig = {
