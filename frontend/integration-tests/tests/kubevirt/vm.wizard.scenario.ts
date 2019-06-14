@@ -31,7 +31,7 @@ describe('Kubevirt create VM using wizard', () => {
     },
     namespace: testName,
     description: `Default description ${testName}`,
-    flavor: 'tiny',
+    flavor: basicVmConfig.flavor,
     operatingSystem: basicVmConfig.operatingSystem,
     workloadProfile: basicVmConfig.workloadProfile,
   };
@@ -100,6 +100,7 @@ describe('Kubevirt create VM using wizard', () => {
     const vm1Config = vmConfig('vm1', clonedDiskProvisionConfig);
     const vm2Config = vmConfig('vm2', clonedDiskProvisionConfig);
     vm1Config.startOnCreation = false;
+    vm1Config.networkResources = [];
     const vm1 = new VirtualMachine(vm1Config);
     const vm2 = new VirtualMachine(vm2Config);
 

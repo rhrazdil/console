@@ -5,7 +5,7 @@ import { createResource, click, fillInput, getInputValue, selectDropdownOption, 
 import { multusNad, networkInterface, basicVmConfig, hddDisk } from './utils/mocks';
 import { vmDetailDesc as detailDesc, vmDetailName as detailName, vmDetailOS as detailOS, detailViewEditBtn, detailViewSaveBtn,
   vmDetailFlavorDropdownId as detailFlavorDropdownId, vmDetailFlavorCPU as detailFlavorCPU, vmDetailFlavorMemory as detailFlavorMemory } from '../../views/kubevirt/virtualMachine.view';
-import { VM_ACTIONS_TIMEOUT, TABS } from './utils/consts';
+import { VM_ACTIONS_TIMEOUT, TABS, TEMPLATE_ACTIONS_TIMEOUT } from './utils/consts';
 import { Template } from './models/template';
 import { VirtualMachine } from './models/virtualMachine';
 import { resourceTitle } from '../../views/crud.view';
@@ -49,7 +49,7 @@ describe('Test adding discs/nics to template', () => {
   beforeAll(async() => {
     createResource(multusNad);
     await template.create(templateConfig);
-  });
+  }, TEMPLATE_ACTIONS_TIMEOUT);
 
   afterAll(() => {
     deleteResource(multusNad);

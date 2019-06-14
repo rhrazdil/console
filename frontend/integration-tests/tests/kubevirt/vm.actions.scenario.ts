@@ -8,8 +8,8 @@ import { isLoaded, resourceRowsPresent, textFilter } from '../../views/crud.view
 import { listViewAction, getDetailActionDropdownOptions } from '../../views/kubevirt/vm.actions.view';
 import { createNic, networkTypeDropdownId } from '../../views/kubevirt/kubevirtDetailView.view';
 import { multusNad, hddDisk, networkInterface, getVmManifest } from './utils/mocks';
-import { click, removeLeakedResources, deleteResources, createResources, fillInput, searchYAML, waitForCount, getResourceObject, getDropdownOptions } from './utils/utils';
-import { VM_BOOTUP_TIMEOUT, VM_STOP_TIMEOUT, VM_ACTIONS_TIMEOUT, PAGE_LOAD_TIMEOUT, TABS } from './utils/consts';
+import { click, removeLeakedResources, deleteResources, createResources, fillInput, searchYAML, waitForCount, getResourceObject, getDropdownOptions, waitForStringInElement } from './utils/utils';
+import { VM_BOOTUP_TIMEOUT, VM_STOP_TIMEOUT, VM_ACTIONS_TIMEOUT, PAGE_LOAD_TIMEOUT, TABS, VM_MIGRATION_TIMEOUT } from './utils/consts';
 import { statusIcon, statusIcons, vmDetailNode } from '../../views/kubevirt/virtualMachine.view';
 import { VirtualMachine } from './models/virtualMachine';
 
@@ -108,6 +108,7 @@ describe('Test VM Migration', () => {
 
   const MIGRATE_VM = 'Migrate Virtual Machine';
   const CANCEL_MIGRATION = 'Cancel Virtual Machine Migration';
+  const VM_BOOT_AND_MIGRATE_TIMEOUT = VM_BOOTUP_TIMEOUT + VM_MIGRATION_TIMEOUT;
 
   beforeEach(() => {
     createResources([testVm]);
@@ -117,7 +118,7 @@ describe('Test VM Migration', () => {
     deleteResources([testVm]);
   });
 
-  xit('BZ(1717262) Migrate VM action button is displayed appropriately', async() => {
+  it('Migrate VM action button is displayed appropriately', async() => {
     await vm.navigateToTab(TABS.OVERVIEW);
     expect(await getDetailActionDropdownOptions()).not.toContain(MIGRATE_VM);
     expect(await getDetailActionDropdownOptions()).not.toContain(CANCEL_MIGRATION);
@@ -126,41 +127,46 @@ describe('Test VM Migration', () => {
     expect(await getDetailActionDropdownOptions()).toContain(MIGRATE_VM);
     expect(await getDetailActionDropdownOptions()).not.toContain(CANCEL_MIGRATION);
 
-    await vm.action('Migrate');
+    await vm.action('Migrate', false);
+    await vm.waitForStatusIcon(statusIcons.migrating, PAGE_LOAD_TIMEOUT);
     expect(await getDetailActionDropdownOptions()).not.toContain(MIGRATE_VM);
     expect(await getDetailActionDropdownOptions()).toContain(CANCEL_MIGRATION);
   }, VM_BOOTUP_TIMEOUT);
 
-  xit('BZ(1717262) Migrate VM', async() => {
+  it('Migrate VM', async() => {
     await vm.action('Start');
     const sourceNode = await vmDetailNode(vm.namespace, vm.name).getText();
 
     await vm.action('Migrate');
-    expect((await vmDetailNode(vm.namespace, vm.name).getText())).not.toBe(sourceNode);
-  }, VM_ACTIONS_TIMEOUT);
+    await vm.waitForMigrationComplete(sourceNode, VM_MIGRATION_TIMEOUT);
+    expect(statusIcon(statusIcons.running).isPresent()).toBeTruthy();
+  }, VM_BOOT_AND_MIGRATE_TIMEOUT);
 
-  xit('BZ(1717262) Migrate already migrated VM', async() => {
+  it('Migrate already migrated VM', async() => {
     await vm.action('Start');
-    const sourceNode = await vmDetailNode(vm.namespace, vm.name).getText();
+    let sourceNode = await vmDetailNode(vm.namespace, vm.name).getText();
 
     await vm.action('Migrate');
-    expect((await vmDetailNode(vm.namespace, vm.name).getText())).not.toBe(sourceNode);
+    await vm.waitForMigrationComplete(sourceNode, VM_MIGRATION_TIMEOUT);
+    sourceNode = await vmDetailNode(vm.namespace, vm.name).getText();
 
     await vm.action('Migrate');
-    expect((await vmDetailNode(vm.namespace, vm.name).getText())).toBe(sourceNode);
-  }, VM_ACTIONS_TIMEOUT);
+    await vm.waitForMigrationComplete(sourceNode, VM_MIGRATION_TIMEOUT);
+    expect(statusIcon(statusIcons.running).isPresent()).toBeTruthy();
+  }, VM_BOOT_AND_MIGRATE_TIMEOUT * 2);
 
-  xit('BZ(1717262) Cancel ongoing VM migration', async() => {
+  it('Cancel ongoing VM migration', async() => {
     await vm.action('Start');
     const sourceNode = await vmDetailNode(vm.namespace, vm.name).getText();
 
     // Start migration without waiting for it to finish
     await vm.action('Migrate', false);
-    await vm.waitForStatusIcon(statusIcons.migrating, PAGE_LOAD_TIMEOUT);
+    await vm.waitForStatusIcon(statusIcons.migrating, VM_MIGRATION_TIMEOUT);
 
-    await vm.action('Cancel');
-    expect((await vmDetailNode(vm.namespace, vm.name).getText())).toBe(sourceNode);
-  }, VM_BOOTUP_TIMEOUT);
+    await vm.action('Cancel', false);
+    await vm.waitForStatusIcon(statusIcons.running, VM_BOOTUP_TIMEOUT);
+    await browser.wait(waitForStringInElement(vmDetailNode(vm.namespace, vm.name), sourceNode), VM_MIGRATION_TIMEOUT);
+  }, VM_ACTIONS_TIMEOUT);
 });
 
 describe('Add/remove disks and NICs on respective VM pages', () => {
