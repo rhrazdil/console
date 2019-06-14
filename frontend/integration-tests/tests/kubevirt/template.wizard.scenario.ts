@@ -4,7 +4,7 @@ import * as _ from 'lodash';
 
 // eslint-disable-next-line no-unused-vars
 import { networkResource, storageResource, provisionOption } from './utils/types';
-import { addLeakableResource, deleteResource, removeLeakableResource, removeLeakedResources, createResource, getResourceObject, withResource } from './utils/utils';
+import { addLeakableResource, deleteResource, removeLeakableResource, removeLeakedResources, createResource, getResourceObject, withResource, getRandStr } from './utils/utils';
 import { VM_BOOTUP_TIMEOUT } from './utils/consts';
 import { testName } from '../../protractor.conf';
 import { basicVmConfig, networkInterface, multusNad, rootDisk } from './utils/mocks';
@@ -65,14 +65,14 @@ describe('Kubevirt create VM template using wizard', () => {
   provisionConfigs.forEach((provisionConfig, configName) => {
     const templateConfig = {
       ...commonSettings,
-      name: `tmpl-${provisionConfig.provision.method.toLowerCase()}-${testName}`,
+      name: `tmpl-${getRandStr(3)}-${provisionConfig.provision.method.toLowerCase()}`,
       provisionSource: provisionConfig.provision,
       storageResources: provisionConfig.storageResources,
       networkResources: provisionConfig.networkResources,
     };
     const vmConfig = {
       ...commonSettings,
-      name: `vm-${provisionConfig.provision.method.toLowerCase()}-${testName}`,
+      name: `vm-${getRandStr(3)}-${provisionConfig.provision.method.toLowerCase()}`,
       template: templateConfig.name,
       storageResources: [],
       networkResources: [],
@@ -96,14 +96,14 @@ describe('Test template datavolume cloning', () => {
   const provisionConfig = provisionConfigs.get('URL');
   const templateConfig = {
     ...commonSettings,
-    name: `tmpl-${provisionConfig.provision.method.toLowerCase()}-${testName}`,
+    name: `tmpl-${getRandStr(3)}-${provisionConfig.provision.method.toLowerCase()}`,
     provisionSource: provisionConfig.provision,
     storageResources: provisionConfig.storageResources,
     networkResources: [],
   };
   const vmConfig = {
     ...commonSettings,
-    name: `vm-${provisionConfig.provision.method.toLowerCase()}-${testName}`,
+    name: `vm-${getRandStr(3)}-${provisionConfig.provision.method.toLowerCase()}`,
     template: templateConfig.name,
     storageResources: [],
     networkResources: [],

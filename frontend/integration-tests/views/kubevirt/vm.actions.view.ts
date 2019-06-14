@@ -1,5 +1,6 @@
-import { $, $$, browser, ExpectedConditions as until } from 'protractor';
+import { $, $$, browser, ExpectedConditions as until, by, element } from 'protractor';
 import { rowForName, confirmAction } from '../crud.view';
+import { click } from '../../tests/kubevirt/utils/utils';
 
 export const detailViewVmStatus = $('#details-column-1 .kubevirt-vm-status__link');
 export const listViewVmStatus = (name: string) => rowForName(name).$('.kubevirt-vm-status__link');
@@ -38,7 +39,13 @@ export const detailViewAction = async(action, confirm?) => {
   await selectDropdownItem(getActionsDropdown, getActionsDropdownMenu)(action);
   await browser.wait(until.not(until.presenceOf($(detailViewDropdownMenu))));
   if (confirm === true) {
-    await confirmAction();
+    if (action === 'Migrate') {
+      await click(element(by.buttonText('Migrate')));
+    } else {
+      // TODO: WA for BZ(1719227), remove when resolved
+      await confirmAction();
+      await browser.wait(until.not(until.presenceOf($('.co-overlay'))));
+    }
   }
 };
 
@@ -52,8 +59,8 @@ export async function getDetailActionDropdownOptions(): Promise<string[]> {
   await browser.wait(until.elementToBeClickable(getActionsDropdown())).then(() => getActionsDropdown().click());
 
   const options = [];
-  await $('ul.dropdown-menu-right').$$('li').each(async(element) => {
-    element.getText().then((text) => {
+  await $('ul.dropdown-menu-right').$$('li').each(async(elem) => {
+    elem.getText().then((text) => {
       options.push(text);
     });
   });

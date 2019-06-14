@@ -4,7 +4,7 @@ import * as _ from 'lodash';
 
 // eslint-disable-next-line no-unused-vars
 import { networkResource, storageResource, provisionOption } from './utils/types';
-import { deleteResource, removeLeakedResources, withResource, createResources, deleteResources, getResourceObject } from './utils/utils';
+import { removeLeakedResources, withResource, createResources, deleteResources, getResourceObject } from './utils/utils';
 import { VM_BOOTUP_TIMEOUT, CLONE_VM_TIMEOUT } from './utils/consts';
 import { testName } from '../../protractor.conf';
 import { basicVmConfig, rootDisk, networkInterface, multusNad, hddDisk, dataVolumeManifest } from './utils/mocks';
@@ -31,7 +31,7 @@ describe('Kubevirt create VM using wizard', () => {
     },
     namespace: testName,
     description: `Default description ${testName}`,
-    flavor: 'tiny',
+    flavor: basicVmConfig.flavor,
     operatingSystem: basicVmConfig.operatingSystem,
     workloadProfile: basicVmConfig.workloadProfile,
   };
@@ -82,6 +82,9 @@ describe('Kubevirt create VM using wizard', () => {
 
   afterAll(async() => {
     deleteResources([multusNad, testDataVolume]);
+  });
+
+  afterEach(() => {
     removeLeakedResources(leakedResources);
   });
 
@@ -90,7 +93,6 @@ describe('Kubevirt create VM using wizard', () => {
       const vm = new VirtualMachine(vmConfig(configName.toLowerCase(), provisionConfig));
       await withResource(leakedResources, vm.asResource(), async() => {
         await vm.create(vmConfig(configName.toLowerCase(), provisionConfig));
-        deleteResource(vm.asResource());
       });
     }, VM_BOOTUP_TIMEOUT);
   });
@@ -100,6 +102,7 @@ describe('Kubevirt create VM using wizard', () => {
     const vm1Config = vmConfig('vm1', clonedDiskProvisionConfig);
     const vm2Config = vmConfig('vm2', clonedDiskProvisionConfig);
     vm1Config.startOnCreation = false;
+    vm1Config.networkResources = [];
     const vm1 = new VirtualMachine(vm1Config);
     const vm2 = new VirtualMachine(vm2Config);
 

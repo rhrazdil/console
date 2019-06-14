@@ -5,7 +5,7 @@ import * as _ from 'lodash';
 
 // eslint-disable-next-line no-unused-vars
 import { removeLeakedResources, waitForCount, searchYAML, searchJSON, getResourceObject, withResource, deleteResource, createResources, deleteResources, createResource } from './utils/utils';
-import { CLONE_VM_TIMEOUT, VM_BOOTUP_TIMEOUT, PAGE_LOAD_TIMEOUT, VM_STOP_TIMEOUT, TABS, CLONED_VM_BOOTUP_TIMEOUT, DASHES } from './utils/consts';
+import { CLONE_VM_TIMEOUT, VM_BOOTUP_TIMEOUT, PAGE_LOAD_TIMEOUT, VM_STOP_TIMEOUT, TABS, CLONED_VM_BOOTUP_TIMEOUT } from './utils/consts';
 import { appHost, testName } from '../../protractor.conf';
 import { filterForName, isLoaded, resourceRowsPresent, resourceRows } from '../../views/crud.view';
 import { basicVmConfig, networkInterface, multusNad, getVmManifest, cloudInitCustomScriptConfig, rootDisk } from './utils/mocks';
@@ -130,8 +130,7 @@ describe('Test clone VM.', () => {
         await clonedVm.navigateToTab(TABS.NICS);
         await browser.wait(until.and(waitForCount(resourceRows, 2)), PAGE_LOAD_TIMEOUT);
         const addedNic = (await clonedVm.getAttachedNics()).find(nic => nic.name === networkInterface.name);
-        expect(addedNic.mac === DASHES).toBe(true, 'MAC address should be cleared');
-        deleteResource(clonedVm.asResource());
+        expect(addedNic.mac !== networkInterface.mac).toBe(true, 'MAC address should be cleared');
       });
       await vm.removeNic(networkInterface.name);
     }, VM_BOOTUP_TIMEOUT);
