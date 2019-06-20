@@ -107,6 +107,13 @@ export default class Wizard {
     await click(wizardView.apply);
   }
 
+  async attachDisk(disk: storageResource) {
+    await click(wizardView.attachDisk);
+    const rowsCount = await this.getTableRowsCount();
+    await wizardView.selectTableDropdownAttribute(rowsCount, 'name-attach', disk.name);
+    await click(wizardView.apply);
+  }
+
   async editDiskAttribute(rowNumber: number, attribute: string, value: string) {
     await wizardView.activateTableRow(rowNumber - 1);
     if (attribute === 'storage') {

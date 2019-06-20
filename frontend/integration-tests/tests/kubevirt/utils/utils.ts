@@ -117,6 +117,22 @@ export async function logIn() {
   await browser.wait(until.visibilityOf($('img.pf-c-brand')), PAGE_LOAD_TIMEOUT);
 }
 
+export function getRandStr(length: number) {
+  return Math.random().toString(36).replace(/[.]/g, '').substr(1, length); // First char is always 0
+}
+
+export function getRandomMacAddress() {
+  const getRandByte = () => {
+    let byte: string;
+    do {
+      byte = Math.random().toString(16).substr(2, 2);
+    }
+    while (byte.length !== 2);
+    return byte;
+  };
+  return `30:24:${getRandByte()}:${getRandByte()}:${getRandByte()}:${getRandByte()}`;
+}
+
 /**
    * Search YAML manifest for a given string. Return true if found.
    * @param     {string}    needle    String to search in YAML.
@@ -189,3 +205,10 @@ export const waitForStringInElement = (element: ElementFinder, needle: string) =
 
 // eslint-disable-next-line eqeqeq
 export const resolveTimeout = (timeout, defaultTimeout) => timeout != undefined ? timeout : defaultTimeout;
+
+export const waitForStringNotInElement = (element: ElementFinder, needle: string) => {
+  return async() => {
+    const content = await element.getText();
+    return !content.includes(needle);
+  };
+};

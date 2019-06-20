@@ -2,9 +2,9 @@
 import { testName } from '../../../protractor.conf';
 // eslint-disable-next-line no-unused-vars
 import { cloudInitConfig } from './types';
+import { STORAGE_CLASS } from './consts';
+import { getRandomMacAddress } from './utils';
 
-export const emptyStr = '---';
-export const testStorage = process.env.STORAGE_CLASS;
 
 export const multusNad = {
   apiVersion: 'k8s.cni.cncf.io/v1',
@@ -72,9 +72,39 @@ export const localStoragePersistentVolume = {
   },
 };
 
+export const dataVolumeManifest = ({name, namespace, sourceURL}) => {
+  return {
+    apiVersion: 'cdi.kubevirt.io/v1alpha1',
+    kind: 'DataVolume',
+    metadata: {
+      name,
+      namespace,
+    },
+    spec: {
+      pvc: {
+        accessModes: [
+          'ReadWriteOnce',
+        ],
+        dataSource: null,
+        resources: {
+          requests: {
+            storage: '5Gi',
+          },
+        },
+        storageClassName: STORAGE_CLASS,
+      },
+      source: {
+        http: {
+          url: sourceURL,
+        },
+      },
+    },
+  };
+};
+
 export const basicVmConfig = {
-  operatingSystem: 'Red Hat Enterprise Linux 7.0',
-  flavor: 'small',
+  operatingSystem: 'Red Hat Enterprise Linux 7.6',
+  flavor: 'tiny',
   workloadProfile: 'desktop',
   sourceURL: 'https://download.cirros-cloud.net/0.4.0/cirros-0.4.0-x86_64-disk.img',
   sourceContainer: 'kubevirt/cirros-registry-disk-demo:latest',
@@ -90,7 +120,7 @@ export const windowsVmConfig = {
 
 export const networkInterface = {
   name: `nic1-${testName.slice(-5)}`,
-  mac: 'fe:fe:fe:fe:fe:fe',
+  mac: getRandomMacAddress(),
   binding: 'bridge',
   networkDefinition: multusNad.metadata.name,
 };
@@ -111,13 +141,13 @@ export const networkBindingMethods = {
 export const rootDisk = {
   name: 'rootdisk',
   size: '1',
-  storageClass: `${testStorage}`,
+  storageClass: `${STORAGE_CLASS}`,
 };
 
 export const hddDisk = {
   name: `disk-${testName.slice(-5)}`,
   size: '2',
-  storageClass: `${testStorage}`,
+  storageClass: `${STORAGE_CLASS}`,
 };
 
 export const localStorageDisk = {
@@ -164,15 +194,15 @@ export function getVmManifest(provisionSource: string, namespace: string, name?:
   const metadata = {
     name: name ? name : `${provisionSource.toLowerCase()}-${namespace.slice(-5)}`,
     annotations: {
-      'name.os.template.kubevirt.io/rhel7.0': 'Red Hat Enterprise Linux 7.0',
+      'name.os.template.kubevirt.io/rhel7.6': 'Red Hat Enterprise Linux 7.6',
       description: namespace,
     },
     namespace,
     labels: {
       'app': `vm-${provisionSource.toLowerCase()}-${namespace}`,
-      'flavor.template.kubevirt.io/small': 'true',
-      'os.template.kubevirt.io/rhel7.0': 'true',
-      'vm.kubevirt.io/template': 'rhel7-desktop-small',
+      'flavor.template.kubevirt.io/tiny': 'true',
+      'os.template.kubevirt.io/rhel7.6': 'true',
+      'vm.kubevirt.io/template': 'rhel7-desktop-tiny',
       'vm.kubevirt.io/template-namespace': 'openshift',
       'workload.template.kubevirt.io/desktop': 'true',
     },
@@ -296,7 +326,7 @@ export function getVmManifest(provisionSource: string, namespace: string, name?:
             },
             resources: {
               requests: {
-                memory: '2G',
+                memory: '1G',
               },
             },
           },
@@ -340,7 +370,7 @@ spec:
           resources:
             requests:
               storage: 1Gi
-          storageClassName: ${testStorage}
+          storageClassName: ${STORAGE_CLASS}
         source:
           blank: {}
   running: false
@@ -371,7 +401,7 @@ spec:
           rng: {}
         resources:
           requests:
-            memory: 2G
+            memory: 1G
       networks:
         - name: nic0
           pod: {}

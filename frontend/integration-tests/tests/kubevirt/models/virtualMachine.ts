@@ -5,9 +5,9 @@ import { testName } from '../../../protractor.conf';
 import * as vmView from '../../../views/kubevirt/virtualMachine.view';
 import { nameInput, errorMessage } from '../../../views/kubevirt/wizard.view';
 import { resourceTitle, isLoaded, filterForName, resourceRowsPresent } from '../../../views/crud.view';
-import { selectDropdownOption, resolveTimeout } from '../utils/utils';
+import { selectDropdownOption, waitForStringNotInElement, resolveTimeout } from '../utils/utils';
 import { provisionOption, networkResource, storageResource, cloudInitConfig } from '../utils/types';
-import { PAGE_LOAD_TIMEOUT, VM_BOOTUP_TIMEOUT, VM_STOP_TIMEOUT, VM_ACTIONS_TIMEOUT, WIZARD_CREATE_VM_ERROR, UNEXPECTED_ACTION_ERROR, TABS, WIZARD_TABLE_FIRST_ROW } from '../utils/consts';
+import { PAGE_LOAD_TIMEOUT, VM_BOOTUP_TIMEOUT, VM_STOP_TIMEOUT, VM_ACTIONS_TIMEOUT, WIZARD_CREATE_VM_ERROR, UNEXPECTED_ACTION_ERROR, TABS, WIZARD_TABLE_FIRST_ROW, DASHES } from '../utils/consts';
 import { VirtualMachineInstance } from './virtualMachineInstance';
 import { detailViewAction } from '../../../views/kubevirt/vm.actions.view';
 import Wizard from './wizard';
@@ -73,6 +73,12 @@ export class VirtualMachine extends KubevirtDetailView {
   async waitForStatusIcon(statusIcon: string, timeout: number) {
     await this.navigateToTab(TABS.OVERVIEW);
     await browser.wait(until.presenceOf(vmView.statusIcon(statusIcon)), timeout);
+  }
+
+  async waitForMigrationComplete(fromNode: string, timeout: number) {
+    await browser.wait(until.and(
+      waitForStringNotInElement(vmView.vmDetailNode(this.namespace, this.name), fromNode),
+      waitForStringNotInElement(vmView.vmDetailNode(this.namespace, this.name), DASHES)), timeout);
   }
 
   async resourceExists(resourceName:string) {
@@ -163,6 +169,8 @@ export class VirtualMachine extends KubevirtDetailView {
         // Rootdisk is present by default, only edit specific properties
         await wizard.editDiskAttribute(WIZARD_TABLE_FIRST_ROW, 'size', resource.size);
         await wizard.editDiskAttribute(WIZARD_TABLE_FIRST_ROW, 'storage', resource.storageClass);
+      } else if (resource.attached === true) {
+        await wizard.attachDisk(resource);
       } else {
         await wizard.addDisk(resource);
       }

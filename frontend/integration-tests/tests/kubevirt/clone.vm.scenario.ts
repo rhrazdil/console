@@ -8,7 +8,7 @@ import { removeLeakedResources, waitForCount, searchYAML, searchJSON, getResourc
 import { CLONE_VM_TIMEOUT, VM_BOOTUP_TIMEOUT, PAGE_LOAD_TIMEOUT, VM_STOP_TIMEOUT, TABS, CLONED_VM_BOOTUP_TIMEOUT } from './utils/consts';
 import { appHost, testName } from '../../protractor.conf';
 import { filterForName, isLoaded, resourceRowsPresent, resourceRows } from '../../views/crud.view';
-import { basicVmConfig, networkInterface, multusNad, getVmManifest, cloudInitCustomScriptConfig, emptyStr, rootDisk } from './utils/mocks';
+import { basicVmConfig, networkInterface, multusNad, getVmManifest, cloudInitCustomScriptConfig, rootDisk } from './utils/mocks';
 import * as wizardView from '../../views/kubevirt/wizard.view';
 import Wizard from './models/wizard';
 import { VirtualMachine } from './models/virtualMachine';
@@ -130,7 +130,7 @@ describe('Test clone VM.', () => {
         await clonedVm.navigateToTab(TABS.NICS);
         await browser.wait(until.and(waitForCount(resourceRows, 2)), PAGE_LOAD_TIMEOUT);
         const addedNic = (await clonedVm.getAttachedNics()).find(nic => nic.name === networkInterface.name);
-        expect(addedNic.mac === emptyStr).toBe(true, 'MAC address should be cleared');
+        expect(addedNic.mac !== networkInterface.mac).toBe(true, 'MAC address should be cleared');
       });
       await vm.removeNic(networkInterface.name);
     }, VM_BOOTUP_TIMEOUT);
