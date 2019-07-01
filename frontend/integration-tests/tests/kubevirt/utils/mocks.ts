@@ -47,7 +47,7 @@ export const localStoragePersistentVolume = {
       path: '/tmp/mylocalstorage/vol1',
     },
     accessModes: [
-      'ReadWriteOnce',
+      'ReadWriteMany',
     ],
     persistentVolumeReclaimPolicy: 'Retain',
     storageClassName: `${localStorageClass.metadata.name}`,
@@ -83,7 +83,7 @@ export const dataVolumeManifest = ({name, namespace, sourceURL}) => {
     spec: {
       pvc: {
         accessModes: [
-          'ReadWriteOnce',
+          'ReadWriteMany',
         ],
         dataSource: null,
         resources: {
@@ -219,7 +219,7 @@ export function getVmManifest(provisionSource: string, namespace: string, name?:
     spec: {
       pvc: {
         accessModes: [
-          'ReadWriteOnce',
+          'ReadWriteMany',
         ],
         resources: {
           requests: {
@@ -366,7 +366,7 @@ spec:
       spec:
         pvc:
           accessModes:
-            - ReadWriteOnce
+            - ReadWriteMany
           resources:
             requests:
               storage: 1Gi

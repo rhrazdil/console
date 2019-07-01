@@ -55,9 +55,10 @@ export class KubevirtDetailView extends DetailView {
 
   async waitForNewResourceRow() {
     // TODO: Remove when https://bugzilla.redhat.com/show_bug.cgi?id=1709939 is fixed
-    const inputPresent = await kubevirtDetailView.newResourceRowInput.isPresent();
+    const newRowInput = kubevirtDetailView.newResourceRowInput;
+    const inputPresent = (await newRowInput.isPresent() && await newRowInput.isEnabled());
     await browser.sleep(300);
-    return inputPresent && (await kubevirtDetailView.newResourceRowInput.isPresent());
+    return inputPresent && (await newRowInput.isPresent() && await newRowInput.isEnabled());
   }
 
   async addDisk(disk: storageResource) {
@@ -78,12 +79,21 @@ export class KubevirtDetailView extends DetailView {
 
   async addNic(nic: networkResource) {
     await this.navigateToTab(TABS.NICS);
-    await click(kubevirtDetailView.createNic, 1000, this.waitForNewResourceRow);
-    await fillInput(kubevirtDetailView.nicName, nic.name);
-    await selectDropdownOption(kubevirtDetailView.networkTypeDropdownId, nic.networkDefinition);
-    await selectDropdownOption(kubevirtDetailView.networkBindingId, nic.binding);
-    await fillInput(kubevirtDetailView.macAddress, nic.mac);
-    await click(kubevirtDetailView.applyBtn);
+    let attempts: number = 3;
+    let success: boolean;
+    do {
+      success = true;
+      try {
+        await click(kubevirtDetailView.createNic, 1000, this.waitForNewResourceRow);
+        await fillInput(kubevirtDetailView.nicName, nic.name);
+        await selectDropdownOption(kubevirtDetailView.networkTypeDropdownId, nic.networkDefinition);
+        await selectDropdownOption(kubevirtDetailView.networkBindingId, nic.binding);
+        await fillInput(kubevirtDetailView.macAddress, nic.mac);
+        await click(kubevirtDetailView.applyBtn);
+      } catch (e) {
+        success = false;
+      }
+    } while (!success && --attempts > 0);
     await isLoaded();
   }
 

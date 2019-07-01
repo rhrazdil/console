@@ -1,4 +1,4 @@
-import { $, browser, ExpectedConditions as until } from 'protractor';
+import { $, $$, browser, ExpectedConditions as until } from 'protractor';
 import { resourceRows } from '../crud.view';
 
 export const createNic = $('#create-nic-btn');
@@ -16,7 +16,7 @@ export const diskStorageClassDropdownId = '#disk-storage-class';
 export const cancelBtn = $('button.kubevirt-cancel-accept-buttons.btn-default');
 export const applyBtn = $('button.kubevirt-cancel-accept-buttons.btn-primary');
 
-export const newResourceRowInput = $('.co-resource-list__item input');
+export const newResourceRowInput = $$('.co-resource-list__item').first().$$('input').first();
 
 export const rowForName = (name: string) => resourceRows
   .filter((row) => row.$$('div').first().getText()
