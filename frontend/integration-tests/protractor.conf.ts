@@ -150,6 +150,10 @@ export const config: Config = {
       'tests/monitoring.scenario.ts',
       'tests/crd-extensions.scenario.ts',
     ]),
+    kubevirt: suite([
+      'tests/kubevirt/kubevirt.login.scenario.ts',
+      'tests/kubevirt/vm.wizard.scenario.ts',
+    ]),
     all: suite([
       'tests/crud.scenario.ts',
       'tests/overview/overview.scenareio.ts',
