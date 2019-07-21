@@ -9,7 +9,7 @@ import {
   element,
   ElementArrayFinder,
 } from 'protractor';
-import { config } from '../../../../integration-tests/protractor.conf';
+import { config } from '@console/internal-integration-tests/protractor.conf';
 
 export function resolveTimeout(timeout: number, defaultTimeout: number) {
   return timeout !== undefined ? timeout : defaultTimeout;

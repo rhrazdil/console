@@ -22,8 +22,8 @@ set -x
 export BRIDGE_BASE_ADDRESS="$(oc get consoles.config.openshift.io cluster -o jsonpath='{.status.consoleURL}')"
 
 # Add htpasswd IDP
-oc apply -f ./frontend/integration-tests/data/htpasswd-secret.yaml
-oc patch oauths cluster --patch "$(cat ./frontend/integration-tests/data/patch-htpasswd.yaml)" --type=merge
+oc apply -f ./frontend/internal-integration-tests/data/htpasswd-secret.yaml
+oc patch oauths cluster --patch "$(cat ./frontend/internal-integration-tests/data/patch-htpasswd.yaml)" --type=merge
 
 # Chrome Version 76.0.3809.0 (Developer Build) (64-bit)
 # get the branch base position for a specific chrmoe version using https://omahaproxy.appspot.com/

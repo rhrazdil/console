@@ -224,19 +224,19 @@ The end-to-end tests run against pull requests using [ci-operator](https://githu
 The tests are defined in [this manifest](https://github.com/openshift/release/blob/master/ci-operator/jobs/openshift/console/openshift-console-master-presubmits.yaml)
 in the [openshift/release](https://github.com/openshift/release) repo and were generated with [ci-operator-prowgen](https://github.com/openshift/ci-operator-prowgen).
 
-CI runs the [test-prow-e2e.sh](test-prow-e2e.sh) script, which uses the `e2e` suite defined in [protractor.conf.ts](frontend/integration-tests/protractor.conf.ts).
+CI runs the [test-prow-e2e.sh](test-prow-e2e.sh) script, which uses the `e2e` suite defined in [protractor.conf.ts](frontend/internal-integration-tests/protractor.conf.ts).
 
 You can simulate an e2e run against an existing 4.0 cluster with the following commands (replace `/path/to/install-dir` with your OpenShift 4.0 install directory):
 
 ```
-$ oc apply -f ./frontend/integration-tests/data/htpasswd-secret.yaml
-$ oc patch oauths cluster --patch "$(cat ./frontend/integration-tests/data/patch-htpasswd.yaml)" --type=merge
+$ oc apply -f ./frontend/internal-integration-tests/data/htpasswd-secret.yaml
+$ oc patch oauths cluster --patch "$(cat ./frontend/internal-integration-tests/data/patch-htpasswd.yaml)" --type=merge
 $ export BRIDGE_BASE_ADDRESS="$(oc get consoles.config.openshift.io cluster -o jsonpath='{.status.consoleURL}')"
 $ export BRIDGE_KUBEADMIN_PASSWORD=$(cat "/path/to/install-dir/auth/kubeadmin-password")
 $ ./test-gui.sh e2e
 ```
 
-If you don't want to run the entire e2e tests, you can use a different suite from [protractor.conf.ts](frontend/integration-tests/protractor.conf.ts). For instance,
+If you don't want to run the entire e2e tests, you can use a different suite from [protractor.conf.ts](frontend/internal-integration-tests/protractor.conf.ts). For instance,
 
 ```
 $ ./test-gui.sh <suite>

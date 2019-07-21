@@ -5,7 +5,8 @@
   "private": true,
   "workspaces": [
     "packages/*",
-    "public"
+    "public",
+    "internal-integration-tests"
   ],
   "scripts": {
     "clean": "rm -rf ./public/dist",
@@ -20,8 +21,8 @@
     "test-gui-tap": "TAP=true yarn run test-gui",
     "test-gui-openshift": "yarn run test-suite --suite crud --params.openshift true",
     "test-gui": "yarn run test-suite --suite all",
-    "test-suite": "ts-node -O '{\"module\":\"commonjs\"}' ./node_modules/.bin/protractor integration-tests/protractor.conf.ts",
-    "debug-test-suite": "TS_NODE_COMPILER_OPTIONS='{\"module\":\"commonjs\"}' node -r ts-node/register --inspect-brk ./node_modules/.bin/protractor integration-tests/protractor.conf.ts",
+    "test-suite": "ts-node -O '{\"module\":\"commonjs\"}' ./node_modules/.bin/protractor internal-integration-tests/protractor.conf.ts",
+    "debug-test-suite": "TS_NODE_COMPILER_OPTIONS='{\"module\":\"commonjs\"}' node -r ts-node/register --inspect-brk ./node_modules/.bin/protractor internal-integration-tests/protractor.conf.ts",
     "analyze": "NODE_ENV=production NODE_OPTIONS=--max-old-space-size=4096 ts-node -O '{\"module\":\"commonjs\"}' ./node_modules/.bin/webpack --mode=production --profile --json | awk '{if(NR>2)print}' > public/dist/stats.json && ts-node -O '{\"module\":\"commonjs\"}' ./node_modules/.bin/webpack-bundle-analyzer --mode static -r public/dist/report.html public/dist/stats.json",
     "plugin-stats": "node ./plugin-stats.js"
   },

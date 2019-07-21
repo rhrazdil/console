@@ -1,6 +1,6 @@
 /* eslint-disable no-await-in-loop */
+import { isLoaded, resourceRows } from '@console/internal-integration-tests/views/crud.view';
 import { selectDropdownOption, click } from '../../../../console-shared/src/test-utils/utils';
-import { isLoaded, resourceRows } from '../../../../../integration-tests/views/crud.view';
 import { TABS, diskTabCol, networkTabCol } from '../utils/consts';
 import { StorageResource, NetworkResource } from '../utils/types';
 import { fillInput } from '../utils/utils';

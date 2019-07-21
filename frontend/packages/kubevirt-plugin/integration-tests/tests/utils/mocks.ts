@@ -1,4 +1,4 @@
-import { testName } from '../../../../../integration-tests/protractor.conf';
+import { testName } from '@console/internal-integration-tests';
 import { CloudInitConfig } from './types';
 import { STORAGE_CLASS } from './consts';
 import { getRandomMacAddress } from './utils';

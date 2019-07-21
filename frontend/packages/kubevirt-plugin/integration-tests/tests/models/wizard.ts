@@ -1,5 +1,5 @@
 import { $, browser, ExpectedConditions as until } from 'protractor';
-import { createItemButton, isLoaded } from '../../../../../integration-tests/views/crud.view';
+import { createItemButton, isLoaded } from '@console/internal-integration-tests/views/crud.view';
 import { selectDropdownOption, click } from '../../../../console-shared/src/test-utils/utils';
 import { fillInput } from '../utils/utils';
 import { CloudInitConfig, StorageResource } from '../utils/types';

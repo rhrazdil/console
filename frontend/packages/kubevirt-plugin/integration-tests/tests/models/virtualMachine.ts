@@ -1,7 +1,7 @@
 /* eslint-disable no-await-in-loop, no-console */
 import { browser, ExpectedConditions as until } from 'protractor';
-import { testName } from '../../../../../integration-tests/protractor.conf';
-import { resourceTitle, isLoaded } from '../../../../../integration-tests/views/crud.view';
+import { testName } from '@console/internal-integration-tests';
+import { resourceTitle, isLoaded } from '@console/internal-integration-tests/views/crud.view';
 import {
   selectDropdownOption,
   waitForStringNotInElement,
