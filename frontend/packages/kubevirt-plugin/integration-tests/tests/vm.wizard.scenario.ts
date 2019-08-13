@@ -1,7 +1,7 @@
 /* eslint-disable no-undef, max-nested-callbacks */
 import { OrderedMap } from 'immutable';
 import * as _ from 'lodash';
-import { testName } from '../../../../integration-tests/protractor.conf';
+import { testName } from '@console/integration-tests/protractor.conf';
 import { statusIcons } from '../views/virtualMachine.view';
 import { VirtualMachine } from './models/virtualMachine';
 // eslint-disable-next-line no-unused-vars

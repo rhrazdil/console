@@ -1,9 +1,9 @@
 /* eslint-disable no-await-in-loop, no-console */
 import { browser, ExpectedConditions as until } from 'protractor';
-import { testName } from '../../../../../integration-tests/protractor.conf';
+import { testName } from '@console/integration-tests/protractor.conf';
 import * as vmView from '../../views/virtualMachine.view';
 import { nameInput, errorMessage } from '../../views/wizard.view';
-import { resourceTitle, isLoaded } from '../../../../../integration-tests/views/crud.view';
+import { resourceTitle, isLoaded } from '@console/integration-tests/views/crud.view';
 import { selectDropdownOption, waitForStringNotInElement, resolveTimeout } from '../utils/utils';
 import { vmConfig } from '../utils/types';
 import {

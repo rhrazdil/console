@@ -152,7 +152,7 @@ export const config: Config = {
       'tests/monitoring.scenario.ts',
       'tests/crd-extensions.scenario.ts',
     ]),
-    kubevirt: [
+    'kubevirt-plugin': [
       '../packages/kubevirt-plugin/integration-tests/tests/kubevirt.login.scenario.ts',
       'tests/base.scenario.ts',
       '../packages/kubevirt-plugin/integration-tests/tests/vm.wizard.scenario.ts',

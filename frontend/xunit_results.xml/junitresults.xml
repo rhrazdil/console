@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites disabled="11" errors="0" failures="1" tests="15" time="77713">
+ <testsuite name="Basic console test" timestamp="2019-05-07T13:21:03" hostname="localhost" time="20.797" errors="0" tests="2" skipped="0" disabled="0" failures="0">
+  <testcase classname="Basic console test" name="logs into console if necessary" time="14.67" />
+  <testcase classname="Basic console test" name="creates test namespace test if necessary" time="6.123" />
+ </testsuite>
+ <testsuite name="Kubevirt create VM using wizard" timestamp="2019-05-07T13:21:24" hostname="localhost" time="56.887" errors="0" tests="3" skipped="0" disabled="1" failures="1">
+  <testcase classname="Kubevirt create VM using wizard" name="Using PXE provision source." time="27.621" />
+  <testcase classname="Kubevirt create VM using wizard" name="Using Container provision source." time="27.009">
+   <failure type="exception" message="Failed: Wait timed out after 20003ms"><![CDATA[TimeoutError: Wait timed out after 20003ms
+    at /home/rhrazdil/go/src/github.com/openshift/console/frontend/node_modules/selenium-webdriver/lib/promise.js:2201:17
+    at ManagedPromise.invokeCallback_ (/home/rhrazdil/go/src/github.com/openshift/console/frontend/node_modules/selenium-webdriver/lib/promise.js:1376:14)
+    at TaskQueue.execute_ (/home/rhrazdil/go/src/github.com/openshift/console/frontend/node_modules/selenium-webdriver/lib/promise.js:3084:14)
+    at TaskQueue.executeNext_ (/home/rhrazdil/go/src/github.com/openshift/console/frontend/node_modules/selenium-webdriver/lib/promise.js:3067:27)
+    at asyncRun (/home/rhrazdil/go/src/github.com/openshift/console/frontend/node_modules/selenium-webdriver/lib/promise.js:2927:27)
+    at /home/rhrazdil/go/src/github.com/openshift/console/frontend/node_modules/selenium-webdriver/lib/promise.js:668:7
+    at process._tickCallback (internal/process/next_tick.js:68:7)
+From: Task: <anonymous wait>
+    at scheduleWait (/home/rhrazdil/go/src/github.com/openshift/console/frontend/node_modules/selenium-webdriver/lib/promise.js:2188:20)
+    at ControlFlow.wait (/home/rhrazdil/go/src/github.com/openshift/console/frontend/node_modules/selenium-webdriver/lib/promise.js:2517:12)
+    at Driver.wait (/home/rhrazdil/go/src/github.com/openshift/console/frontend/node_modules/selenium-webdriver/lib/webdriver.js:934:29)
+    at run (/home/rhrazdil/go/src/github.com/openshift/console/frontend/node_modules/protractor/built/browser.js:59:33)
+    at ProtractorBrowser.to.(anonymous function) [as wait] (/home/rhrazdil/go/src/github.com/openshift/console/frontend/node_modules/protractor/built/browser.js:67:16)
+    at Object.<anonymous> (/home/rhrazdil/go/src/github.com/openshift/console/frontend/integration-tests/tests/kubevirt/vm.wizard.scenario.ts:103:21)
+    at step (/home/rhrazdil/go/src/github.com/openshift/console/frontend/integration-tests/tests/kubevirt/vm.wizard.scenario.ts:33:23)
+    at Object.next (/home/rhrazdil/go/src/github.com/openshift/console/frontend/integration-tests/tests/kubevirt/vm.wizard.scenario.ts:14:53)
+    at fulfilled (/home/rhrazdil/go/src/github.com/openshift/console/frontend/integration-tests/tests/kubevirt/vm.wizard.scenario.ts:5:58)
+    at process._tickCallback (internal/process/next_tick.js:68:7)
+From: Task: Run it("Using Container provision source.") in control flow
+    at UserContext.<anonymous> (/home/rhrazdil/go/src/github.com/openshift/console/frontend/node_modules/jasminewd2/index.js:94:19)
+    at attempt (/home/rhrazdil/go/src/github.com/openshift/console/frontend/node_modules/jasmine/node_modules/jasmine-core/lib/jasmine-core/jasmine.js:4297:26)
+    at QueueRunner.run (/home/rhrazdil/go/src/github.com/openshift/console/frontend/node_modules/jasmine/node_modules/jasmine-core/lib/jasmine-core/jasmine.js:4217:20)
+    at QueueRunner.execute (/home/rhrazdil/go/src/github.com/openshift/console/frontend/node_modules/jasmine/node_modules/jasmine-core/lib/jasmine-core/jasmine.js:4199:10)
+    at Spec.queueRunnerFactory (/home/rhrazdil/go/src/github.com/openshift/console/frontend/node_modules/jasmine/node_modules/jasmine-core/lib/jasmine-core/jasmine.js:909:35)
+    at Spec.execute (/home/rhrazdil/go/src/github.com/openshift/console/frontend/node_modules/jasmine/node_modules/jasmine-core/lib/jasmine-core/jasmine.js:526:10)
+    at UserContext.fn (/home/rhrazdil/go/src/github.com/openshift/console/frontend/node_modules/jasmine/node_modules/jasmine-core/lib/jasmine-core/jasmine.js:5340:37)
+    at attempt (/home/rhrazdil/go/src/github.com/openshift/console/frontend/node_modules/jasmine/node_modules/jasmine-core/lib/jasmine-core/jasmine.js:4297:26)
+    at QueueRunner.run (/home/rhrazdil/go/src/github.com/openshift/console/frontend/node_modules/jasmine/node_modules/jasmine-core/lib/jasmine-core/jasmine.js:4217:20)
+    at runNext (/home/rhrazdil/go/src/github.com/openshift/console/frontend/node_modules/jasmine/node_modules/jasmine-core/lib/jasmine-core/jasmine.js:4257:20)
+From asynchronous test: 
+Error
+    at /home/rhrazdil/go/src/github.com/openshift/console/frontend/integration-tests/tests/kubevirt/vm.wizard.scenario.ts:87:5
+    at /home/rhrazdil/go/src/github.com/openshift/console/frontend/node_modules/immutable/dist/immutable.js:2699:43
+    at List.__iterate (/home/rhrazdil/go/src/github.com/openshift/console/frontend/node_modules/immutable/dist/immutable.js:2206:13)
+    at OrderedMap.__iterate (/home/rhrazdil/go/src/github.com/openshift/console/frontend/node_modules/immutable/dist/immutable.js:2698:25)
+    at OrderedMap.forEach (/home/rhrazdil/go/src/github.com/openshift/console/frontend/node_modules/immutable/dist/immutable.js:4381:19)
+    at Suite.<anonymous> (/home/rhrazdil/go/src/github.com/openshift/console/frontend/integration-tests/tests/kubevirt/vm.wizard.scenario.ts:86:20)
+    at addSpecsToSuite (/home/rhrazdil/go/src/github.com/openshift/console/frontend/node_modules/jasmine/node_modules/jasmine-core/lib/jasmine-core/jasmine.js:1107:25)
+    at Env.describe (/home/rhrazdil/go/src/github.com/openshift/console/frontend/node_modules/jasmine/node_modules/jasmine-core/lib/jasmine-core/jasmine.js:1074:7)
+    at Env.<anonymous> (/home/rhrazdil/go/src/github.com/openshift/console/frontend/node_modules/jasmine-fail-fast/dist/jasmine-fail-fast.js:57:26)]]>
+   </failure>
+  </testcase>
+  <testcase classname="Kubevirt create VM using wizard" name="Using URL provision source." time="0">
+   <skipped />
+  </testcase>
+ </testsuite>
+ <testsuite name="Test VM actions" timestamp="2019-05-07T13:22:21" hostname="localhost" time="0.015" errors="0" tests="0" skipped="0" disabled="0" failures="0">
+ </testsuite>
+ <testsuite name="Test VM actions.Test VM list view kebab actions" timestamp="2019-05-07T13:22:21" hostname="localhost" time="0.013" errors="0" tests="5" skipped="0" disabled="5" failures="0">
+  <testcase classname="Test VM actions.Test VM list view kebab actions" name="Navigates to VMs" time="0.004">
+   <skipped />
+  </testcase>
+  <testcase classname="Test VM actions.Test VM list view kebab actions" name="Starts VM" time="0">
+   <skipped />
+  </testcase>
+  <testcase classname="Test VM actions.Test VM list view kebab actions" name="Restarts VM" time="0.006">
+   <skipped />
+  </testcase>
+  <testcase classname="Test VM actions.Test VM list view kebab actions" name="Stops VM" time="0">
+   <skipped />
+  </testcase>
+  <testcase classname="Test VM actions.Test VM list view kebab actions" name="Deletes VM" time="0">
+   <skipped />
+  </testcase>
+ </testsuite>
+ <testsuite name="Test VM actions.Test VM detail view kebab actions" timestamp="2019-05-07T13:22:21" hostname="localhost" time="0.001" errors="0" tests="5" skipped="0" disabled="5" failures="0">
+  <testcase classname="Test VM actions.Test VM detail view kebab actions" name="Navigates to VMs detail page" time="0">
+   <skipped />
+  </testcase>
+  <testcase classname="Test VM actions.Test VM detail view kebab actions" name="Starts VM" time="0">
+   <skipped />
+  </testcase>
+  <testcase classname="Test VM actions.Test VM detail view kebab actions" name="Restarts VM" time="0.001">
+   <skipped />
+  </testcase>
+  <testcase classname="Test VM actions.Test VM detail view kebab actions" name="Stops VM" time="0">
+   <skipped />
+  </testcase>
+  <testcase classname="Test VM actions.Test VM detail view kebab actions" name="Deletes VM" time="0">
+   <skipped />
+  </testcase>
+ </testsuite>
+</testsuites>

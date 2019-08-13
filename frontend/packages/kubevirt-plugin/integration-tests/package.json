@@ -1,0 +1,9 @@
+{
+  "name": "@console/integration-tests",
+  "version": "0.0.0-fixed",
+  "description": "Integraton tests for kubevirt-plugin",
+  "private": true,
+  "devDependencies": {
+    "@console/integration-tests": "0.0.0-fixed"
+  }
+}
