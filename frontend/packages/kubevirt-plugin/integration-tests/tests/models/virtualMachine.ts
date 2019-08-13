@@ -93,58 +93,45 @@ export class VirtualMachine extends KubevirtDetailView {
     return vmView.rdpPort.getText();
   }
 
-  async create({
-    name,
-    namespace,
-    description,
-    template,
-    provisionSource,
-    operatingSystem,
-    flavor,
-    workloadProfile,
-    startOnCreation,
-    cloudInit,
-    storageResources,
-    networkResources,
-  }: VMConfig) {
+  async create(config: VMConfig) {
     const wizard = new Wizard();
     await this.navigateToListView();
 
     await wizard.openWizard();
-    await wizard.fillName(name);
-    await wizard.fillDescription(description);
+    await wizard.fillName(config.name);
+    await wizard.fillDescription(config.description);
     if (!(await browser.getCurrentUrl()).includes(`${testName}/${this.kind}`)) {
-      await wizard.selectNamespace(namespace);
+      await wizard.selectNamespace(config.namespace);
     }
-    if (template !== undefined) {
-      await wizard.selectTemplate(template);
+    if (config.template !== undefined) {
+      await wizard.selectTemplate(config.template);
     } else {
-      await wizard.selectProvisionSource(provisionSource);
-      await wizard.selectOperatingSystem(operatingSystem);
-      await wizard.selectWorkloadProfile(workloadProfile);
+      await wizard.selectProvisionSource(config.provisionSource);
+      await wizard.selectOperatingSystem(config.operatingSystem);
+      await wizard.selectWorkloadProfile(config.workloadProfile);
     }
-    await wizard.selectFlavor(flavor);
-    if (startOnCreation) {
+    await wizard.selectFlavor(config.flavor);
+    if (config.startOnCreation) {
       await wizard.startOnCreation();
     }
-    if (cloudInit.useCloudInit) {
-      if (template !== undefined) {
+    if (config.cloudInit.useCloudInit) {
+      if (config.template !== undefined) {
         // TODO: wizard.useCloudInit needs to check state of checkboxes before clicking them to ensure desired state is achieved with specified template
         throw new Error('Using cloud init with template not implemented.');
       }
-      await wizard.useCloudInit(cloudInit);
+      await wizard.useCloudInit(config.cloudInit);
     }
     await wizard.next();
 
     // Networking
-    for (const resource of networkResources) {
+    for (const resource of config.networkResources) {
       await wizard.addNIC(resource);
     }
     await wizard.next();
 
     // Storage
-    for (const resource of storageResources) {
-      if (resource.name === 'rootdisk' && provisionSource.method === 'URL') {
+    for (const resource of config.storageResources) {
+      if (resource.name === 'rootdisk' && config.provisionSource.method === 'URL') {
         // Rootdisk is present by default, only edit specific properties
         await wizard.editDiskAttribute(WIZARD_TABLE_FIRST_ROW, 'size', resource.size);
         await wizard.editDiskAttribute(WIZARD_TABLE_FIRST_ROW, 'storage', resource.storageClass);
@@ -167,7 +154,7 @@ export class VirtualMachine extends KubevirtDetailView {
     await wizard.next();
 
     await this.navigateToTab(TABS.OVERVIEW);
-    if (startOnCreation === true) {
+    if (config.startOnCreation === true) {
       // If startOnCreation is true, wait for VM to boot up
       await vmView.waitForStatusIcon(vmView.statusIcons.running, VM_BOOTUP_TIMEOUT_SECS);
     } else {
