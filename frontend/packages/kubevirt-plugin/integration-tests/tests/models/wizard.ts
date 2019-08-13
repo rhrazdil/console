@@ -1,7 +1,8 @@
 /* eslint-disable no-unused-vars, no-undef */
 import { $, browser, ExpectedConditions as until } from 'protractor';
-import { createItemButton, isLoaded } from '../../../../../integration-tests/views/crud.view';
-import { fillInput, selectDropdownOption, click } from '../utils/utils';
+import { createItemButton, isLoaded } from '@console/../integration-tests/views/crud.view';
+import { selectDropdownOption, click } from '@console/shared/src/test-utils/utils';
+import { fillInput } from '../utils/utils';
 import { cloudInitConfig, storageResource } from '../utils/types';
 import { PAGE_LOAD_TIMEOUT } from '../utils/consts';
 import * as wizardView from '../../views/wizard.view';

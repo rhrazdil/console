@@ -1,6 +1,6 @@
 import { $, element, by, browser, ExpectedConditions as until } from 'protractor';
-import { rowForName, resourceRowsPresent } from '../../../../integration-tests/views/crud.view';
-import { click } from '../tests/utils/utils';
+import { rowForName, resourceRowsPresent } from '@console/../integration-tests/views/crud.view';
+import { click } from '@console/shared/src/test-utils/utils';
 
 const dialogOverlay = $('.co-overlay');
 

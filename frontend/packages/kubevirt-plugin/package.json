@@ -12,6 +12,9 @@
     "@console/shared": "0.0.0-fixed",
     "kubevirt-web-ui-components": "~0.1.40"
   },
+  "devDependencies": {
+    "@console/integration-tests": "0.0.0-fixed"
+  },
   "consolePlugin": {
     "entry": "src/plugin.tsx"
   }

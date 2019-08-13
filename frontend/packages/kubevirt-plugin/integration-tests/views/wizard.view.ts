@@ -1,5 +1,6 @@
 import { $, $$ } from 'protractor';
-import { selectDropdownOption, fillInput } from '../tests/utils/utils';
+import { fillInput } from '../tests/utils/utils';
+import { selectDropdownOption } from '@console/shared/src/test-utils/utils';
 
 // Wizard Common
 export const closeWizard = $('.modal-footer > button.btn-cancel');

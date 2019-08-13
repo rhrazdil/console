@@ -1,10 +1,11 @@
 /* eslint-disable no-await-in-loop */
 import { TABS, diskTabCol, networkTabCol } from '../utils/consts';
 import { storageResource, networkResource } from '../utils/types';
-import { fillInput, selectDropdownOption, click } from '../utils/utils';
+import { selectDropdownOption, click } from '@console/shared/src/test-utils/utils';
+import { fillInput } from '../utils/utils';
 import * as kubevirtDetailView from '../../views/kubevirtDetailView.view';
 import { confirmAction } from '../../views/vm.actions.view';
-import { isLoaded, resourceRows } from '../../../../../integration-tests/views/crud.view';
+import { isLoaded, resourceRows } from '@console/../integration-tests/views/crud.view';
 import { DetailView } from './detailView';
 
 export class KubevirtDetailView extends DetailView {
