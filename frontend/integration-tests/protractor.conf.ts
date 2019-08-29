@@ -169,6 +169,9 @@ export const config: Config = {
     'kubevirt-plugin': suite([
       '../packages/kubevirt-plugin/integration-tests/tests/vm.wizard.scenario.ts',
     ]),
+    'rhhi-suite': suite([
+      'tests/rhhi/demo.rhhi.ts',
+    ]),
     all: suite([
       'tests/crud.scenario.ts',
       'tests/overview/overview.scenareio.ts',
