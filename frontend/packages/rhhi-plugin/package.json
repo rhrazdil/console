@@ -1,0 +1,23 @@
+{
+  "name": "@console/rhhi-plugin",
+  "version": "0.0.0-fixed",
+  "description": "RHHI-plugin package containing RHHI integration tests",
+  "private": true,
+  "dependencies": {
+    "@console/plugin-sdk": "0.0.0-fixed",
+    "@console/shared": "0.0.0-fixed"
+  },
+  "devDependencies": {
+    "@console/internal-integration-tests": "0.0.0-fixed"
+  },
+  "consolePlugin": {
+    "entry": "src/plugin.tsx",
+    "integrationTests": {
+      "rhhi-plugin": [
+        "@console/internal-integration-tests/tests/login.scenario.ts",
+        "@console/internal-integration-tests/tests/base.scenario.ts",
+        "integration-tests/tests/demo.scenario.ts"
+      ]
+    }
+  }
+}
