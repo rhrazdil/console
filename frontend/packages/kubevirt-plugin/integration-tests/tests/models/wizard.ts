@@ -37,6 +37,26 @@ export class Wizard {
     await selectDropdownOption(wizardView.templateDropdownId, template);
   }
 
+  async selectProvider(provider: string) {
+    await selectDropdownOption(wizardView.providerDropdownId, provider);
+  }
+
+  async selectVcenterInstance(instance: string) {
+    await selectDropdownOption(wizardView.vcenterInstanceDropdownId, instance);
+  }
+
+  async fillVcenterHostname(hostname: string) {
+    await fillInput(wizardView.vcenterHostname, hostname);
+  }
+
+  async fillVcenterUsername(username: string) {
+    await fillInput(wizardView.vcenterUsername, username);
+  }
+
+  async fillVcenterPassword(password: string) {
+    await fillInput(wizardView.vcenterPassword, password);
+  }
+
   async selectOperatingSystem(operatingSystem: string) {
     await selectDropdownOption(wizardView.operatingSystemDropdownId, operatingSystem);
   }

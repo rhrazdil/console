@@ -172,6 +172,9 @@ export const config: Config = {
       '../packages/kubevirt-plugin/integration-tests/tests/vm.migration.scenario.ts',
       '../packages/kubevirt-plugin/integration-tests/tests/vm.resources.scenario.ts',
     ]),
+    'ims-demo': suite([
+      '../packages/kubevirt-plugin/integration-tests/tests/vm.import.scenario.ts',
+    ]),
     all: suite([
       'tests/crud.scenario.ts',
       'tests/overview/overview.scenareio.ts',

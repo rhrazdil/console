@@ -25,6 +25,8 @@ export const provisionSources = {
   Container: provisionSourceContainerImage,
 };
 
+export const providerDropdownId = '#provider-dropdown';
+export const vcenterInstanceDropdownId = '#vcenter-instance-dropdown';
 export const namespaceDropdownId = '#namespace-dropdown';
 export const provisionSourceDropdownId = '#image-source-type-dropdown';
 export const operatingSystemDropdownId = '#operating-system-dropdown';
@@ -33,6 +35,12 @@ export const flavorDropdownId = '#flavor-dropdown';
 export const customFlavorCpus = '#resources-cpu';
 export const customFlavorMemory = '#resources-memory';
 export const workloadProfileDropdownId = '#workload-profile-dropdown';
+
+export const vcenterHostname = $('#vcenter-hostname-dropdown');
+export const vcenterUsername = $('#vcenter-username');
+export const vcenterPassword = $('#vcenter-password');
+export const saveVcenterCreds = $('#vcenter-remember-credentials');
+export const vcenterSaveInstanceButton = $('#vcenter-connect');
 
 export const startVMOnCreation = $('#start-vm');
 export const useCloudInit = $('#use-cloud-init');
