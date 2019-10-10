@@ -12,7 +12,7 @@ import { vmConfig, getProvisionConfigs, CONFIG_NAME_CONTAINER } from './vm.wizar
 import * as editFlavorView from './models/editFlavorView';
 import { fillInput } from './utils/utils';
 
-describe('KubeVirt VM detail - edit flavor', () => {
+xdescribe('KubeVirt VM detail - edit flavor', () => {
   const leakedResources = new Set<string>();
   const provisionConfigs = getProvisionConfigs(testName);
 
