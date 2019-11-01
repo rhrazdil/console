@@ -7,7 +7,12 @@ import {
   dataVolumeManifest,
 } from './utils/mocks';
 import { StorageResource, ProvisionConfig } from './utils/types';
-import { KUBEVIRT_STORAGE_CLASS_DEFAULTS, KUBEVIRT_PROJECT_NAME } from './utils/consts';
+import {
+  KUBEVIRT_STORAGE_CLASS_DEFAULTS,
+  KUBEVIRT_PROJECT_NAME,
+  DISK_SOURCE,
+  DISK_INTERFACE,
+} from './utils/consts';
 import { resolveStorageDataAttribute, getResourceObject } from './utils/utils';
 
 export const vmConfig = (name: string, provisionConfig, testName: string) => {
@@ -52,8 +57,9 @@ const getDiskToCloneFrom = (testName: string): StorageResource => {
   return {
     name: testDV.metadata.name,
     size: '1',
+    interface: DISK_INTERFACE.VirtIO,
     storageClass: testDV.spec.pvc.storageClassName,
-    attached: true,
+    source: DISK_SOURCE.AttachDisk,
   };
 };
 

@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars, no-undef */
 import { browser, ExpectedConditions as until } from 'protractor';
 import { click } from '@console/shared/src/test-utils/utils';
-import { fillInput, selectSelectorOption } from '../utils/utils';
+import { fillInput, selectOptionByText } from '../utils/utils';
 import { PAGE_LOAD_TIMEOUT_SECS } from '../utils/consts';
 import * as cloneDialogView from '../../views/cloneDialog.view';
 
@@ -20,7 +20,7 @@ export class CloneDialog {
   }
 
   async selectNamespace(namespace: string) {
-    await selectSelectorOption(cloneDialogView.namespaceSelectorId, namespace);
+    await selectOptionByText(cloneDialogView.namespaceSelector, namespace);
   }
 
   async startOnCreation() {

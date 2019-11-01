@@ -10,7 +10,7 @@ export const TEMPLATE_ACTIONS_TIMEOUT_SECS = 90 * SEC;
 export const VM_ACTIONS_TIMEOUT_SECS = 250 * SEC;
 export const VM_BOOTUP_TIMEOUT_SECS = 230 * SEC;
 export const VM_MIGRATION_TIMEOUT_SECS = 260 * SEC;
-export const VM_STOP_TIMEOUT_SECS = 10 * SEC;
+export const VM_STOP_TIMEOUT_SECS = 20 * SEC;
 export const VM_IP_ASSIGNMENT_TIMEOUT_SECS = 180 * SEC;
 export const VM_IMPORT_TIMEOUT_SECS = 160 * SEC;
 export const WINDOWS_IMPORT_TIMEOUT_SECS = 150 * SEC;
@@ -45,29 +45,67 @@ export const KUBEVIRT_PROJECT_NAME = 'openshift-cnv';
 export const COMMON_TEMPLATES_VERSION = 'v0.6.2';
 
 // Tab names
-export const TABS = {
-  OVERVIEW: 'Overview',
-  YAML: 'YAML',
-  CONSOLES: 'Consoles',
-  EVENTS: 'Events',
-  DISKS: 'Disks',
-  NICS: 'Network Interfaces',
-};
-Object.freeze(TABS);
+export enum TAB {
+  Consoles = 'Consoles',
+  Disks = 'Disks',
+  Events = 'Events',
+  NetworkInterfaces = 'Network Interfaces',
+  Overview = 'Overview',
+  Yaml = 'YAML',
+}
+Object.freeze(TAB);
 
 // Tab names
-export const VM_ACTIONS = {
-  START: 'Start Virtual Machine',
-  STOP: 'Stop Virtual Machine',
-  CLONE: 'Clone Virtual Machine',
-  RESTART: 'Restart Virtual Machine',
-  MIGRATE: 'Migrate Virtual Machine',
-  CANCEL: 'Cancel Virtual Machine Migration',
-  EDIT_LABELS: 'Edit Labels',
-  EDIT_ANNOTATIONS: 'Edit Annotations',
-  DELETE: 'Delete Virtual Machine',
-};
-Object.freeze(VM_ACTIONS);
+export enum VM_ACTION {
+  Cancel = 'Cancel Virtual Machine Migration',
+  Clone = 'Clone Virtual Machine',
+  Delete = 'Delete Virtual Machine',
+  EditAnnotations = 'Edit Annotations',
+  EditLabels = 'Edit Labels',
+  Migrate = 'Migrate Virtual Machine',
+  Restart = 'Restart Virtual Machine',
+  Start = 'Start Virtual Machine',
+  Stop = 'Stop Virtual Machine',
+}
+Object.freeze(VM_ACTION);
+
+// VM Statuses
+export enum VM_STATUS {
+  Error = 'Error',
+  Starting = 'Starting',
+  Running = 'Running',
+  Off = 'Off',
+  Pending = 'Pending',
+  Importing = 'Importing',
+  Migrating = 'Migrating',
+}
+Object.freeze(VM_STATUS);
+
+export enum DISK_SOURCE {
+  AttachDisk = 'Attach Disk',
+  AttachClonedDisk = 'Attach Cloned Disk',
+  Blank = 'Blank',
+  Container = 'Container',
+  Url = 'URL',
+}
+Object.freeze(DISK_SOURCE);
+
+export enum NIC_MODEL {
+  VirtIO = 'VirtIO',
+  e1000 = 'e1000',
+  e1000e = 'e1000e',
+  net2kPCI = 'net2kPCI',
+  pcnet = 'pcnet',
+  rtl8139 = 'rtl8139',
+}
+Object.freeze(NIC_MODEL);
+
+export enum DISK_INTERFACE {
+  VirtIO = 'VirtIO',
+  sata = 'sata',
+  scsi = 'scsi',
+}
+Object.freeze(DISK_INTERFACE);
 
 // Network tab columns in VM Wizard
 export const networkWizardTabCol = {

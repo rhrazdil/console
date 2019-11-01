@@ -1,6 +1,6 @@
 import { testName } from '@console/internal-integration-tests/protractor.conf';
 import { CloudInitConfig } from './types';
-import { STORAGE_CLASS, COMMON_TEMPLATES_VERSION } from './consts';
+import { STORAGE_CLASS, COMMON_TEMPLATES_VERSION, NIC_MODEL, DISK_INTERFACE } from './consts';
 import { getRandomMacAddress } from './utils';
 
 export const multusNAD = {
@@ -54,28 +54,31 @@ export const basicVMConfig = {
   cloudInitScript: `#cloud-config\nuser: cloud-user\npassword: atomic\nchpasswd: {expire: False}\nhostname: vm-${testName}.example.com`,
 };
 
-export const networkInterface = {
-  name: `nic1-${testName.slice(-5)}`,
-  mac: getRandomMacAddress(),
-  binding: 'bridge',
-  networkDefinition: multusNAD.metadata.name,
-};
-
 export const networkBindingMethods = {
   masquerade: 'masquerade',
   bridge: 'bridge',
   sriov: 'sriov',
 };
 
+export const networkInterface = {
+  name: `nic1-${testName.slice(-5)}`,
+  model: NIC_MODEL.VirtIO,
+  mac: getRandomMacAddress(),
+  binding: networkBindingMethods.bridge,
+  networkDefinition: multusNAD.metadata.name,
+};
+
 export const rootDisk = {
   name: 'rootdisk',
   size: '1',
+  interface: DISK_INTERFACE.VirtIO,
   storageClass: `${STORAGE_CLASS}`,
 };
 
 export const hddDisk = {
   name: `disk-${testName.slice(-5)}`,
   size: '2',
+  interface: DISK_INTERFACE.VirtIO,
   storageClass: `${STORAGE_CLASS}`,
 };
 

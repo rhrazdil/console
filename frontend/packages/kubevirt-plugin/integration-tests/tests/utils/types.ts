@@ -5,6 +5,7 @@ export type ProvisionOption = {
 
 export type NetworkResource = {
   name: string;
+  model: string;
   mac: string;
   binding: string;
   networkDefinition: string;
@@ -14,7 +15,8 @@ export type StorageResource = {
   name: string;
   size: string;
   storageClass: string;
-  attached?: boolean;
+  interface: string;
+  source?: string;
 };
 
 export type CloudInitConfig = {

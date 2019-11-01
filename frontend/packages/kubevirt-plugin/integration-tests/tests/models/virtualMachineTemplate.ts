@@ -7,7 +7,7 @@ import {
   resourceRowsPresent,
 } from '@console/internal-integration-tests/views/crud.view';
 import { VMTemplateConfig } from '../utils/types';
-import { WIZARD_CREATE_TEMPLATE_ERROR, WIZARD_TABLE_FIRST_ROW } from '../utils/consts';
+import { WIZARD_CREATE_TEMPLATE_ERROR, WIZARD_TABLE_FIRST_ROW, DISK_SOURCE } from '../utils/consts';
 import { Wizard } from './wizard';
 import { KubevirtDetailView } from './kubevirtDetailView';
 
@@ -59,6 +59,8 @@ export class VirtualMachineTemplate extends KubevirtDetailView {
         // Rootdisk is present by default, only edit specific properties
         await wizard.editDiskAttribute(WIZARD_TABLE_FIRST_ROW, 'size', resource.size);
         await wizard.editDiskAttribute(WIZARD_TABLE_FIRST_ROW, 'storage', resource.storageClass);
+      } else if (resource.source === DISK_SOURCE.AttachDisk) {
+        await wizard.attachDisk(resource);
       } else {
         await wizard.addDisk(resource);
       }

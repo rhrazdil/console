@@ -6,15 +6,14 @@ import {
   createResources,
   deleteResources,
 } from '@console/shared/src/test-utils/utils';
-import { statusIcons, waitForStatusIcon } from '../views/virtualMachine.view';
 import { VirtualMachine } from './models/virtualMachine';
 import { getResourceObject, resolveStorageDataAttribute } from './utils/utils';
 import {
   VM_BOOTUP_TIMEOUT_SECS,
   CLONE_VM_TIMEOUT_SECS,
-  TABS,
-  VM_ACTIONS,
+  VM_ACTION,
   CLONED_VM_BOOTUP_TIMEOUT_SECS,
+  VM_STATUS,
 } from './utils/consts';
 import { multusNAD } from './utils/mocks';
 import {
@@ -96,12 +95,11 @@ describe('Kubevirt create VM using wizard', () => {
       await withResource(leakedResources, vm1.asResource(), async () => {
         await vm1.create(vm1Config);
         // Don't wait for the first VM to be running
-        await vm1.action(VM_ACTIONS.START, false);
+        await vm1.action(VM_ACTION.Start, false);
         await withResource(leakedResources, vm2.asResource(), async () => {
           await vm2.create(vm2Config);
-          await vm1.navigateToTab(TABS.OVERVIEW);
-          await waitForStatusIcon(statusIcons.running, CLONED_VM_BOOTUP_TIMEOUT_SECS);
-
+          // Come back to the first VM and verify it is Running as well
+          await vm1.waitForStatus(VM_STATUS.Running, CLONED_VM_BOOTUP_TIMEOUT_SECS);
           // Verify that DV of VM created with Cloned disk method points to correct PVC
           const dvResource = getResourceObject(
             `${vm1.name}-${testDataVolume.metadata.name}-clone`,
