@@ -2,27 +2,12 @@ import { $, browser, ExpectedConditions as until, element, by } from 'protractor
 import { resourceRows } from '@console/internal-integration-tests/views/crud.view';
 import { click } from '@console/shared/src/test-utils/utils';
 
-export const createNic = $('#create-nic-btn');
-export const createDisk = $('#create-disk-btn');
+export const createNICButton = $('#create-nic-btn');
+export const createDiskButton = $('#create-disk-btn');
 
-export const nicName = $('#nic-name');
-export const nicModel = $('#nic-model');
-export const nicNetwork = $('#nic-network');
-export const nicBinding = $('#nic-type');
-export const nicMACAddress = $('#nic-mac-address');
-
-export const diskSource = $('#disk-source');
-export const diskURL = $('#disk-url');
-export const diskContainer = $('#disk-container');
-export const diskNamespace = $('#disk-namespace');
-export const diskPVC = $('#disk-pvc');
-export const diskName = $('#disk-name');
-export const diskSize = $('#disk-size-row-size');
-export const diskInterface = $('#disk-interface');
-export const diskStorageClass = $('#disk-storage-class');
-
-export const cancelBtn = element(by.buttonText('Cancel'));
-export const applyBtn = element(by.buttonText('Add'));
+export const cancelButton = element(by.buttonText('Cancel'));
+export const applyButton = element(by.buttonText('Add'));
+export const saveButton = element(by.buttonText('Save'));
 
 // Used to determine presence of a new row by looking for confirmation buttons
 export const newResourceRow = $('.kubevirt-vm-create-device-row__confirmation-buttons');

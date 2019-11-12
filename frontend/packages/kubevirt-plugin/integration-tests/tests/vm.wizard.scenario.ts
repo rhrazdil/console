@@ -14,6 +14,8 @@ import {
   VM_ACTION,
   CLONED_VM_BOOTUP_TIMEOUT_SECS,
   VM_STATUS,
+  CONFIG_NAME_DISK,
+  CONFIG_NAME_URL,
 } from './utils/consts';
 import { multusNAD } from './utils/mocks';
 import {
@@ -21,8 +23,6 @@ import {
   getProvisionConfigs,
   getTestDataVolume,
   kubevirtStorage,
-  CONFIG_NAME_CLONED_DISK,
-  CONFIG_NAME_URL,
 } from './vm.wizard.configs';
 
 describe('Kubevirt create VM using wizard', () => {
@@ -44,7 +44,7 @@ describe('Kubevirt create VM using wizard', () => {
 
   provisionConfigs.forEach((provisionConfig, configName) => {
     const specTimeout =
-      configName === CONFIG_NAME_CLONED_DISK ? CLONE_VM_TIMEOUT_SECS : VM_BOOTUP_TIMEOUT_SECS;
+      configName === CONFIG_NAME_DISK ? CLONE_VM_TIMEOUT_SECS : VM_BOOTUP_TIMEOUT_SECS;
     it(
       `Create VM using ${configName}.`,
       async () => {
@@ -84,7 +84,7 @@ describe('Kubevirt create VM using wizard', () => {
   it(
     'Multiple VMs created using "Cloned Disk" method from single source',
     async () => {
-      const clonedDiskProvisionConfig = provisionConfigs.get(CONFIG_NAME_CLONED_DISK);
+      const clonedDiskProvisionConfig = provisionConfigs.get(CONFIG_NAME_DISK);
       const vm1Config = vmConfig('vm1', clonedDiskProvisionConfig, testName);
       const vm2Config = vmConfig('vm2', clonedDiskProvisionConfig, testName);
       vm1Config.startOnCreation = false;
@@ -102,7 +102,7 @@ describe('Kubevirt create VM using wizard', () => {
           await vm1.waitForStatus(VM_STATUS.Running, CLONED_VM_BOOTUP_TIMEOUT_SECS);
           // Verify that DV of VM created with Cloned disk method points to correct PVC
           const dvResource = getResourceObject(
-            `${vm1.name}-${testDataVolume.metadata.name}-clone`,
+            `${vm1.name}-${testDataVolume.metadata.name}`,
             vm1.namespace,
             'dv',
           );

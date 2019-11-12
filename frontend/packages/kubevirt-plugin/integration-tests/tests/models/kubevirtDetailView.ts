@@ -1,19 +1,14 @@
 /* eslint-disable no-await-in-loop */
 import { browser, ExpectedConditions as until } from 'protractor';
 import { click, waitForCount } from '@console/shared/src/test-utils/utils';
-import { isLoaded, resourceRows } from '@console/internal-integration-tests/views/crud.view';
-import {
-  TAB,
-  diskTabCol,
-  networkTabCol,
-  PAGE_LOAD_TIMEOUT_SECS,
-  DISK_SOURCE,
-} from '../utils/consts';
+import { resourceRows } from '@console/internal-integration-tests/views/crud.view';
+import { TAB, diskTabCol, networkTabCol, PAGE_LOAD_TIMEOUT_SECS } from '../utils/consts';
 import { StorageResource, NetworkResource } from '../utils/types';
-import { fillInput, selectOptionByText } from '../utils/utils';
 import * as kubevirtDetailView from '../../views/kubevirtDetailView.view';
 import { confirmAction } from '../../views/vm.actions.view';
 import { vmDetailFlavorEditButton } from '../../views/virtualMachine.view';
+import { NetworkInterfaceDialog } from '../dialogs/networkInterfaceDialog';
+import { DiskDialog } from '../dialogs/diskDialog';
 import { DetailView } from './detailView';
 import * as editFlavor from './editFlavorView';
 
@@ -49,15 +44,9 @@ export class KubevirtDetailView extends DetailView {
 
   async addDisk(disk: StorageResource) {
     await this.navigateToTab(TAB.Disks);
-    await click(kubevirtDetailView.createDisk, 1000);
-    await isLoaded();
-    await selectOptionByText(kubevirtDetailView.diskSource, DISK_SOURCE.Blank); // TODO: ATM always adds a Blank disk
-    await fillInput(kubevirtDetailView.diskName, disk.name);
-    await fillInput(kubevirtDetailView.diskSize, disk.size);
-    await selectOptionByText(kubevirtDetailView.diskInterface, disk.interface);
-    await selectOptionByText(kubevirtDetailView.diskStorageClass, disk.storageClass);
-    await click(kubevirtDetailView.applyBtn);
-    await isLoaded();
+    await click(kubevirtDetailView.createDiskButton);
+    const dialog = new DiskDialog();
+    await dialog.create(disk);
   }
 
   async removeDisk(name: string) {
@@ -70,15 +59,9 @@ export class KubevirtDetailView extends DetailView {
 
   async addNIC(nic: NetworkResource) {
     await this.navigateToTab(TAB.NetworkInterfaces);
-    await click(kubevirtDetailView.createNic, 1000);
-    await isLoaded();
-    await fillInput(kubevirtDetailView.nicName, nic.name);
-    await selectOptionByText(kubevirtDetailView.nicModel, nic.model);
-    await selectOptionByText(kubevirtDetailView.nicNetwork, nic.networkDefinition);
-    await selectOptionByText(kubevirtDetailView.nicBinding, nic.binding);
-    await fillInput(kubevirtDetailView.nicMACAddress, nic.mac);
-    await click(kubevirtDetailView.applyBtn);
-    await isLoaded();
+    await click(kubevirtDetailView.createNICButton);
+    const dialog = new NetworkInterfaceDialog();
+    await dialog.create(nic);
   }
 
   async removeNIC(name: string) {

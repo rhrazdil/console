@@ -56,6 +56,10 @@ export async function getInputValue(elem: ElementFinder) {
   return elem.getAttribute('value');
 }
 
+export async function getSelectedOptionText(selector: ElementFinder) {
+  return selector.$('option:checked').getText();
+}
+
 export async function selectOptionByText(selector: ElementFinder, option: string) {
   await click(selector.all(by.cssContainingText('option', option)).first());
 }

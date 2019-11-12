@@ -13,10 +13,10 @@ export type NetworkResource = {
 
 export type StorageResource = {
   name: string;
-  size: string;
+  size?: string;
   storageClass: string;
   interface: string;
-  source?: string;
+  selectSource?: Function;
 };
 
 export type CloudInitConfig = {
@@ -39,7 +39,6 @@ export type NodePortService = {
 
 export type VMConfig = {
   name: string;
-  namespace: string;
   description: string;
   template?: string;
   provisionSource?: ProvisionOption;
@@ -60,7 +59,6 @@ export type ProvisionConfig = {
 
 export type VMTemplateConfig = {
   name: string;
-  namespace: string;
   description: string;
   provisionSource?: ProvisionOption;
   operatingSystem?: string;

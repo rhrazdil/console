@@ -20,7 +20,7 @@ import {
   addLeakableResource,
   removeLeakableResource,
 } from '@console/shared/src/test-utils/utils';
-import * as cloneDialogView from '../views/cloneDialog.view';
+import * as cloneDialogView from '../views/dialogs/cloneVirtualMachineDialog.view';
 import { getVolumes, getDataVolumeTemplates } from '../../src/selectors/vm/selectors';
 import { getResourceObject, getRandStr, createProject } from './utils/utils';
 import {
@@ -42,11 +42,11 @@ import {
   rootDisk,
 } from './utils/mocks';
 import { VirtualMachine } from './models/virtualMachine';
-import { CloneDialog } from './models/cloneDialog';
+import { CloneVirtualMachineDialog } from './dialogs/cloneVirtualMachineDialog';
 
 describe('Test clone VM.', () => {
   const leakedResources = new Set<string>();
-  const cloneDialog = new CloneDialog();
+  const cloneDialog = new CloneVirtualMachineDialog();
   const testCloningNamespace = `${testName}-cloning`;
 
   beforeAll(async () => {
@@ -186,7 +186,7 @@ describe('Test clone VM.', () => {
       await vm.waitForStatus(VM_STATUS.Off, PAGE_LOAD_TIMEOUT_SECS);
     });
 
-    it('Cloned VM has cleared MAC addresses.', async () => {
+    it('Cloned VM has changed MAC address.', async () => {
       await clonedVM.navigateToTab(TAB.NetworkInterfaces);
       await browser.wait(until.and(waitForCount(resourceRows, 2)), PAGE_LOAD_TIMEOUT_SECS);
       const addedNIC = (await clonedVM.getAttachedNICs()).find(
@@ -195,7 +195,7 @@ describe('Test clone VM.', () => {
       expect(addedNIC.mac === networkInterface.mac).toBe(false);
     });
 
-    it('Cloned VM has vm.kubevirt.io/name label.', async () => {
+    it('Cloned VM has vm.kubevirt.io/name label.', () => {
       expect(
         searchYAML(`vm.kubevirt.io/name: ${vm.name}`, clonedVM.name, clonedVM.namespace, 'vm'),
       ).toBeTruthy();
@@ -257,7 +257,6 @@ describe('Test clone VM.', () => {
       async () => {
         const ciVMConfig = {
           name: `ci-${testName}`,
-          namespace: testName,
           description: `Default description ${testName}`,
           provisionSource: cloudInitVmProvisionConfig,
           storageResources: [rootDisk],

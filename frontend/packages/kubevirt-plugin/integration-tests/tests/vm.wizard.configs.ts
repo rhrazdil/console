@@ -10,10 +10,14 @@ import { StorageResource, ProvisionConfig } from './utils/types';
 import {
   KUBEVIRT_STORAGE_CLASS_DEFAULTS,
   KUBEVIRT_PROJECT_NAME,
-  DISK_SOURCE,
   DISK_INTERFACE,
+  CONFIG_NAME_URL,
+  CONFIG_NAME_PXE,
+  CONFIG_NAME_CONTAINER,
+  CONFIG_NAME_DISK,
 } from './utils/consts';
 import { resolveStorageDataAttribute, getResourceObject } from './utils/utils';
+import { DiskDialog } from './dialogs/diskDialog';
 
 export const vmConfig = (name: string, provisionConfig, testName: string) => {
   const commonSettings = {
@@ -56,17 +60,13 @@ const getDiskToCloneFrom = (testName: string): StorageResource => {
   const testDV = getTestDataVolume(testName);
   return {
     name: testDV.metadata.name,
-    size: '1',
+    size: testDV.spec.pvc.resources.requests.storage.slice(0, -2),
     interface: DISK_INTERFACE.VirtIO,
     storageClass: testDV.spec.pvc.storageClassName,
-    source: DISK_SOURCE.AttachDisk,
+    selectSource: async () =>
+      DiskDialog.selectSourceAttachClonedDisk(testDV.metadata.name, testName),
   };
 };
-
-export const CONFIG_NAME_URL = 'URL';
-export const CONFIG_NAME_CONTAINER = 'Container';
-export const CONFIG_NAME_PXE = 'PXE';
-export const CONFIG_NAME_CLONED_DISK = 'ClonedDisk';
 
 export const getProvisionConfigs = (testName: string) =>
   OrderedMap<string, ProvisionConfig>()
@@ -93,9 +93,9 @@ export const getProvisionConfigs = (testName: string) =>
       networkResources: [networkInterface],
       storageResources: [rootDisk],
     })
-    .set(CONFIG_NAME_CLONED_DISK, {
+    .set(CONFIG_NAME_DISK, {
       provision: {
-        method: 'Cloned Disk', // mind the space
+        method: CONFIG_NAME_DISK,
       },
       networkResources: [networkInterface],
       storageResources: [getDiskToCloneFrom(testName)],

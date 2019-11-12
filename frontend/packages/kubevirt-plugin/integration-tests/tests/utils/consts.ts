@@ -25,6 +25,7 @@ export const NODE_STOP_MAINTENANCE_TIMEOUT = 40 * SEC;
 
 // Web-UI Exceptions
 export const WAIT_TIMEOUT_ERROR = 'Wait Timeout Error.';
+export const WIZARD_CREATE_VM_SUCCESS = 'Successfully created virtual machine.';
 export const WIZARD_CREATE_VM_ERROR = 'Creating VM failed';
 export const WIZARD_CREATE_TEMPLATE_ERROR = 'Creating Template failed';
 
@@ -36,8 +37,12 @@ export const NODE_MAINTENANCE_STATUS = 'Under maintenance';
 export const NODE_STOPPING_MAINTENANCE_STATUS = 'Stopping maintenance';
 export const NODE_READY_STATUS = 'Ready';
 
-// Wizard dialog
-export const WIZARD_TABLE_FIRST_ROW = 1;
+// Wizard
+export const CONFIG_NAME_URL = 'URL';
+export const CONFIG_NAME_CONTAINER = 'Container';
+export const CONFIG_NAME_PXE = 'PXE';
+export const CONFIG_NAME_DISK = 'Disk';
+export const CONFIG_NAME_CLONED_DISK = 'ClonedDisk';
 
 // Kubevirt related
 export const KUBEVIRT_STORAGE_CLASS_DEFAULTS = 'kubevirt-storage-class-defaults';

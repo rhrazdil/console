@@ -7,7 +7,8 @@ import {
   deleteResources,
   searchYAML,
 } from '@console/shared/src/test-utils/utils';
-import { createNic, nicNetwork } from '../views/kubevirtDetailView.view';
+import { createNICButton } from '../views/kubevirtDetailView.view';
+import { nicNetwork } from '../views/dialogs/networkInterface.view';
 import { getInterfaces } from '../../src/selectors/vm/selectors';
 import { getVMIDisks } from '../../src/selectors/vmi/basic';
 import { multusNAD, hddDisk, networkInterface, getVMManifest } from './utils/mocks';
@@ -28,7 +29,7 @@ describe('Add/remove disks and NICs on respective VM pages', () => {
   });
 
   it(
-    'BZ(1768614) Add/remove disk on VM disks page',
+    'Add/remove disk on VM disks page',
     async () => {
       await vm.addDisk(hddDisk);
       expect(await vm.getAttachedDisks()).toContain(hddDisk);
@@ -76,7 +77,7 @@ describe('Add/remove disks and NICs on respective VM pages', () => {
     expect(nic).not.toBe(undefined);
 
     // Try to add the NIC again
-    await click(createNic, 1000);
+    await click(createNICButton, 1000);
     await browser.sleep(1000).then(() => browser.wait(until.presenceOf(nicNetwork)));
 
     // The network dropdown should be either empty (disabled) or not containing the already used net-attach-def

@@ -77,7 +77,7 @@ export const rootDisk = {
 
 export const hddDisk = {
   name: `disk-${testName.slice(-5)}`,
-  size: '2',
+  size: '1',
   interface: DISK_INTERFACE.VirtIO,
   storageClass: `${STORAGE_CLASS}`,
 };
@@ -101,6 +101,7 @@ export function getVMManifest(
       'name.os.template.kubevirt.io/rhel7.6': 'Red Hat Enterprise Linux 7.6',
       description: namespace,
     },
+    finalizers: ['k8s.v1.cni.cncf.io/kubeMacPool'],
     namespace,
     labels: {
       app: vmName,
@@ -126,6 +127,7 @@ export function getVMManifest(
       pvc: {
         accessModes: ['ReadWriteMany'],
         volumeMode: 'Block',
+        dataSource: null,
         resources: {
           requests: {
             storage: '1Gi',
@@ -234,6 +236,7 @@ export function getVMManifest(
                   bootOrder: 2,
                   masquerade: {},
                   name: 'nic0',
+                  model: 'virtio',
                 },
               ],
               rng: {},

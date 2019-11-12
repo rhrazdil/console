@@ -1,6 +1,5 @@
 /* eslint-disable no-await-in-loop, no-console */
 import { browser, ExpectedConditions as until } from 'protractor';
-import { testName } from '@console/internal-integration-tests/protractor.conf';
 import { isLoaded, resourceTitle } from '@console/internal-integration-tests/views/crud.view';
 import {
   selectDropdownOption,
@@ -8,14 +7,11 @@ import {
   resolveTimeout,
 } from '@console/shared/src/test-utils/utils';
 import * as vmView from '../../views/virtualMachine.view';
-import { errorMessage } from '../../views/wizard.view';
 import { VMConfig } from '../utils/types';
 import {
   PAGE_LOAD_TIMEOUT_SECS,
   VM_BOOTUP_TIMEOUT_SECS,
   VM_MIGRATION_TIMEOUT_SECS,
-  WIZARD_CREATE_VM_ERROR,
-  WIZARD_TABLE_FIRST_ROW,
   VM_ACTION,
   TAB,
   VM_IMPORT_TIMEOUT_SECS,
@@ -23,10 +19,12 @@ import {
   VM_ACTIONS_TIMEOUT_SECS,
   VM_STOP_TIMEOUT_SECS,
   VM_STATUS,
-  DISK_SOURCE,
+  CONFIG_NAME_URL,
+  CONFIG_NAME_PXE,
+  CONFIG_NAME_DISK,
 } from '../utils/consts';
 import { detailViewAction, listViewAction } from '../../views/vm.actions.view';
-import { nameInput as cloneDialogNameInput } from '../../views/cloneDialog.view';
+import { nameInput as cloneDialogNameInput } from '../../views/dialogs/cloneVirtualMachineDialog.view';
 import { Wizard } from './wizard';
 import { KubevirtDetailView } from './kubevirtDetailView';
 
@@ -168,7 +166,6 @@ export class VirtualMachine extends KubevirtDetailView {
 
   async create({
     name,
-    namespace,
     description,
     template,
     provisionSource,
@@ -182,13 +179,7 @@ export class VirtualMachine extends KubevirtDetailView {
   }: VMConfig) {
     const wizard = new Wizard();
     await this.navigateToListView();
-
     await wizard.openWizard();
-    await wizard.fillName(name);
-    await wizard.fillDescription(description);
-    if (!(await browser.getCurrentUrl()).includes(`${testName}/${this.kind}`)) {
-      await wizard.selectNamespace(namespace);
-    }
     if (template !== undefined) {
       await wizard.selectTemplate(template);
     } else {
@@ -197,15 +188,10 @@ export class VirtualMachine extends KubevirtDetailView {
       await wizard.selectWorkloadProfile(workloadProfile);
     }
     await wizard.selectFlavor(flavor);
+    await wizard.fillName(name);
+    await wizard.fillDescription(description);
     if (startOnCreation) {
       await wizard.startOnCreation();
-    }
-    if (cloudInit.useCloudInit) {
-      if (template !== undefined) {
-        // TODO: wizard.useCloudInit needs to check state of checkboxes before clicking them to ensure desired state is achieved with specified template
-        throw new Error('Using cloud init with template not implemented.');
-      }
-      await wizard.useCloudInit(cloudInit);
     }
     await wizard.next();
 
@@ -213,31 +199,41 @@ export class VirtualMachine extends KubevirtDetailView {
     for (const resource of networkResources) {
       await wizard.addNIC(resource);
     }
+    if (provisionSource.method === CONFIG_NAME_PXE) {
+      // Select the last NIC as the source for booting
+      await wizard.selectBootableNIC(
+        networkResources[networkResources.length - 1].networkDefinition,
+      );
+    }
+
     await wizard.next();
 
     // Storage
     for (const resource of storageResources) {
-      if (resource.name === 'rootdisk' && provisionSource.method === 'URL') {
-        // Rootdisk is present by default, only edit specific properties
-        await wizard.editDiskAttribute(WIZARD_TABLE_FIRST_ROW, 'size', resource.size);
-        await wizard.editDiskAttribute(WIZARD_TABLE_FIRST_ROW, 'storage', resource.storageClass);
-      } else if (resource.source === DISK_SOURCE.AttachDisk) {
-        await wizard.attachDisk(resource);
+      if (resource.name === 'rootdisk' && provisionSource.method === CONFIG_NAME_URL) {
+        await wizard.editDisk(resource.name, resource);
       } else {
         await wizard.addDisk(resource);
       }
     }
-
-    // Create VM
-    await wizard.next();
-    await wizard.waitForCreation();
-
-    // Check for errors and close wizard
-    if (await errorMessage.isPresent()) {
-      console.error(await errorMessage.getText());
-      throw new Error(WIZARD_CREATE_VM_ERROR);
+    if (provisionSource.method === CONFIG_NAME_DISK) {
+      // Select the last NIC as the source for booting
+      await wizard.selectBootableDisk(storageResources[storageResources.length - 1].name);
     }
     await wizard.next();
+
+    // Advanced - Cloud Init
+    if (cloudInit.useCloudInit) {
+      if (template !== undefined) {
+        // TODO: wizard.useCloudInit needs to check state of checkboxes before clicking them to ensure desired state is achieved with specified template
+        throw new Error('Using cloud init with template not implemented.');
+      }
+      await wizard.configureCloudInit(cloudInit);
+    }
+    await wizard.next();
+    // Review page
+    await wizard.confirmAndCreate();
+    await wizard.waitForCreation();
 
     await this.navigateToTab(TAB.Overview);
     if (startOnCreation === true) {
