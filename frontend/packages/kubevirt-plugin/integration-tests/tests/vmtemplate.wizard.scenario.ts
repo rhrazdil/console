@@ -3,18 +3,20 @@ import { testName } from '@console/internal-integration-tests/protractor.conf';
 import {
   removeLeakedResources,
   withResource,
-  deleteResource,
-  createResource,
+  deleteResources,
+  createResources,
 } from '@console/shared/src/test-utils/utils';
 import { VM_BOOTUP_TIMEOUT_SECS } from './utils/consts';
 import { basicVMConfig, multusNAD } from './utils/mocks';
-import { getProvisionConfigs } from './vm.wizard.configs';
+import { getProvisionConfigs, getTestDataVolume } from './vm.wizard.configs';
 import { VirtualMachine } from './models/virtualMachine';
 import { VirtualMachineTemplate } from './models/virtualMachineTemplate';
+import { ProvisionConfigName } from './utils/constants/wizard';
 
 describe('Kubevirt create VM Template using wizard', () => {
   const leakedResources = new Set<string>();
   const provisionConfigs = getProvisionConfigs();
+  const testDataVolume = getTestDataVolume();
   const commonSettings = {
     cloudInit: {
       useCloudInit: false,
@@ -43,15 +45,19 @@ describe('Kubevirt create VM Template using wizard', () => {
       provisionSource: templateConfig.provisionSource,
       storageResources: [],
       networkResources: [],
+      bootableDevice:
+        templateConfig.provisionSource.method === ProvisionConfigName.DISK
+          ? testDataVolume.metadata.name
+          : undefined,
     };
   };
 
   beforeAll(() => {
-    createResource(multusNAD);
+    createResources([multusNAD, testDataVolume]);
   });
 
   afterAll(() => {
-    deleteResource(multusNAD);
+    deleteResources([multusNAD, testDataVolume]);
   });
 
   afterEach(() => {

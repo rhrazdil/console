@@ -58,7 +58,7 @@ export const dataVolumeManifest = ({ name, namespace, sourceURL, accessMode, vol
 
 export const basicVMConfig = {
   operatingSystem: OperatingSystem.RHEL7_6,
-  flavor: Flavor.TINY,
+  flavor: Flavor.SMALL,
   workloadProfile: WorkloadProfile.DESKTOP,
   sourceURL: 'https://download.cirros-cloud.net/0.4.0/cirros-0.4.0-x86_64-disk.img',
   sourceContainer: 'kubevirt/cirros-registry-disk-demo',
@@ -237,7 +237,7 @@ export function getVMManifest(
         metadata: {
           labels: {
             'kubevirt.io/domain': metadata.name,
-            'kubevirt.io/size': 'tiny',
+            'kubevirt.io/size': 'small',
             'vm.kubevirt.io/name': metadata.name,
           },
         },
@@ -269,7 +269,7 @@ export function getVMManifest(
             },
             resources: {
               requests: {
-                memory: '1G',
+                memory: '2G',
               },
             },
           },

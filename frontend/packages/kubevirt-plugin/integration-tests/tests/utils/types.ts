@@ -59,6 +59,7 @@ export type VMConfig = {
   cloudInit: CloudInitConfig;
   storageResources: StorageResource[];
   networkResources: NetworkResource[];
+  bootableDevice?: string;
 };
 
 export type ProvisionConfig = {

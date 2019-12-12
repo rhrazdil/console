@@ -57,6 +57,10 @@ export class VirtualMachineTemplate extends KubevirtDetailView {
         await wizard.addDisk(resource);
       }
     }
+    if (provisionSource.method === ProvisionConfigName.DISK) {
+      // Select the last Disk as the source for booting
+      await wizard.selectBootableDisk(storageResources[storageResources.length - 1].name);
+    }
     await wizard.next();
 
     // Advanced - Cloud Init

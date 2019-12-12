@@ -57,6 +57,7 @@ describe('Test VM overview', () => {
   });
 
   it('Check VM details in overview when VM is off', async () => {
+    const notAvailable = 'Not available';
     const expectation = {
       name: vmName,
       status: VM_STATUS.Off,
@@ -65,10 +66,10 @@ describe('Test VM overview', () => {
       profile: basicVMConfig.workloadProfile,
       template: `rhel7-desktop-tiny-${COMMON_TEMPLATES_VERSION}`,
       bootOrder: ['rootdisk', 'nic0', 'cloudinitdisk'],
-      flavor: basicVMConfig.flavor,
-      ip: DASH,
-      pod: DASH,
-      node: DASH,
+      flavor: 'Tiny: 1 vCPU, 2 GB Memory',
+      ip: notAvailable,
+      pod: notAvailable,
+      node: notAvailable,
     };
 
     const found = {

@@ -12,10 +12,14 @@ import { vmConfig, getProvisionConfigs } from './vm.wizard.configs';
 import * as editFlavorView from './models/editFlavorView';
 import { fillInput } from './utils/utils';
 import { ProvisionConfigName } from './utils/constants/wizard';
+import { basicVMConfig } from './utils/mocks';
 
 describe('KubeVirt VM detail - edit flavor', () => {
   const leakedResources = new Set<string>();
   const provisionConfigs = getProvisionConfigs();
+
+  const defaultFlavorLower = basicVMConfig.flavor;
+  const defaultFlavorUpper = basicVMConfig.flavor.replace(/^\w/, (c) => c.toUpperCase());
 
   const configName = ProvisionConfigName.CONTAINER;
   const provisionConfig = provisionConfigs.get(configName);
@@ -25,7 +29,7 @@ describe('KubeVirt VM detail - edit flavor', () => {
   provisionConfig.storageResources = [];
 
   it(
-    'changes tiny to large',
+    `changes ${defaultFlavorLower} to large`,
     async () => {
       const vm1Config = vmConfig(configName.toLowerCase(), testName, provisionConfig);
       vm1Config.startOnCreation = false;
@@ -37,12 +41,12 @@ describe('KubeVirt VM detail - edit flavor', () => {
         await browser.wait(
           until.textToBePresentInElement(
             virtualMachineView.vmDetailFlavor(vm.namespace, vm.name),
-            'Tiny: 1 vCPU, 1 GB Memory',
+            `${defaultFlavorUpper}: 1 vCPU, 2 GB Memory`,
           ),
         );
         await vm.modalEditFlavor();
         await browser.wait(
-          until.textToBePresentInElement(editFlavorView.flavorDropdownText(), 'Tiny'),
+          until.textToBePresentInElement(editFlavorView.flavorDropdownText(), defaultFlavorUpper),
         );
         await selectDropdownOptionById(editFlavorView.flavorDropdownId, 'large-link');
         await browser.wait(
@@ -53,7 +57,7 @@ describe('KubeVirt VM detail - edit flavor', () => {
         await browser.wait(
           until.textToBePresentInElement(
             virtualMachineView.vmDetailFlavor(vm.namespace, vm.name),
-            'Large: 2 vCPUs, 6 GB Memory',
+            'Large: 2 vCPUs, 8 GB Memory',
           ),
         );
         expect(
@@ -61,7 +65,7 @@ describe('KubeVirt VM detail - edit flavor', () => {
         ).toBe('true');
         expect(
           (await virtualMachineView.vmDetailLabelValue('vm.kubevirt.io/template')).startsWith(
-            'rhel7-desktop-tiny-', // template is not changed (might be in the future)
+            `rhel7-desktop-${defaultFlavorLower}-`, // template is not changed (might be in the future)
           ),
         ).toBeTruthy();
       });
@@ -70,7 +74,7 @@ describe('KubeVirt VM detail - edit flavor', () => {
   );
 
   it(
-    'changes tiny to custom',
+    `changes ${defaultFlavorLower} to custom`,
     async () => {
       const vm1Config = vmConfig(configName.toLowerCase(), testName, provisionConfig);
       vm1Config.startOnCreation = false;
@@ -82,26 +86,26 @@ describe('KubeVirt VM detail - edit flavor', () => {
         await browser.wait(
           until.textToBePresentInElement(
             virtualMachineView.vmDetailFlavor(vm.namespace, vm.name),
-            'Tiny: 1 vCPU, 1 GB Memory',
+            `${defaultFlavorUpper}: 1 vCPU, 2 GB Memory`,
           ),
         );
         await vm.modalEditFlavor();
 
         await browser.wait(
-          until.textToBePresentInElement(editFlavorView.flavorDropdownText(), 'Tiny'),
+          until.textToBePresentInElement(editFlavorView.flavorDropdownText(), defaultFlavorUpper),
         );
         await selectDropdownOptionById(editFlavorView.flavorDropdownId, 'Custom-link');
         await browser.wait(
           until.textToBePresentInElement(editFlavorView.flavorDropdownText(), 'Custom'),
         );
         await fillInput(editFlavorView.cpusInput(), '2');
-        await fillInput(editFlavorView.memoryInput(), '356');
+        await fillInput(editFlavorView.memoryInput(), '1500');
         await click(editFlavorView.saveButton());
 
         await browser.wait(
           until.textToBePresentInElement(
             virtualMachineView.vmDetailFlavor(vm.namespace, vm.name),
-            'Custom: 2 vCPUs, 356 MB Memory',
+            'Custom: 2 vCPUs, 1.5 GB Memory',
           ),
         );
 
@@ -110,7 +114,7 @@ describe('KubeVirt VM detail - edit flavor', () => {
         ).toBe('true');
         expect(
           (await virtualMachineView.vmDetailLabelValue('vm.kubevirt.io/template')).startsWith(
-            'rhel7-desktop-tiny-', // template is not changed (might be in the future)
+            `rhel7-desktop-${defaultFlavorLower}-`, // template is not changed (might be in the future)
           ),
         ).toBeTruthy();
       });

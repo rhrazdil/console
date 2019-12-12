@@ -1,10 +1,11 @@
 import { browser } from 'protractor';
-import { testName } from '@console/internal-integration-tests/protractor.conf';
+import { testName, appHost } from '@console/internal-integration-tests/protractor.conf';
 import {
   createResource,
   deleteResource,
   waitForStringInElement,
 } from '@console/shared/src/test-utils/utils';
+import { isLoaded } from '@console/internal-integration-tests/views/crud.view';
 import { getDetailActionDropdownOptions } from '../views/vm.actions.view';
 import { vmDetailNode } from '../views/virtualMachine.view';
 import { getRandStr } from './utils/utils';
@@ -37,6 +38,11 @@ describe('Test VM Migration', () => {
 
   afterEach(() => {
     deleteResource(testVm);
+  });
+
+  afterAll(async () => {
+    await browser.get(`${appHost}/k8s/ns/${testName}/virtualmachines`);
+    await isLoaded();
   });
 
   it(
@@ -74,8 +80,8 @@ describe('Test VM Migration', () => {
     VM_BOOT_AND_MIGRATE_TIMEOUT * 2,
   );
 
-  it(
-    'Cancel ongoing VM migration',
+  xit(
+    'BZ(1785344) Cancel ongoing VM migration',
     async () => {
       await vm.waitForStatus(VM_STATUS.Off, VM_IMPORT_TIMEOUT_SECS);
       await vm.action(VM_ACTION.Start);

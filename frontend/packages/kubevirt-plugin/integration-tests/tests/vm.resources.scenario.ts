@@ -173,7 +173,7 @@ describe('Test network type presets and options', () => {
     expect((await getSelectOptions(nicType)).sort()).toEqual(nonPodNetworkBindingMethods);
   });
 
-  it('Test NIC type in example VM', async () => {
+  xit('BZ(1780176) Test NIC type in example VM', async () => {
     await createExampleVMViaYAML();
     const vm = new VirtualMachine({ name: 'example', namespace: testName });
     const NICDialog = new NetworkInterfaceDialog();
