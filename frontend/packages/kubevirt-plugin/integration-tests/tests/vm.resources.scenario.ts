@@ -24,7 +24,7 @@ import {
   basicVMConfig,
   defaultWizardPodNetworkingInterface,
   defaultYAMLPodNetworkingInterface,
-} from './utils/mocks';
+} from './utils/mocks/mocks';
 import {
   getSelectOptions,
   getResourceObject,
@@ -39,7 +39,7 @@ import {
   NIC_TYPE,
   DISK_SOURCE,
   networkTabCol,
-} from './utils/consts';
+} from './utils/constants/consts';
 import { VirtualMachine } from './models/virtualMachine';
 import { Wizard } from './models/wizard';
 import { NetworkInterfaceDialog } from './dialogs/networkInterfaceDialog';
@@ -99,7 +99,7 @@ describe('Add/remove disks and NICs on respective VM pages', () => {
     }
 
     // Verify the NIC is added in VM Manifest
-    const resource = getResourceObject(vm.name, vm.namespace, vm.kind);
+    const resource = getResourceObject(vm.name, vm.namespace, vm.kind.plural);
     const nic = _.find(getInterfaces(resource), (o) => o.name === multusNetworkInterface.name);
     expect(nic).not.toBe(undefined);
 

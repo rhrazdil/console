@@ -6,16 +6,16 @@ import {
   rootDisk,
   hddDisk,
   dataVolumeManifest,
-} from './utils/mocks';
-import { StorageResource, ProvisionConfig, BaseVMConfig } from './utils/types';
+} from './utils/mocks/mocks';
+import { Disk, ProvisionConfig, BaseVMConfig } from './utils/types';
 import {
   KUBEVIRT_STORAGE_CLASS_DEFAULTS,
   KUBEVIRT_PROJECT_NAME,
   DISK_INTERFACE,
   DISK_SOURCE,
-} from './utils/consts';
+} from './utils/constants/consts';
 import { resolveStorageDataAttribute, getResourceObject } from './utils/utils';
-import { ProvisionConfigName } from './utils/constants/wizard';
+import { ProvisionSourceName } from './utils/constants/wizard';
 
 export const vmConfig = (
   name: string,
@@ -61,7 +61,7 @@ export const getTestDataVolume = () =>
     volumeMode: resolveStorageDataAttribute(kubevirtStorage, 'volumeMode'),
   });
 
-const getDiskToCloneFrom = (): StorageResource => {
+const getDiskToCloneFrom = (): Disk => {
   const testDV = getTestDataVolume();
   return {
     name: testDV.metadata.name,
@@ -77,33 +77,33 @@ const getDiskToCloneFrom = (): StorageResource => {
 };
 
 export const getProvisionConfigs = () =>
-  OrderedMap<ProvisionConfigName, ProvisionConfig>()
-    .set(ProvisionConfigName.URL, {
+  OrderedMap<ProvisionSourceName, ProvisionConfig>()
+    .set(ProvisionSourceName.URL, {
       provision: {
-        method: ProvisionConfigName.URL,
+        method: ProvisionSourceName.URL,
         source: basicVMConfig.sourceURL,
       },
       networkResources: [multusNetworkInterface],
       storageResources: [rootDisk],
     })
-    .set(ProvisionConfigName.CONTAINER, {
+    .set(ProvisionSourceName.CONTAINER, {
       provision: {
-        method: ProvisionConfigName.CONTAINER,
+        method: ProvisionSourceName.CONTAINER,
         source: basicVMConfig.sourceContainer,
       },
       networkResources: [multusNetworkInterface],
       storageResources: [hddDisk],
     })
-    .set(ProvisionConfigName.PXE, {
+    .set(ProvisionSourceName.PXE, {
       provision: {
-        method: ProvisionConfigName.PXE,
+        method: ProvisionSourceName.PXE,
       },
       networkResources: [multusNetworkInterface],
       storageResources: [rootDisk],
     })
-    .set(ProvisionConfigName.DISK, {
+    .set(ProvisionSourceName.DISK, {
       provision: {
-        method: ProvisionConfigName.DISK,
+        method: ProvisionSourceName.DISK,
       },
       networkResources: [multusNetworkInterface],
       storageResources: [getDiskToCloneFrom()],

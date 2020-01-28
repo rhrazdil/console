@@ -1,7 +1,7 @@
 import { click } from '@console/shared/src/test-utils/utils';
 import * as view from '../../views/dialogs/networkInterface.view';
 import { fillInput, selectOptionByText, getSelectOptions } from '../utils/utils';
-import { NetworkResource } from '../utils/types';
+import { Network } from '../utils/types';
 import { applyButton, saveButton } from '../../views/kubevirtDetailView.view';
 import { waitForNoLoaders } from '../../views/wizard.view';
 
@@ -30,7 +30,7 @@ export class NetworkInterfaceDialog {
     return getSelectOptions(view.nicNetwork);
   }
 
-  async create(NIC: NetworkResource) {
+  async create(NIC: Network) {
     await waitForNoLoaders();
     await this.fillName(NIC.name);
     await this.selectModel(NIC.model);

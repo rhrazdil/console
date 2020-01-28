@@ -1,5 +1,5 @@
 import { testName } from '@console/internal-integration-tests/protractor.conf';
-import { CloudInitConfig, BaseVMConfig, StorageResource } from './types';
+import { CloudInitConfig, BaseVMConfig, Disk } from '../types';
 import {
   STORAGE_CLASS,
   COMMON_TEMPLATES_VERSION,
@@ -11,9 +11,10 @@ import {
   COMMON_TEMPLATES_NAMESPACE,
   COMMON_TEMPLATES_REVISION,
   DISK_SOURCE,
-} from './consts';
-import { getRandomMacAddress, getResourceObject, resolveStorageDataAttribute } from './utils';
-import { Flavor, OperatingSystem, WorkloadProfile } from './constants/wizard';
+} from '../constants/consts';
+import { getRandomMacAddress, getResourceObject, resolveStorageDataAttribute } from '../utils';
+import { Flavor, OperatingSystem, WorkloadProfile, ProvisionSourceName } from '../constants/wizard';
+
 
 export const multusNAD = {
   apiVersion: 'k8s.cni.cncf.io/v1',
@@ -56,6 +57,13 @@ export const dataVolumeManifest = ({ name, namespace, sourceURL, accessMode, vol
     },
   };
 };
+
+export const provisionSources = {
+  [ProvisionSourceName.URL]: { method: ProvisionSourceName.URL, source: 'http://cnv-qe-server.rhevdev.lab.eng.rdu2.redhat.com/files/files-https/cirros/cirros-qcow2.img' },
+  [ProvisionSourceName.CONTAINER]: { method: ProvisionSourceName.CONTAINER, source: 'kubevirt/cirros-registry-disk-demo' },
+  [ProvisionSourceName.PXE]: { method: ProvisionSourceName.PXE },
+  [ProvisionSourceName.DISK]: { method: ProvisionSourceName.DISK },
+}
 
 export const basicVMConfig: BaseVMConfig = {
   operatingSystem: OperatingSystem.RHEL7_6,
@@ -102,14 +110,14 @@ export const multusNetworkInterface = {
   network: multusNAD.metadata.name,
 };
 
-export const rootDisk: StorageResource = {
+export const rootDisk: Disk = {
   name: 'rootdisk',
   size: '1',
   interface: DISK_INTERFACE.VirtIO,
   storageClass: `${STORAGE_CLASS}`,
 };
 
-export const cdGuestTools: StorageResource = {
+export const cdGuestTools: Disk = {
   source: DISK_SOURCE.Container,
   interface: DISK_INTERFACE.VirtIO,
   storageClass: `${STORAGE_CLASS}`,
@@ -118,7 +126,7 @@ export const cdGuestTools: StorageResource = {
   },
 };
 
-export const hddDisk: StorageResource = {
+export const hddDisk: Disk = {
   name: `disk-${testName.slice(-5)}`,
   size: '1',
   interface: DISK_INTERFACE.VirtIO,

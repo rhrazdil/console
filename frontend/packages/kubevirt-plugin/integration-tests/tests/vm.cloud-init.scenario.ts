@@ -2,10 +2,10 @@ import { get } from 'lodash';
 import { testName } from '@console/internal-integration-tests/protractor.conf';
 import { withResource } from '@console/shared/src/test-utils/utils';
 import { getCloudInitVolume } from '../../src/selectors/vm/selectors';
-import { basicVMConfig } from './utils/mocks';
+import { basicVMConfig } from './utils/mocks/mocks';
 import { getResourceObject } from './utils/utils';
 import { CloudInitConfig, ProvisionConfig } from './utils/types';
-import { ProvisionConfigName } from './utils/constants/wizard';
+import { ProvisionSourceName } from './utils/constants/wizard';
 import { vmConfig } from './vm.wizard.configs';
 import { VirtualMachine } from './models/virtualMachine';
 
@@ -15,7 +15,7 @@ describe('Kubevirt create VM using cloud-init', () => {
   const sourceContainer = 'kubevirt/fedora-cloud-container-disk-demo';
   const provisionConfig: ProvisionConfig = {
     provision: {
-      method: ProvisionConfigName.CONTAINER,
+      method: ProvisionSourceName.CONTAINER,
       source: sourceContainer,
     },
     networkResources: [],
@@ -45,7 +45,7 @@ describe('Kubevirt create VM using cloud-init', () => {
     await withResource(leakedResources, vm.asResource(), async () => {
       await vm.create(testVMConfig);
       const volumeUserData = get(
-        getCloudInitVolume(getResourceObject(vm.name, vm.namespace, vm.kind)),
+        getCloudInitVolume(getResourceObject(vm.name, vm.namespace, vm.kind.plural)),
         'cloudInitNoCloud.userData',
         {},
       );
@@ -63,7 +63,7 @@ describe('Kubevirt create VM using cloud-init', () => {
     await withResource(leakedResources, vm.asResource(), async () => {
       await vm.create(testVMConfig);
       const volumeUserData = get(
-        getCloudInitVolume(getResourceObject(vm.name, vm.namespace, vm.kind)),
+        getCloudInitVolume(getResourceObject(vm.name, vm.namespace, vm.kind.plural)),
         'cloudInitNoCloud.userData',
         {},
       );

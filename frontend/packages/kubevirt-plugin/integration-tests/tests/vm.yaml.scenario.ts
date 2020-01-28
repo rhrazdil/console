@@ -20,8 +20,8 @@ import {
   deleteResource,
 } from '@console/shared/src/test-utils/utils';
 import { VirtualMachine } from './models/virtualMachine';
-import { VM_BOOTUP_TIMEOUT_SECS, PAGE_LOAD_TIMEOUT_SECS, VM_ACTION } from './utils/consts';
-import { getVMManifest, multusNAD } from './utils/mocks';
+import { VM_BOOTUP_TIMEOUT_SECS, PAGE_LOAD_TIMEOUT_SECS, VM_ACTION } from './utils/constants/consts';
+import { getVMManifest, multusNAD } from './utils/mocks/mocks';
 
 describe('Test VM creation from YAML', () => {
   const leakedResources = new Set<string>();

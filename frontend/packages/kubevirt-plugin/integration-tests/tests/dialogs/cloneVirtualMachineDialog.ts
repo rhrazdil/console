@@ -1,7 +1,7 @@
 import { browser, ExpectedConditions as until } from 'protractor';
 import { click } from '@console/shared/src/test-utils/utils';
 import { fillInput, selectOptionByText } from '../utils/utils';
-import { PAGE_LOAD_TIMEOUT_SECS } from '../utils/consts';
+import { PAGE_LOAD_TIMEOUT_SECS } from '../utils/constants/consts';
 import * as cloneDialogView from '../../views/dialogs/cloneVirtualMachineDialog.view';
 
 export class CloneVirtualMachineDialog {

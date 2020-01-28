@@ -28,11 +28,11 @@ import {
   VM_CREATE_AND_EDIT_TIMEOUT_SECS,
   PAGE_LOAD_TIMEOUT_SECS,
   VM_CREATE_AND_EDIT_AND_CLOUDINIT_TIMEOUT_SECS,
-} from './utils/consts';
+} from './utils/constants/consts';
 import { VirtualMachine } from './models/virtualMachine';
 import { vmConfig, getProvisionConfigs } from './vm.wizard.configs';
-import { ProvisionConfigName } from './utils/constants/wizard';
-import { widowsVMConfig, multusNAD } from './utils/mocks';
+import { ProvisionSourceName } from './utils/constants/wizard';
+import { widowsVMConfig, multusNAD } from './utils/mocks/mocks';
 import { getWindowsVM } from './utils/templates/windowsVMForRDPL2';
 
 const VM_IP = '123.123.123.123';
@@ -52,7 +52,7 @@ describe('KubeVirt VM console - RDP', () => {
   const leakedResources = new Set<string>();
   const provisionConfigs = getProvisionConfigs();
 
-  const configName = ProvisionConfigName.CONTAINER;
+  const configName = ProvisionSourceName.CONTAINER;
   const provisionConfig = provisionConfigs.get(configName);
 
   provisionConfig.networkResources = [];
@@ -159,7 +159,7 @@ describe('KubeVirt VM console - RDP', () => {
           }),
         });
 
-        await vm.navigateToDetail();
+        await vm.navigateToDetails();
         // eslint-disable-next-line no-console
         console.log(
           'Waiting for static IP to be reported by the guest-agent (can take up to several minutes ...)',

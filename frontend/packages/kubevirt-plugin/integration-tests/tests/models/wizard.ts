@@ -7,8 +7,8 @@ import {
 import { clickNavLink } from '@console/internal-integration-tests/views/sidenav.view';
 import { click, asyncForEach } from '@console/shared/src/test-utils/utils';
 import { fillInput, selectOptionByText } from '../utils/utils';
-import { CloudInitConfig, StorageResource, NetworkResource, FlavorConfig } from '../utils/types';
-import { WIZARD_CREATE_VM_SUCCESS, PAGE_LOAD_TIMEOUT_SECS, KEBAP_ACTION } from '../utils/consts';
+import { CloudInitConfig, Disk, Network, FlavorConfig } from '../utils/types';
+import { WIZARD_CREATE_VM_SUCCESS, PAGE_LOAD_TIMEOUT_SECS, KEBAP_ACTION } from '../utils/constants/consts';
 import * as wizardView from '../../views/wizard.view';
 import { NetworkInterfaceDialog } from '../dialogs/networkInterfaceDialog';
 import { DiskDialog } from '../dialogs/diskDialog';
@@ -101,7 +101,7 @@ export class Wizard {
     }
   }
 
-  async addNIC(nic: NetworkResource) {
+  async addNIC(nic: Network) {
     await click(wizardView.addNICButton);
     const addNICDialog = new NetworkInterfaceDialog();
     await addNICDialog.create(nic);
@@ -109,10 +109,10 @@ export class Wizard {
 
   /**
    * Edits attributes of a NIC.
-   * @param   {string}              name     Name of a NIC to edit.
-   * @param   {NetworkResource}     NIC      NIC with the requested attributes.
+   * @param   {string}      name     Name of a NIC to edit.
+   * @param   {Network}     NIC      NIC with the requested attributes.
    */
-  async editNIC(name: string, NIC: NetworkResource) {
+  async editNIC(name: string, NIC: Network) {
     await wizardView.clickKebabAction(name, KEBAP_ACTION.Edit);
     const addNICDialog = new NetworkInterfaceDialog();
     await addNICDialog.edit(NIC);
@@ -126,13 +126,13 @@ export class Wizard {
     await selectOptionByText(wizardView.storageBootSourceSelect, diskName);
   }
 
-  async addDisk(disk: StorageResource) {
+  async addDisk(disk: Disk) {
     await click(wizardView.addDiskButton);
     const addDiskDialog = new DiskDialog();
     await addDiskDialog.create(disk);
   }
 
-  async addCD(cd: StorageResource) {
+  async addCD(cd: Disk) {
     await click(wizardView.addCDButton);
     const addDiskDialog = new DiskDialog();
     await addDiskDialog.create(cd);
@@ -140,10 +140,10 @@ export class Wizard {
 
   /**
    * Edits attributes of a disk.
-   * @param   {string}              name     Name of a disk to edit.
-   * @param   {StorageResource}     disk     Disk with the requested attributes.
+   * @param   {string}   name     Name of a disk to edit.
+   * @param   {Disk}     disk     Disk with the requested attributes.
    */
-  async editDisk(name: string, disk: StorageResource) {
+  async editDisk(name: string, disk: Disk) {
     await wizardView.clickKebabAction(name, KEBAP_ACTION.Edit);
     const addDiskDialog = new DiskDialog();
     await addDiskDialog.edit(disk);

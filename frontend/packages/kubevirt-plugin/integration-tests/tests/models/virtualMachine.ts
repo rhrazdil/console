@@ -1,10 +1,7 @@
 /* eslint-disable no-await-in-loop, no-console */
 import { browser, ExpectedConditions as until } from 'protractor';
-import { isLoaded, resourceTitle } from '@console/internal-integration-tests/views/crud.view';
 import {
-  selectDropdownOption,
   waitForStringNotInElement,
-  resolveTimeout,
 } from '@console/shared/src/test-utils/utils';
 import * as vmView from '../../views/virtualMachine.view';
 import { VMConfig, VMImportConfig } from '../utils/types';
@@ -15,140 +12,36 @@ import {
   VM_ACTION,
   TAB,
   VM_IMPORT_TIMEOUT_SECS,
-  UNEXPECTED_ACTION_ERROR,
-  VM_ACTIONS_TIMEOUT_SECS,
-  VM_STOP_TIMEOUT_SECS,
   VM_STATUS,
-  VMI_ACTION,
-} from '../utils/consts';
+} from '../utils/constants/consts';
 import { detailViewAction, listViewAction } from '../../views/vm.actions.view';
-import { nameInput as cloneDialogNameInput } from '../../views/dialogs/cloneVirtualMachineDialog.view';
-import { ProvisionConfigName } from '../utils/constants/wizard';
+import { ProvisionSourceName } from '../utils/constants/wizard';
 import { Wizard } from './wizard';
-import { appHost, testName } from '@console/internal-integration-tests/protractor.conf';
-import { KubevirtDetailView } from './kubevirtDetailView';
 import { ImportWizard } from './importWizard';
+import { BaseVM } from './baseModels/baseVM';
+import { VirtualMachineModel } from '../../../src/models/index';
+import { VMBuilderData } from '../types/vm';
 
-const noConfirmDialogActions: (VM_ACTION | VMI_ACTION)[] = [VM_ACTION.Start, VM_ACTION.Clone];
+export class VirtualMachine extends BaseVM {
+  private noConfirmDialogActions: VM_ACTION[] = [VM_ACTION.Start, VM_ACTION.Clone];
 
-export class VirtualMachine extends KubevirtDetailView {
-  constructor(config, kind?: 'virtualmachines' | 'virtualmachineinstances') {
-    super({ ...config, kind: kind || 'virtualmachines' });
+  constructor(data: VMBuilderData) {
+    super(data, VirtualMachineModel);
   }
 
-  async getStatus(): Promise<string> {
-    return vmView.vmDetailStatus(this.namespace, this.name).getText();
-  }
-
-  async getNode(): Promise<string> {
-    return vmView.vmDetailNode(this.namespace, this.name).getText();
-  }
-
-  async getBootDevices(): Promise<string[]> {
-    return vmView.vmDetailBootOrder(this.namespace, this.name).getText();
-  }
-
-  async action(action: VM_ACTION | VMI_ACTION, waitForAction?: boolean, timeout?: number) {
-    await this.navigateToTab(TAB.Details);
-
-    const confirmDialog = !noConfirmDialogActions.includes(action);
-
-    await detailViewAction(action, confirmDialog);
+  async action(action: VM_ACTION, waitForAction?: boolean, timeout?: number) {
+    await this.navigateToDetails();
+    await detailViewAction(action, !this.noConfirmDialogActions.includes(action));
     if (waitForAction !== false) {
       await this.waitForActionFinished(action, timeout);
     }
   }
 
-  async navigateToListView() {
-    const vmsListUrl = (namespace) =>
-      `${appHost}/k8s/${namespace === 'all-namespaces' ? '' : 'ns/'}${namespace}/virtualmachines`;
-    const currentUrl = await browser.getCurrentUrl();
-    if (![vmsListUrl(testName), vmsListUrl('all-namespaces')].includes(currentUrl)) {
-      await browser.get(vmsListUrl(this.namespace));
-      await isLoaded();
-    }
-  }
-
-  async listViewAction(action: VM_ACTION | VMI_ACTION, waitForAction?: boolean, timeout?: number) {
+  async listViewAction(action: VM_ACTION, waitForAction?: boolean, timeout?: number) {
     await this.navigateToListView();
-
-    const confirmDialog = !noConfirmDialogActions.includes(action);
-    await listViewAction(this.name)(action, confirmDialog);
+    await listViewAction(this.name)(action, !this.noConfirmDialogActions.includes(action));
     if (waitForAction !== false) {
       await this.waitForActionFinished(action, timeout);
-    }
-  }
-
-  async waitForStatus(status: string, timeout?: number) {
-    await this.navigateToTab(TAB.Details);
-    await browser.wait(
-      until.textToBePresentInElement(vmView.vmDetailStatus(this.namespace, this.name), status),
-      resolveTimeout(timeout, VM_BOOTUP_TIMEOUT_SECS),
-    );
-  }
-
-  async waitForActionFinished(action: string, timeout?: number) {
-    await this.navigateToTab(TAB.Details);
-    switch (action) {
-      case VM_ACTION.Start:
-        await this.waitForStatus(
-          VM_STATUS.Running,
-          resolveTimeout(timeout, VM_BOOTUP_TIMEOUT_SECS),
-        );
-        break;
-      case VM_ACTION.Restart:
-        await browser.wait(
-          until.or(
-            until.textToBePresentInElement(
-              vmView.vmDetailStatus(this.namespace, this.name),
-              VM_STATUS.Error,
-            ),
-            until.textToBePresentInElement(
-              vmView.vmDetailStatus(this.namespace, this.name),
-              VM_STATUS.Starting,
-            ),
-          ),
-          resolveTimeout(timeout, VM_BOOTUP_TIMEOUT_SECS),
-        );
-        await this.waitForStatus(
-          VM_STATUS.Running,
-          resolveTimeout(timeout, VM_BOOTUP_TIMEOUT_SECS),
-        );
-        break;
-      case VM_ACTION.Stop:
-        await this.waitForStatus(VM_STATUS.Off, resolveTimeout(timeout, VM_STOP_TIMEOUT_SECS));
-        break;
-      case VM_ACTION.Clone:
-        await browser.wait(
-          until.visibilityOf(cloneDialogNameInput),
-          resolveTimeout(timeout, PAGE_LOAD_TIMEOUT_SECS),
-        );
-        break;
-      case VM_ACTION.Migrate:
-        await this.waitForStatus(
-          VM_STATUS.Migrating,
-          resolveTimeout(timeout, PAGE_LOAD_TIMEOUT_SECS),
-        );
-        await this.waitForStatus(
-          VM_STATUS.Running,
-          resolveTimeout(timeout, VM_ACTIONS_TIMEOUT_SECS),
-        );
-        break;
-      case VM_ACTION.Cancel:
-        await this.waitForStatus(
-          VM_STATUS.Running,
-          resolveTimeout(timeout, PAGE_LOAD_TIMEOUT_SECS),
-        );
-        break;
-      case VM_ACTION.Delete:
-        // wait for redirect
-        await browser.wait(
-          until.textToBePresentInElement(resourceTitle, 'Virtual Machines'),
-          resolveTimeout(timeout, PAGE_LOAD_TIMEOUT_SECS),
-        );
-        break;
-      default:
-        throw Error(UNEXPECTED_ACTION_ERROR);
     }
   }
 
@@ -158,11 +51,6 @@ export class VirtualMachine extends KubevirtDetailView {
       waitForStringNotInElement(vmView.vmDetailNode(this.namespace, this.name), fromNode),
       timeout,
     );
-  }
-
-  async selectConsole(type: string) {
-    await selectDropdownOption(vmView.consoleSelectorDropdownId, type);
-    await isLoaded();
   }
 
   async getConsoleVmIpAddress(): Promise<string> {
@@ -212,7 +100,7 @@ export class VirtualMachine extends KubevirtDetailView {
     for (const resource of networkResources) {
       await wizard.addNIC(resource);
     }
-    if (provisionSource.method === ProvisionConfigName.PXE && template === undefined) {
+    if (provisionSource.method === ProvisionSourceName.PXE && template === undefined) {
       // Select the last NIC as the source for booting
       await wizard.selectBootableNIC(networkResources[networkResources.length - 1].name);
     }
@@ -220,13 +108,13 @@ export class VirtualMachine extends KubevirtDetailView {
 
     // Storage
     for (const resource of storageResources) {
-      if (resource.name === 'rootdisk' && provisionSource.method === ProvisionConfigName.URL) {
+      if (resource.name === 'rootdisk' && provisionSource.method === ProvisionSourceName.URL) {
         await wizard.editDisk(resource.name, resource);
       } else {
         await wizard.addDisk(resource);
       }
     }
-    if (provisionSource.method === ProvisionConfigName.DISK) {
+    if (provisionSource.method === ProvisionSourceName.DISK) {
       if (bootableDevice !== undefined) {
         await wizard.selectBootableDisk(bootableDevice);
       } else if (storageResources.length > 0) {

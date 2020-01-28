@@ -1,6 +1,6 @@
 import { withResource } from '@console/shared/src/test-utils/utils';
 import { testName } from '@console/internal-integration-tests/protractor.conf';
-import { V2V_VM_IMPORT_TIMEOUT, VM_STATUS } from '../tests/utils/consts';
+import { V2V_VM_IMPORT_TIMEOUT, VM_STATUS } from '../tests/utils/constants/consts';
 import { VirtualMachine } from '../tests/models/virtualMachine';
 import { vmwareVMConfig } from './v2v.configs';
 

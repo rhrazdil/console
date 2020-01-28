@@ -11,7 +11,7 @@ import {
   IMPORT_WIZARD_CONN_TO_NEW_INSTANCE,
   networkTabCol,
   STORAGE_CLASS,
-} from '../utils/consts';
+} from '../utils/constants/consts';
 import * as view from '../../views/importWizard.view';
 import { waitForNoLoaders, clickKebabAction } from '../../views/wizard.view';
 import { InstanceConfig } from '../utils/types';

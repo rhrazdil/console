@@ -16,14 +16,14 @@ import {
 import { restrictedAccessBlock, hintBlockTitle } from '../views/vms.list.view';
 import { createProject, fillInput } from './utils/utils';
 import { vmConfig, getProvisionConfigs } from './vm.wizard.configs';
-import { ProvisionConfigName } from './utils/constants/wizard';
+import { ProvisionSourceName } from './utils/constants/wizard';
 import { VirtualMachine } from './models/virtualMachine';
 import {
   VM_ACTION,
   VM_STATUS,
   JASMINE_EXTENDED_TIMEOUT_INTERVAL,
   PAGE_LOAD_TIMEOUT_SECS,
-} from './utils/consts';
+} from './utils/constants/consts';
 
 const testNonAdminNamespace = `${testName}-non-admin`;
 const KUBEADMIN_IDP = 'kube:admin';
@@ -37,7 +37,7 @@ const {
 
 describe('Kubevirt non-admin Flow', () => {
   const leakedResources = new Set<string>();
-  const configName = ProvisionConfigName.URL;
+  const configName = ProvisionSourceName.URL;
   const provisionConfigs = getProvisionConfigs();
   const provisionConfig = provisionConfigs.get(configName);
   provisionConfig.networkResources = [];

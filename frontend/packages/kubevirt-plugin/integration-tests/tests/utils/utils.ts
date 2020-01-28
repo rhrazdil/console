@@ -16,7 +16,7 @@ import {
   isLoaded as yamlPageIsLoaded,
   saveButton,
 } from '@console/internal-integration-tests/views/yaml.view';
-import { STORAGE_CLASS, PAGE_LOAD_TIMEOUT_SECS } from './consts';
+import { STORAGE_CLASS, PAGE_LOAD_TIMEOUT_SECS } from './constants/consts';
 import { NodePortService } from './types';
 
 export async function fillInput(elem: any, value: string) {
@@ -149,3 +149,21 @@ export function resolveStorageDataAttribute(configMap: any, attribute: string): 
   }
   return _.get(configMap, ['data', attribute]);
 }
+
+
+/*
+ * Function recursively freezes objects including inner objects
+ * Source: https://github.com/substack/deep-freeze/
+ */
+export function deepFreeze(o: {}) {
+  Object.freeze(o);
+  Object.getOwnPropertyNames(o).forEach(function (prop) {
+    if (o.hasOwnProperty(prop)
+      && o[prop] !== null
+      && (typeof o[prop] === "object" || typeof o[prop] === "function")
+      && !Object.isFrozen(o[prop])) {
+      deepFreeze(o[prop]);
+    }
+  });
+  return o;
+};

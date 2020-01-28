@@ -39,8 +39,8 @@ export const groupVersionFor = (apiVersion: string) => ({
 export const referenceFor = (obj: K8sResourceKind): GroupVersionKind =>
   obj.kind && obj.apiVersion
     ? referenceForGroupVersionKind(groupVersionFor(obj.apiVersion).group)(
-        groupVersionFor(obj.apiVersion).version,
-      )(obj.kind)
+      groupVersionFor(obj.apiVersion).version,
+    )(obj.kind)
     : '';
 
 export const referenceForCRD = (obj: CustomResourceDefinitionKind): GroupVersionKind =>

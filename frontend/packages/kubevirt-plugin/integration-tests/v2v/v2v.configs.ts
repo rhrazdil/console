@@ -1,5 +1,5 @@
 import { VMImportConfig } from '../tests/utils/types';
-import { IMPORT_WIZARD_CONN_TO_NEW_INSTANCE } from '../tests/utils/consts';
+import { IMPORT_WIZARD_CONN_TO_NEW_INSTANCE } from '../tests/utils/constants/consts';
 import { OperatingSystem, WorkloadProfile } from '../tests/utils/constants/wizard';
 
 const { V2V_INSTANCE_HOSTNAME, V2V_INSTANCE_USERNAME, V2V_INSTANCE_PASSWORD } = process.env;

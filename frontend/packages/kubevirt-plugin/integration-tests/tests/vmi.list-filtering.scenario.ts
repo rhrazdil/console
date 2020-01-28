@@ -11,19 +11,18 @@ import {
   textFilter,
   isLoaded,
 } from '@console/internal-integration-tests/views/crud.view';
-import { getVMManifest, getVMIManifest } from './utils/mocks';
-import { VM_STATUS } from './utils/consts';
+import { getVMManifest, getVMIManifest } from './utils/mocks/mocks';
+import { VM_STATUS } from './utils/constants/consts';
 import { filterBoxCount } from '../views/vms.list.view';
-import { VirtualMachine } from './models/virtualMachine';
+import { VirtualMachineInstance } from './models/virtualMachineInstance';
 import { fillInput } from './utils/utils';
 
 const waitForVM = async (
   manifest: any,
   status: VM_STATUS,
   resourcesSet: Set<string>,
-  kind?: 'virtualmachines' | 'virtualmachineinstances',
 ) => {
-  const vm = new VirtualMachine(manifest.metadata, kind || 'virtualmachines');
+  const vm = new VirtualMachineInstance(manifest.metadata);
 
   createResource(manifest);
   addLeakableResource(resourcesSet, manifest);
@@ -42,7 +41,7 @@ describe('Test List View Filtering (VMI)', () => {
 
   beforeAll(async () => {
     await waitForVM(testVM, VM_STATUS.Off, leakedResources);
-    await waitForVM(testVMI, VM_STATUS.Running, leakedResources, 'virtualmachineinstances');
+    await waitForVM(testVMI, VM_STATUS.Running, leakedResources);
 
     await waitForVMList();
   });

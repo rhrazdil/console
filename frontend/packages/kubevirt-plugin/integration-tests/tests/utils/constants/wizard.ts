@@ -1,4 +1,4 @@
-export enum ProvisionConfigName {
+export enum ProvisionSourceName {
   URL = 'URL',
   CONTAINER = 'Container',
   PXE = 'PXE',
@@ -14,6 +14,7 @@ export enum OperatingSystem {
 
 export const OSIDLookup = {
   [OperatingSystem.WINDOWS_10]: 'win10',
+  [OperatingSystem.RHEL7_6]: 'rhel7.6',
 };
 
 export enum Flavor {

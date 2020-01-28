@@ -9,12 +9,12 @@ import {
   createResources,
   deleteResources,
 } from '@console/shared/src/test-utils/utils';
-import { VM_BOOTUP_TIMEOUT_SECS, TAB, NOT_AVAILABLE } from './utils/consts';
-import { basicVMConfig, multusNAD } from './utils/mocks';
+import { VM_BOOTUP_TIMEOUT_SECS, TAB, NOT_AVAILABLE } from './utils/constants/consts';
+import { basicVMConfig, multusNAD } from './utils/mocks/mocks';
 import { getProvisionConfigs, getTestDataVolume } from './vm.wizard.configs';
 import { VirtualMachine } from './models/virtualMachine';
 import { VirtualMachineTemplate } from './models/virtualMachineTemplate';
-import { ProvisionConfigName } from './utils/constants/wizard';
+import { ProvisionSourceName } from './utils/constants/wizard';
 
 describe('Kubevirt create VM Template using wizard', () => {
   const leakedResources = new Set<string>();
@@ -49,7 +49,7 @@ describe('Kubevirt create VM Template using wizard', () => {
       storageResources: [],
       networkResources: [],
       bootableDevice:
-        templateConfig.provisionSource.method === ProvisionConfigName.DISK
+        templateConfig.provisionSource.method === ProvisionSourceName.DISK
           ? testDataVolume.metadata.name
           : undefined,
     };
@@ -88,7 +88,7 @@ describe('Kubevirt create VM Template using wizard', () => {
   });
 
   it('Displays correct data on VM Template Details page', async () => {
-    const provisionConfig = provisionConfigs.get(ProvisionConfigName.CONTAINER);
+    const provisionConfig = provisionConfigs.get(ProvisionSourceName.CONTAINER);
     const templateCfg = vmTemplateConfig(
       provisionConfig.provision.method.toLowerCase(),
       provisionConfig,

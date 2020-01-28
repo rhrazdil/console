@@ -10,16 +10,15 @@ import {
   vmInventoryNICs,
   vmInventoryDisks,
 } from '../views/dashboard.view';
-import { getVMIManifest } from './utils/mocks';
-import { VirtualMachine } from './models/virtualMachine';
-import { VM_STATUS, NOT_AVAILABLE } from './utils/consts';
+import { getVMIManifest } from './utils/mocks/mocks';
+import { VirtualMachineInstance } from './models/virtualMachineInstance';
+import { VM_STATUS, NOT_AVAILABLE } from './utils/constants/consts';
 
 const waitForVM = async (
   manifest: any,
   status: VM_STATUS,
-  kind?: 'virtualmachines' | 'virtualmachineinstances',
 ) => {
-  const vm = new VirtualMachine(manifest.metadata, kind || 'virtualmachines');
+  const vm = new VirtualMachineInstance(manifest.metadata);
   createResource(manifest);
   await vm.waitForStatus(status);
   return vm;
@@ -27,15 +26,15 @@ const waitForVM = async (
 
 describe('Test VMI dashboard', () => {
   const testVM = getVMIManifest('Container', testName);
-  let vm: VirtualMachine;
+  let vm: VirtualMachineInstance;
 
   afterAll(() => {
     deleteResource(testVM);
   });
 
   beforeAll(async () => {
-    vm = await waitForVM(testVM, VM_STATUS.Running, 'virtualmachineinstances');
-    await vm.navigateToDashboard();
+    vm = await waitForVM(testVM, VM_STATUS.Running);
+    await vm.navigateToOverview();
   });
 
   it('Inventory card', async () => {

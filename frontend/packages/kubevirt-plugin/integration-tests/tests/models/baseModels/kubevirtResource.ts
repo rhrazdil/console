@@ -2,26 +2,26 @@
 import { browser, ExpectedConditions as until } from 'protractor';
 import { click, waitForCount } from '@console/shared/src/test-utils/utils';
 import { resourceRows } from '@console/internal-integration-tests/views/crud.view';
-import { TAB, diskTabCol, networkTabCol, PAGE_LOAD_TIMEOUT_SECS } from '../utils/consts';
-import { StorageResource, NetworkResource } from '../utils/types';
-import * as kubevirtDetailView from '../../views/kubevirtDetailView.view';
-import { confirmAction } from '../../views/vm.actions.view';
+import { TAB, diskTabCol, networkTabCol, PAGE_LOAD_TIMEOUT_SECS } from '../../utils/constants/consts';
+import { Disk, Network } from '../../utils/types';
+import * as kubevirtDetailView from '../../../views/kubevirtDetailView.view';
+import { confirmAction } from '../../../views/vm.actions.view';
 import {
   vmDetailFlavorEditButton,
   vmDetailCdEditButton,
   vmDetailBootOrderEditButton,
   vmDetailDedicatedResourcesEditButton,
-} from '../../views/virtualMachine.view';
-import * as editCD from '../../views/editCDView';
-import * as editBootOrder from '../../views/editBootOrderView';
-import * as editDedicatedResourcesView from '../../views/editDedicatedResourcesView';
-import { NetworkInterfaceDialog } from '../dialogs/networkInterfaceDialog';
-import { DiskDialog } from '../dialogs/diskDialog';
-import { DetailView } from './detailView';
-import * as editFlavor from './editFlavorView';
+} from '../../../views/virtualMachine.view';
+import * as editCD from '../../../views/editCDView';
+import * as editBootOrder from '../../../views/editBootOrderView';
+import * as editDedicatedResourcesView from '../../../views/editDedicatedResourcesView';
+import { NetworkInterfaceDialog } from '../../dialogs/networkInterfaceDialog';
+import { DiskDialog } from '../../dialogs/diskDialog';
+import { k8sUIResource } from './k8sUIResource';
+import * as editFlavor from '../../../views/editFlavorView';
 
-export class KubevirtDetailView extends DetailView {
-  async getAttachedDisks(): Promise<StorageResource[]> {
+export class kubevirtResource extends k8sUIResource {
+  async getAttachedDisks(): Promise<Disk[]> {
     await this.navigateToTab(TAB.Disks);
     const rows = await kubevirtDetailView.tableRows();
     return rows.map((line) => {
@@ -35,7 +35,7 @@ export class KubevirtDetailView extends DetailView {
     });
   }
 
-  async getAttachedNICs(): Promise<NetworkResource[]> {
+  async getAttachedNICs(): Promise<Network[]> {
     await this.navigateToTab(TAB.NetworkInterfaces);
     const rows = await kubevirtDetailView.tableRows();
     return rows.map((line) => {
@@ -50,7 +50,7 @@ export class KubevirtDetailView extends DetailView {
     });
   }
 
-  async addDisk(disk: StorageResource) {
+  async addDisk(disk: Disk) {
     await this.navigateToTab(TAB.Disks);
     const count = await resourceRows.count();
     await click(kubevirtDetailView.createDiskButton);
@@ -67,7 +67,7 @@ export class KubevirtDetailView extends DetailView {
     await browser.wait(until.and(waitForCount(resourceRows, count - 1)), PAGE_LOAD_TIMEOUT_SECS);
   }
 
-  async addNIC(nic: NetworkResource) {
+  async addNIC(nic: Network) {
     await this.navigateToTab(TAB.NetworkInterfaces);
     const count = await resourceRows.count();
     await click(kubevirtDetailView.createNICButton);

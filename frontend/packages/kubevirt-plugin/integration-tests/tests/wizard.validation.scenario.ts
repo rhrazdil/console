@@ -6,11 +6,11 @@ import {
   KEBAP_ACTION,
   PAGE_LOAD_TIMEOUT_SECS,
   NOT_RECOMMENDED_BUS_TYPE_WARN,
-} from './utils/consts';
+} from './utils/constants/consts';
 import {
   Flavor,
   OperatingSystem,
-  ProvisionConfigName,
+  ProvisionSourceName,
   WorkloadProfile,
 } from './utils/constants/wizard';
 import { Wizard } from './models/wizard';
@@ -25,7 +25,7 @@ import { saveButton } from '../views/kubevirtDetailView.view';
 describe('Wizard validation', () => {
   const wizard = new Wizard();
   const diskDialog = new DiskDialog();
-  const provisionConfig = getProvisionConfigs().get(ProvisionConfigName.CONTAINER);
+  const provisionConfig = getProvisionConfigs().get(ProvisionSourceName.CONTAINER);
   const customFlavorNotEnoughMemory: FlavorConfig = {
     flavor: Flavor.CUSTOM,
     cpu: '1',

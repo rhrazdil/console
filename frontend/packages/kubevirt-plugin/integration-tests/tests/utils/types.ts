@@ -1,12 +1,12 @@
-import { DISK_SOURCE } from './consts';
+import { DISK_SOURCE } from './constants/consts';
 import { Flavor, OperatingSystem, WorkloadProfile } from './constants/wizard';
 
-export type ProvisionOption = {
+export type ProvisionSource = {
   method: string;
   source?: string;
 };
 
-export type NetworkResource = {
+export type Network = {
   name: string;
   model: string;
   mac: string;
@@ -21,7 +21,7 @@ export type DiskSourceConfig = {
   container?: string;
 };
 
-export type StorageResource = {
+export type Disk = {
   name?: string;
   size?: string;
   storageClass: string;
@@ -58,15 +58,15 @@ export type VMConfig = {
   name: string;
   description: string;
   template?: string;
-  provisionSource?: ProvisionOption;
+  provisionSource?: ProvisionSource;
   operatingSystem?: string;
   flavorConfig?: FlavorConfig;
   workloadProfile?: string;
   startOnCreation: boolean;
   cloudInit: CloudInitConfig;
-  storageResources: StorageResource[];
-  CDRoms?: StorageResource[];
-  networkResources: NetworkResource[];
+  storageResources: Disk[];
+  CDRoms?: Disk[];
+  networkResources: Network[];
   bootableDevice?: string;
 };
 
@@ -87,8 +87,8 @@ export type VMImportConfig = {
   operatingSystem?: OperatingSystem;
   flavorConfig?: FlavorConfig;
   workloadProfile?: WorkloadProfile;
-  storageResources?: StorageResource[];
-  networkResources?: NetworkResource[];
+  storageResources?: Disk[];
+  networkResources?: Network[];
   cloudInit?: CloudInitConfig;
 };
 
@@ -102,20 +102,21 @@ export type BaseVMConfig = {
 };
 
 export type ProvisionConfig = {
-  provision: ProvisionOption;
-  networkResources: NetworkResource[];
-  storageResources: StorageResource[];
-  CDRoms?: StorageResource[];
+  provision: ProvisionSource;
+  networkResources: Network[];
+  storageResources: Disk[];
+  CDRoms?: Disk[];
 };
 
 export type VMTemplateConfig = {
   name: string;
   description: string;
-  provisionSource?: ProvisionOption;
+  provisionSource?: ProvisionSource;
   operatingSystem?: string;
   flavorConfig?: FlavorConfig;
   workloadProfile?: string;
   cloudInit?: CloudInitConfig;
-  storageResources?: StorageResource[];
-  networkResources?: NetworkResource[];
+  storageResources?: Disk[];
+  networkResources?: Network[];
 };
+

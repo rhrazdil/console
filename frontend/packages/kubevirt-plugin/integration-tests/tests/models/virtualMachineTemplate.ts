@@ -4,13 +4,14 @@ import {
   resourceRowsPresent,
 } from '@console/internal-integration-tests/views/crud.view';
 import { VMTemplateConfig } from '../utils/types';
-import { ProvisionConfigName } from '../utils/constants/wizard';
+import { ProvisionSourceName } from '../utils/constants/wizard';
 import { Wizard } from './wizard';
-import { KubevirtDetailView } from './kubevirtDetailView';
+import { kubevirtResource } from './baseModels/kubevirtResource';
+import { TemplateModel } from '../../../../../public/models/index';
 
-export class VirtualMachineTemplate extends KubevirtDetailView {
+export class VirtualMachineTemplate extends kubevirtResource {
   constructor(templateConfig) {
-    super({ ...templateConfig, kind: 'vmtemplates' });
+    super({ ...templateConfig, kind: TemplateModel });
   }
 
   async create({
@@ -43,7 +44,7 @@ export class VirtualMachineTemplate extends KubevirtDetailView {
     for (const resource of networkResources) {
       await wizard.addNIC(resource);
     }
-    if (provisionSource.method === ProvisionConfigName.PXE) {
+    if (provisionSource.method === ProvisionSourceName.PXE) {
       // Select the last NIC as the source for booting
       await wizard.selectBootableNIC(networkResources[networkResources.length - 1].name);
     }
@@ -51,19 +52,19 @@ export class VirtualMachineTemplate extends KubevirtDetailView {
 
     // Storage
     for (const resource of storageResources) {
-      if (resource.name === 'rootdisk' && provisionSource.method === ProvisionConfigName.URL) {
+      if (resource.name === 'rootdisk' && provisionSource.method === ProvisionSourceName.URL) {
         await wizard.editDisk(resource.name, resource);
       } else {
         await wizard.addDisk(resource);
       }
     }
 
-    if (provisionSource.method === ProvisionConfigName.DISK) {
+    if (provisionSource.method === ProvisionSourceName.DISK) {
       // Select the last Disk as the source for booting
       if (storageResources.length > 0) {
         await wizard.selectBootableDisk(storageResources[storageResources.length - 1].name);
       } else {
-        throw Error(`Provision source ${ProvisionConfigName.DISK} is missing a storage.`);
+        throw Error(`Provision source ${ProvisionSourceName.DISK} is missing a storage.`);
       }
     }
 
@@ -85,15 +86,5 @@ export class VirtualMachineTemplate extends KubevirtDetailView {
     await this.navigateToListView();
     await filterForName(name);
     await resourceRowsPresent();
-  }
-
-  asResource() {
-    return {
-      kind: 'template',
-      metadata: {
-        namespace: this.namespace,
-        name: this.name,
-      },
-    };
   }
 }

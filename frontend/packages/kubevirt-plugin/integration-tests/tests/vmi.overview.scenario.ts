@@ -3,18 +3,18 @@ import { testName } from '@console/internal-integration-tests/protractor.conf';
 import { isLoaded, resourceTitle } from '@console/internal-integration-tests/views/crud.view';
 import { asyncForEach, createResource, deleteResource } from '@console/shared/src/test-utils/utils';
 import * as vmView from '../views/virtualMachine.view';
-import { getVMIManifest, basicVMConfig } from './utils/mocks';
+import { getVMIManifest, basicVMConfig } from './utils/mocks/mocks';
 import { exposeServices } from './utils/utils';
-import { VirtualMachine } from './models/virtualMachine';
-import { TAB, VM_STATUS, NOT_AVAILABLE } from './utils/consts';
+import { TAB, VM_STATUS, NOT_AVAILABLE } from './utils/constants/consts';
 import { NodePortService } from './utils/types';
+import { VirtualMachineInstance } from './models/virtualMachineInstance';
 
 describe('Test VMI Details', () => {
   const vmiName = `vmi-${testName}`;
   const cloudInit = `#cloud-config\nuser: cloud-user\npassword: atomic\nchpasswd: {expire: False}`;
   const serviceCommon = { name: vmiName, kind: 'vmi', type: 'NodePort', namespace: testName };
   const testVMI = getVMIManifest('Container', testName, vmiName, cloudInit);
-  const vmi = new VirtualMachine(testVMI.metadata, 'virtualmachineinstances');
+  const vmi = new VirtualMachineInstance(testVMI.metadata);
   const nodePortServices = new Set<NodePortService>();
   nodePortServices.add({
     ...serviceCommon,

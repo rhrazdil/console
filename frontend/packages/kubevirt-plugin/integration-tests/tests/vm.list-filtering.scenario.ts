@@ -1,7 +1,7 @@
 import { testName } from '@console/internal-integration-tests/protractor.conf';
 import { createResource, deleteResource } from '@console/shared/src/test-utils/utils';
-import { getVMManifest } from './utils/mocks';
-import { VM_STATUS, VM_ACTION } from './utils/consts';
+import { getVMManifest } from './utils/mocks/mocks';
+import { VM_STATUS, VM_ACTION } from './utils/constants/consts';
 import { VirtualMachine } from './models/virtualMachine';
 import { filterBoxCount } from '../views/vms.list.view';
 
@@ -17,7 +17,7 @@ describe('Test List View Filtering', () => {
     deleteResource(testVM);
   });
 
-  it('Displays correct count of Other VMs', async () => {
+  it('Displays correct count of Importing VMs', async () => {
     await vm.waitForStatus(VM_STATUS.Importing);
     await vm.navigateToListView();
     const importingCount = await filterBoxCount(VM_STATUS.Importing);

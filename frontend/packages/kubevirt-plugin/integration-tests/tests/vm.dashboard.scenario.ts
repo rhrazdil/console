@@ -11,7 +11,7 @@ import {
   vmInventoryNICs,
   vmInventoryDisks,
 } from '../views/dashboard.view';
-import { getVMManifest, hddDisk, multusNetworkInterface, multusNAD } from './utils/mocks';
+import { getVMManifest, hddDisk, multusNetworkInterface, multusNAD } from './utils/mocks/mocks';
 import { VirtualMachine } from './models/virtualMachine';
 import {
   VM_STATUS,
@@ -22,7 +22,7 @@ import {
   VM_STOP_TIMEOUT_SECS,
   NOT_AVAILABLE,
   PAGE_LOAD_TIMEOUT_SECS,
-} from './utils/consts';
+} from './utils/constants/consts';
 
 describe('Test VM dashboard', () => {
   const testVM = getVMManifest('URL', testName, null, 'foo');
@@ -36,7 +36,7 @@ describe('Test VM dashboard', () => {
   beforeAll(async () => {
     createResources([multusNAD, testVM]);
     vm = new VirtualMachine(testVM.metadata);
-    await vm.navigateToDashboard();
+    await vm.navigateToOverview();
     try {
       await browser.wait(
         until.not(until.textToBePresentInElement(vmStatus, VM_STATUS.Off)),
@@ -72,7 +72,7 @@ describe('Test VM dashboard', () => {
 
   it('Status card', async () => {
     await vm.waitForStatus(VM_STATUS.Off);
-    await vm.navigateToDashboard();
+    await vm.navigateToOverview();
     expect(vmStatus.getText()).toEqual(VM_STATUS.Off);
 
     await vm.action(VM_ACTION.Start, true, VM_BOOTUP_TIMEOUT_SECS);

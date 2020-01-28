@@ -12,7 +12,7 @@ import {
   removeLeakableResource,
   waitForCount,
 } from '@console/shared/src/test-utils/utils';
-import { getVMIManifest } from './utils/mocks';
+import { getVMIManifest } from './utils/mocks/mocks';
 import { fillInput } from './utils/utils';
 import {
   VM_DELETE_TIMEOUT_SECS,
@@ -20,16 +20,15 @@ import {
   TAB,
   VM_IMPORT_TIMEOUT_SECS,
   VM_STATUS,
-} from './utils/consts';
-import { VirtualMachine } from './models/virtualMachine';
+} from './utils/constants/consts';
+import { VirtualMachineInstance } from './models/virtualMachineInstance';
 
 const waitForVM = async (
   manifest: any,
   status: VM_STATUS,
   resourcesSet: Set<string>,
-  kind?: 'virtualmachines' | 'virtualmachineinstances',
 ) => {
-  const vm = new VirtualMachine(manifest.metadata, kind || 'virtualmachines');
+  const vm = new VirtualMachineInstance(manifest.metadata);
 
   createResource(manifest);
   addLeakableResource(resourcesSet, manifest);
@@ -38,7 +37,7 @@ const waitForVM = async (
   return vm;
 };
 
-const waitForVMDelete = async (vm: VirtualMachine) => {
+const waitForVMDelete = async (vm: VirtualMachineInstance) => {
   await vm.navigateToListView();
   await fillInput(textFilter, vm.name);
   await browser.wait(until.and(waitForCount(resourceRows, 0)), VM_DELETE_TIMEOUT_SECS);
@@ -52,12 +51,12 @@ describe('Test VMI actions', () => {
   });
 
   describe('Test VMI list view kebab dropdown', () => {
-    let vm: VirtualMachine;
+    let vm: VirtualMachineInstance;
     let testVM: any;
 
     beforeAll(async () => {
       testVM = getVMIManifest('Container', testName, `vm-list-actions-${testName}`);
-      vm = await waitForVM(testVM, VM_STATUS.Running, leakedResources, 'virtualmachineinstances');
+      vm = await waitForVM(testVM, VM_STATUS.Running, leakedResources);
     }, VM_IMPORT_TIMEOUT_SECS);
 
     it('Deletes VMI', async () => {
@@ -71,12 +70,12 @@ describe('Test VMI actions', () => {
   });
 
   describe('Test VMI detail view actions dropdown', () => {
-    let vm: VirtualMachine;
+    let vm: VirtualMachineInstance;
     let testVM: any;
 
     beforeAll(async () => {
       testVM = getVMIManifest('Container', testName, `vm-detail-actions-${testName}`);
-      vm = await waitForVM(testVM, VM_STATUS.Running, leakedResources, 'virtualmachineinstances');
+      vm = await waitForVM(testVM, VM_STATUS.Running, leakedResources);
     }, VM_IMPORT_TIMEOUT_SECS);
 
     it('Deletes VM', async () => {

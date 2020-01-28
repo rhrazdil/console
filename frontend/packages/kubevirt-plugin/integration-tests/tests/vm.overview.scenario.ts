@@ -3,7 +3,7 @@ import { testName } from '@console/internal-integration-tests/protractor.conf';
 import { resourceTitle } from '@console/internal-integration-tests/views/crud.view';
 import { asyncForEach, createResource, deleteResource } from '@console/shared/src/test-utils/utils';
 import * as vmView from '../views/virtualMachine.view';
-import { getVMManifest, basicVMConfig } from './utils/mocks';
+import { getVMManifest, basicVMConfig } from './utils/mocks/mocks';
 import { exposeServices } from './utils/utils';
 import { VirtualMachine } from './models/virtualMachine';
 import {
@@ -13,7 +13,7 @@ import {
   VM_STATUS,
   COMMON_TEMPLATES_VERSION,
   NOT_AVAILABLE,
-} from './utils/consts';
+} from './utils/constants/consts';
 import { NodePortService } from './utils/types';
 
 describe('Test VM overview', () => {

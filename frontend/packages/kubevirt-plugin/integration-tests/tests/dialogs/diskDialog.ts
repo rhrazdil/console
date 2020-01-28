@@ -7,8 +7,8 @@ import {
 } from '../utils/utils';
 import * as view from '../../views/dialogs/diskDialog.view';
 import { applyButton, saveButton } from '../../views/kubevirtDetailView.view';
-import { StorageResource, DiskSourceConfig } from '../utils/types';
-import { DISK_SOURCE } from '../utils/consts';
+import { Disk, DiskSourceConfig } from '../utils/types';
+import { DISK_SOURCE } from '../utils/constants/consts';
 import { waitForNoLoaders, modalCancelButton } from '../../views/wizard.view';
 import { browser, ExpectedConditions as until, $ } from 'protractor';
 
@@ -65,7 +65,7 @@ export class DiskDialog {
     return getSelectOptions(view.diskInterface);
   }
 
-  async create(disk: StorageResource) {
+  async create(disk: Disk) {
     await waitForNoLoaders();
     await selectOptionByText(view.diskSource, disk.source || DISK_SOURCE.Blank);
     if (this.sourceMethods[disk.source] !== undefined) {
@@ -85,7 +85,7 @@ export class DiskDialog {
     await waitForNoLoaders();
   }
 
-  async edit(disk: StorageResource) {
+  async edit(disk: Disk) {
     await this.fillName(disk.name);
     await this.selectInterface(disk.interface);
     await this.selectStorageClass(disk.storageClass);

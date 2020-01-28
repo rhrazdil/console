@@ -4,16 +4,16 @@ import { createResource, deleteResource, click } from '@console/shared/src/test-
 import { isDedicatedCPUPlacement } from '../../src/selectors/vm';
 import * as editDedicatedResourcesView from '../views/editDedicatedResourcesView';
 import * as virtualMachineView from '../views/virtualMachine.view';
-import { VM_CREATE_AND_EDIT_TIMEOUT_SECS } from './utils/consts';
+import { VM_CREATE_AND_EDIT_TIMEOUT_SECS } from './utils/constants/consts';
 import { VirtualMachine } from './models/virtualMachine';
-import { getVMManifest } from './utils/mocks';
+import { getVMManifest } from './utils/mocks/mocks';
 import { getRandStr, getResourceObject } from './utils/utils';
 
 describe('KubeVirt VM detail - edit Dedicated Resources', () => {
   const testVM = getVMManifest('Container', testName, `dedicatedresourcevm-${getRandStr(5)}`);
   const vm = new VirtualMachine(testVM.metadata);
   const isDedicatedCPU = () =>
-    expect(isDedicatedCPUPlacement(getResourceObject(vm.name, vm.namespace, vm.kind)));
+    expect(isDedicatedCPUPlacement(getResourceObject(vm.name, vm.namespace, vm.kind.plural)));
 
   beforeAll(async () => {
     createResource(testVM);
@@ -26,7 +26,7 @@ describe('KubeVirt VM detail - edit Dedicated Resources', () => {
   it(
     'enables dedicated resources guaranteed policy, then disables it',
     async () => {
-      await vm.navigateToDetail();
+      await vm.navigateToDetails();
       await vm.modalEditDedicatedResources();
       await click(editDedicatedResourcesView.guaranteedPolicyCheckbox);
       await click(editDedicatedResourcesView.saveButton);

@@ -6,18 +6,18 @@ import {
   click,
 } from '@console/shared/src/test-utils/utils';
 import * as virtualMachineView from '../views/virtualMachine.view';
-import { VM_CREATE_AND_EDIT_TIMEOUT_SECS } from './utils/consts';
+import { VM_CREATE_AND_EDIT_TIMEOUT_SECS } from './utils/constants/consts';
 import { VirtualMachine } from './models/virtualMachine';
 import { vmConfig, getProvisionConfigs } from './vm.wizard.configs';
-import * as editFlavorView from './models/editFlavorView';
+import * as editFlavorView from '../views/editFlavorView';
 import { fillInput } from './utils/utils';
-import { ProvisionConfigName } from './utils/constants/wizard';
+import { ProvisionSourceName } from './utils/constants/wizard';
 
 describe('KubeVirt VM detail - edit flavor', () => {
   const leakedResources = new Set<string>();
   const provisionConfigs = getProvisionConfigs();
 
-  const configName = ProvisionConfigName.CONTAINER;
+  const configName = ProvisionSourceName.CONTAINER;
   const provisionConfig = provisionConfigs.get(configName);
 
   // not needed for testing flavor
@@ -33,7 +33,7 @@ describe('KubeVirt VM detail - edit flavor', () => {
       const vm = new VirtualMachine(vmConfig(configName.toLowerCase(), testName, provisionConfig));
       await withResource(leakedResources, vm.asResource(), async () => {
         await vm.create(vm1Config);
-        await vm.navigateToDetail();
+        await vm.navigateToDetails();
         await browser.wait(
           until.textToBePresentInElement(
             virtualMachineView.vmDetailFlavor(vm.namespace, vm.name),
@@ -78,7 +78,7 @@ describe('KubeVirt VM detail - edit flavor', () => {
       const vm = new VirtualMachine(vmConfig(configName.toLowerCase(), testName, provisionConfig));
       await withResource(leakedResources, vm.asResource(), async () => {
         await vm.create(vm1Config);
-        await vm.navigateToDetail();
+        await vm.navigateToDetails();
         await browser.wait(
           until.textToBePresentInElement(
             virtualMachineView.vmDetailFlavor(vm.namespace, vm.name),

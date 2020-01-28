@@ -13,7 +13,7 @@ import {
   removeLeakableResource,
   waitForCount,
 } from '@console/shared/src/test-utils/utils';
-import { getVMManifest } from './utils/mocks';
+import { getVMManifest } from './utils/mocks/mocks';
 import { fillInput } from './utils/utils';
 import {
   VM_BOOTUP_TIMEOUT_SECS,
@@ -23,7 +23,7 @@ import {
   TAB,
   VM_IMPORT_TIMEOUT_SECS,
   VM_STATUS,
-} from './utils/consts';
+} from './utils/constants/consts';
 import { VirtualMachine } from './models/virtualMachine';
 
 describe('Test VM actions', () => {

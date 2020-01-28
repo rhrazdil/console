@@ -5,9 +5,9 @@ import { click, createResource, deleteResource } from '@console/shared/src/test-
 import { isLoaded } from '@console/internal-integration-tests/views/crud.view';
 import * as bootOrderView from '../views/editBootOrderView';
 import { getBootableDevicesInOrder, getNonBootableDevices } from '../../src/selectors/vm/devices';
-import { VM_CREATE_AND_EDIT_TIMEOUT_SECS } from './utils/consts';
+import { VM_CREATE_AND_EDIT_TIMEOUT_SECS } from './utils/constants/consts';
 import { VirtualMachine } from './models/virtualMachine';
-import { getVMManifest, hddDisk } from './utils/mocks';
+import { getVMManifest, hddDisk } from './utils/mocks/mocks';
 import { getRandStr, getResourceObject, getSelectOptions, selectOptionByText } from './utils/utils';
 import { dragAndDrop } from './utils/scripts/drag-drop';
 
@@ -25,7 +25,7 @@ describe('KubeVirt VM detail - Boot Order Dialog', () => {
   });
 
   beforeEach(async () => {
-    await vm.navigateToDetail();
+    await vm.navigateToDetails();
     await vm.modalEditBootOrder();
   });
 
@@ -33,7 +33,7 @@ describe('KubeVirt VM detail - Boot Order Dialog', () => {
     'Displays boot devices',
     async () => {
       const bootableDevices = getBootableDevicesInOrder(
-        getResourceObject(vm.name, vm.namespace, vm.kind),
+        getResourceObject(vm.name, vm.namespace, vm.kind.plural),
       ).map((device) => `${_.get(device, 'value.name')}`);
       const displayedbootableDevices = (await vm.getBootDevices()).map(
         (device) => device.split(' ')[0],
@@ -48,7 +48,7 @@ describe('KubeVirt VM detail - Boot Order Dialog', () => {
     async () => {
       const FIRST_DEVICE_POSITION = 1;
       const initialBootableDevices = getBootableDevicesInOrder(
-        getResourceObject(vm.name, vm.namespace, vm.kind),
+        getResourceObject(vm.name, vm.namespace, vm.kind.plural),
       );
       await click(bootOrderView.deleteDeviceButton(FIRST_DEVICE_POSITION));
       await click(bootOrderView.saveButton);
@@ -59,7 +59,7 @@ describe('KubeVirt VM detail - Boot Order Dialog', () => {
         initialBootableDevices.length - 1,
       );
       const orderedBootableDevices = getBootableDevicesInOrder(
-        getResourceObject(vm.name, vm.namespace, vm.kind),
+        getResourceObject(vm.name, vm.namespace, vm.kind.plural),
       ).map((device) => `${_.get(device, 'value.name')}`);
       const displayedbootableDevices = (await vm.getBootDevices()).map(
         (device) => device.split(' ')[0],
@@ -72,7 +72,7 @@ describe('KubeVirt VM detail - Boot Order Dialog', () => {
   it(
     'Adds bootable device',
     async () => {
-      const initialVMObject = getResourceObject(vm.name, vm.namespace, vm.kind);
+      const initialVMObject = getResourceObject(vm.name, vm.namespace, vm.kind.plural);
       const initialBootableDevices = getBootableDevicesInOrder(initialVMObject);
       const nonBootableDevices = getNonBootableDevices(initialVMObject).map(
         (device) => `${_.get(device, 'value.name')}`,
@@ -97,7 +97,7 @@ describe('KubeVirt VM detail - Boot Order Dialog', () => {
         initialBootableDevices.length + 1,
       );
       const orderedBootableDevices = getBootableDevicesInOrder(
-        getResourceObject(vm.name, vm.namespace, vm.kind),
+        getResourceObject(vm.name, vm.namespace, vm.kind.plural),
       ).map((device) => `${_.get(device, 'value.name')}`);
       const displayedbootableDevices = (await vm.getBootDevices()).map(
         (device) => device.split(' ')[0],
@@ -111,7 +111,7 @@ describe('KubeVirt VM detail - Boot Order Dialog', () => {
     'Drags and drops to change boot order',
     async () => {
       const initialBootableDevices = getBootableDevicesInOrder(
-        getResourceObject(vm.name, vm.namespace, vm.kind),
+        getResourceObject(vm.name, vm.namespace, vm.kind.plural),
       ).map((device) => `${_.get(device, 'value.name')}`);
 
       // Find devices at indexes 0 and 1 representing first and second device
@@ -125,7 +125,7 @@ describe('KubeVirt VM detail - Boot Order Dialog', () => {
       await click(bootOrderView.saveButton);
       await isLoaded();
       // Renavigate to force the page to update
-      await vm.navigateToDetail();
+      await vm.navigateToDetails();
       // Get current boot order from overview page
       const displayedBootableDevices = (await vm.getBootDevices()).map(
         (device) => device.split(' ')[0],

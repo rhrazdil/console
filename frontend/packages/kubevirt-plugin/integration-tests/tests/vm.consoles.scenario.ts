@@ -23,13 +23,13 @@ import {
   VM_ACTION,
   VM_BOOTUP_TIMEOUT_SECS,
   KUBEVIRT_SCRIPTS_PATH,
-} from './utils/consts';
+} from './utils/constants/consts';
 import { VirtualMachine } from './models/virtualMachine';
-import { ProvisionConfigName } from './utils/constants/wizard';
-import { getVMManifest } from './utils/mocks';
+import { ProvisionSourceName } from './utils/constants/wizard';
+import { getVMManifest } from './utils/mocks/mocks';
 
 describe('KubeVirt VM VNC/Serial consoles', () => {
-  const vmResource = getVMManifest(ProvisionConfigName.CONTAINER, testName, 'cirros-vm');
+  const vmResource = getVMManifest(ProvisionSourceName.CONTAINER, testName, 'cirros-vm');
   const vm = new VirtualMachine(vmResource.metadata);
   const cirrosUsername = 'cirros';
   const cirrosPassword = 'gocubsgo';

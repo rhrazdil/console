@@ -19,8 +19,8 @@ import {
   COMMON_TEMPLATES_NAMESPACE,
   COMMON_TEMPLATES_REVISION,
   INNER_TEMPLATE_VERSION,
-} from './utils/consts';
-import { multusNAD, cdGuestTools, basicVMConfig } from './utils/mocks';
+} from './utils/constants/consts';
+import { multusNAD, cdGuestTools, basicVMConfig } from './utils/mocks/mocks';
 import {
   vmConfig,
   getProvisionConfigs,
@@ -31,7 +31,7 @@ import {
   Flavor,
   OperatingSystem,
   OSIDLookup,
-  ProvisionConfigName,
+  ProvisionSourceName,
   WorkloadProfile,
 } from './utils/constants/wizard';
 
@@ -54,7 +54,7 @@ describe('Kubevirt create VM using wizard', () => {
 
   provisionConfigs.forEach((provisionConfig, configName) => {
     const specTimeout =
-      configName === ProvisionConfigName.DISK ? CLONE_VM_TIMEOUT_SECS : VM_BOOTUP_TIMEOUT_SECS;
+      configName === ProvisionSourceName.DISK ? CLONE_VM_TIMEOUT_SECS : VM_BOOTUP_TIMEOUT_SECS;
     it(
       `Create VM using ${configName}.`,
       async () => {
@@ -71,7 +71,7 @@ describe('Kubevirt create VM using wizard', () => {
 
   it('Creates VM with CD ROM added in Wizard', async () => {
     const vmName = 'vm-with-cdrom';
-    const provisionConfig = provisionConfigs.get(ProvisionConfigName.CONTAINER);
+    const provisionConfig = provisionConfigs.get(ProvisionSourceName.CONTAINER);
     provisionConfig.CDRoms = [cdGuestTools];
     const vmCfg = vmConfig(vmName, testName, provisionConfig, basicVMConfig, false);
     const vm = new VirtualMachine(vmCfg);
@@ -87,7 +87,7 @@ describe('Kubevirt create VM using wizard', () => {
       const testVMConfig = vmConfig(
         'windows10',
         testName,
-        provisionConfigs.get(ProvisionConfigName.CONTAINER),
+        provisionConfigs.get(ProvisionSourceName.CONTAINER),
       );
       testVMConfig.networkResources = [];
       testVMConfig.operatingSystem = OperatingSystem.WINDOWS_10;
@@ -100,7 +100,7 @@ describe('Kubevirt create VM using wizard', () => {
 
       await withResource(leakedResources, vm.asResource(), async () => {
         await vm.create(testVMConfig);
-        const vmResult = getResourceObject(vm.name, vm.namespace, vm.kind);
+        const vmResult = getResourceObject(vm.name, vm.namespace, vm.kind.plural);
         const annotations = getAnnotations(vmResult);
         const labels = getLabels(vmResult);
 
@@ -134,7 +134,7 @@ describe('Kubevirt create VM using wizard', () => {
       const testVMConfig = vmConfig(
         'test-dv',
         testName,
-        provisionConfigs.get(ProvisionConfigName.URL),
+        provisionConfigs.get(ProvisionSourceName.URL),
       );
       testVMConfig.networkResources = [];
       const vm = new VirtualMachine(testVMConfig);
@@ -157,7 +157,7 @@ describe('Kubevirt create VM using wizard', () => {
   it(
     'Multiple VMs created using "Cloned Disk" method from single source',
     async () => {
-      const clonedDiskProvisionConfig = provisionConfigs.get(ProvisionConfigName.DISK);
+      const clonedDiskProvisionConfig = provisionConfigs.get(ProvisionSourceName.DISK);
       const vm1Config = vmConfig('vm1', testName, clonedDiskProvisionConfig);
       const vm2Config = vmConfig('vm2', testName, clonedDiskProvisionConfig);
       vm1Config.startOnCreation = false;

@@ -4,16 +4,16 @@ import {
   deleteResources,
 } from '@console/shared/src/test-utils/utils';
 import { testName } from '@console/internal-integration-tests/protractor.conf';
-import { TEMPLATE_ACTIONS_TIMEOUT_SECS } from './utils/consts';
-import { basicVMConfig, multusNAD, hddDisk, multusNetworkInterface } from './utils/mocks';
+import { TEMPLATE_ACTIONS_TIMEOUT_SECS } from './utils/constants/consts';
+import { basicVMConfig, multusNAD, hddDisk, multusNetworkInterface } from './utils/mocks/mocks';
 import { getProvisionConfigs } from './vm.wizard.configs';
 import { VirtualMachine } from './models/virtualMachine';
 import { VirtualMachineTemplate } from './models/virtualMachineTemplate';
 import { ProvisionConfig } from './utils/types';
-import { ProvisionConfigName } from './utils/constants/wizard';
+import { ProvisionSourceName } from './utils/constants/wizard';
 
 describe('Test adding/removing discs/nics to/from a VM template', () => {
-  const provisionConfigContainer = getProvisionConfigs().get(ProvisionConfigName.CONTAINER);
+  const provisionConfigContainer = getProvisionConfigs().get(ProvisionSourceName.CONTAINER);
   const commonSettings = {
     cloudInit: {
       useCloudInit: false,

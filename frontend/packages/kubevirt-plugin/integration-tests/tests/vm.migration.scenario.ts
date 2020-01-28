@@ -8,7 +8,7 @@ import {
 import { getDetailActionDropdownOptions } from '../views/vm.actions.view';
 import { vmDetailNode } from '../views/virtualMachine.view';
 import { getRandStr } from './utils/utils';
-import { getVMManifest } from './utils/mocks';
+import { getVMManifest } from './utils/mocks/mocks';
 import {
   VM_BOOTUP_TIMEOUT_SECS,
   VM_ACTIONS_TIMEOUT_SECS,
@@ -17,7 +17,7 @@ import {
   PAGE_LOAD_TIMEOUT_SECS,
   VM_ACTION,
   VM_STATUS,
-} from './utils/consts';
+} from './utils/constants/consts';
 import { VirtualMachine } from './models/virtualMachine';
 
 describe('Test VM Migration', () => {

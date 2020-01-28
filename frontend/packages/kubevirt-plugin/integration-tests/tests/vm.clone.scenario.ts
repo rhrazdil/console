@@ -32,7 +32,7 @@ import {
   TAB,
   VM_ACTION,
   VM_STATUS,
-} from './utils/consts';
+} from './utils/constants/consts';
 import {
   basicVMConfig,
   multusNetworkInterface,
@@ -41,7 +41,7 @@ import {
   cloudInitCustomScriptConfig,
   rootDisk,
   datavolumeClonerClusterRole,
-} from './utils/mocks';
+} from './utils/mocks/mocks';
 import { VirtualMachine } from './models/virtualMachine';
 import { CloneVirtualMachineDialog } from './dialogs/cloneVirtualMachineDialog';
 
@@ -266,7 +266,7 @@ describe('Test clone VM.', () => {
             const clonedVMJSON = getResourceObject(
               clonedVM.name,
               clonedVM.namespace,
-              clonedVM.kind,
+              clonedVM.kind.plural,
             );
             const clonedDataVolumeTemplate = getDataVolumeTemplates(clonedVMJSON);
             const result = _.find(
@@ -320,7 +320,7 @@ describe('Test clone VM.', () => {
             const clonedVMJSON = getResourceObject(
               clonedVM.name,
               clonedVM.namespace,
-              clonedVM.kind,
+              clonedVM.kind.plural,
             );
             const clonedVMVolumes = getVolumes(clonedVMJSON);
             const result = _.find(clonedVMVolumes, (o) => o.name === 'cloudinitdisk');
