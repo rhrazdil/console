@@ -111,7 +111,7 @@ export const RecentEventsBody: React.FC<RecentEventsBodyProps> = (props) => {
     <>
       <div className="co-activity-card__recent-title">
         Recent Events
-        <DashboardCardButtonLink onClick={togglePause}>
+        <DashboardCardButtonLink onClick={togglePause} data-test-id="events-pause-button">
           {paused ? 'Unpause' : 'Pause'}
         </DashboardCardButtonLink>
       </div>

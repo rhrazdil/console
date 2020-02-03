@@ -124,6 +124,7 @@ const testSuites = {
   clusterSettings: suite(['tests/cluster-settings.scenario.ts']),
   alertmanager: suite(['tests/alertmanager.scenario.ts']),
   login: ['tests/login.scenario.ts'],
+  dashboards: suite(['tests/dashboards/cluster-dashboard.scenario.ts']),
 };
 
 export const config = {

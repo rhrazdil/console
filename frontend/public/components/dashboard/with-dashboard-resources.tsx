@@ -139,15 +139,20 @@ export const withDashboardResources = <P extends DashboardItemProps>(
       };
 
       watchK8sResource: WatchK8sResource = (resource) => {
+        console.log(`watch ${resource.prop}`);
         this.setState((state: WithDashboardResourcesState) => ({
           k8sResources: [...state.k8sResources, { ...resource, optional: true }],
         }));
       };
 
       stopWatchK8sResource: StopWatchK8sResource = (resource) => {
-        this.setState((state: WithDashboardResourcesState) => ({
-          k8sResources: state.k8sResources.filter((r) => r.prop !== resource.prop),
-        }));
+        this.setState((state: WithDashboardResourcesState) => {
+          const newResources = state.k8sResources.filter((r) => r.prop !== resource.prop);
+          console.log(newResources);
+          return {
+            k8sResources: newResources,
+          };
+        });
       };
 
       getExternalProps = (props) => {

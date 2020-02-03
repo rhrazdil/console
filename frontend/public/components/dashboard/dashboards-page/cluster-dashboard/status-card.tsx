@@ -189,7 +189,7 @@ export const StatusCard = connect(mapStateToProps)(
       });
     }
     return (
-      <DashboardCard gradient>
+      <DashboardCard gradient data-test-id="cluster-status-card">
         <DashboardCardHeader>
           <DashboardCardTitle>Status</DashboardCardTitle>
           <DashboardCardLink to="/monitoring/alerts">View alerts</DashboardCardLink>
