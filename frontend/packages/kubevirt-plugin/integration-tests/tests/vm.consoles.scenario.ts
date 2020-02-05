@@ -1,53 +1,54 @@
 import { browser, ExpectedConditions as until } from 'protractor';
 import { testName } from '@console/internal-integration-tests/protractor.conf';
-import { click, selectDropdownOption, withResource } from '@console/shared/src/test-utils/utils';
+import { selectDropdownOption } from '@console/shared/src/test-utils/utils';
 import {
-  consoleTypeSelector,
   consoleTypeSelectorId,
   serialDisconnectButton,
   serialReconnectButton,
   vncSendKeyButton,
+  vncConnectingBar,
+  serialConsoleWrapper,
 } from '../views/consolesView';
-import { PAGE_LOAD_TIMEOUT_SECS } from './utils/consts';
+import { PAGE_LOAD_TIMEOUT_SECS, VM_ACTION } from './utils/consts';
 import { VirtualMachine } from './models/virtualMachine';
-import { vmConfig, getProvisionConfigs } from './vm.wizard.configs';
 import { ProvisionConfigName } from './utils/constants/wizard';
+import { getVMManifest } from './utils/mocks';
+import {
+  createResource,
+  deleteResource,
+  waitForStringNotInElement,
+} from '../../../console-shared/src/test-utils/utils';
 
 describe('KubeVirt VM VNC/Serial consoles', () => {
-  const leakedResources = new Set<string>();
+  const vmResource = getVMManifest(ProvisionConfigName.CONTAINER, testName);
+  const vm = new VirtualMachine(vmResource.metadata);
 
-  const provisionConfigs = getProvisionConfigs();
-  const configName = ProvisionConfigName.CONTAINER;
-  const provisionConfig = provisionConfigs.get(configName);
+  beforeAll(async () => {
+    createResource(vmResource);
+    await vm.action(VM_ACTION.Start);
+    await vm.navigateToConsoles();
+  });
 
-  provisionConfig.networkResources = [];
-  provisionConfig.storageResources = [];
+  afterAll(() => {
+    deleteResource(vmResource);
+  });
 
-  const testVMConfig = vmConfig(configName.toLowerCase(), testName, provisionConfig);
-  const vm = new VirtualMachine(testVMConfig);
+  it('Serial Console connects', async () => {
+    await selectDropdownOption(consoleTypeSelectorId, 'Serial Console');
 
-  it('VM VNC/Serial Console is connected', async () => {
-    await withResource(leakedResources, vm.asResource(), async () => {
-      await vm.create(testVMConfig);
+    // Wait for Loading span element to disappear
+    await waitForStringNotInElement(serialConsoleWrapper, 'Loading');
 
-      // verify Serial Console is connected
-      await vm.navigateToConsoles();
-      await browser.wait(until.presenceOf(consoleTypeSelector));
-      // based on test result, it has to click twice to select the dropdown item.
-      await click(consoleTypeSelector);
-      await click(consoleTypeSelector);
-      await selectDropdownOption(consoleTypeSelectorId, 'Serial Console');
-      await browser.wait(until.presenceOf(serialReconnectButton), PAGE_LOAD_TIMEOUT_SECS);
-      await browser.wait(
-        until.elementToBeClickable(serialDisconnectButton),
-        PAGE_LOAD_TIMEOUT_SECS,
-      );
+    // Ensure presence of control buttons
+    await browser.wait(until.presenceOf(serialReconnectButton), PAGE_LOAD_TIMEOUT_SECS);
+    await browser.wait(until.presenceOf(serialDisconnectButton), PAGE_LOAD_TIMEOUT_SECS);
+  });
 
-      // verify VNC Console is connected
-      await click(consoleTypeSelector);
-      await click(consoleTypeSelector);
-      await selectDropdownOption(consoleTypeSelectorId, 'VNC Console');
-      await browser.wait(until.presenceOf(vncSendKeyButton), PAGE_LOAD_TIMEOUT_SECS);
-    });
+  it('VNC Console connects', async () => {
+    await selectDropdownOption(consoleTypeSelectorId, 'VNC Console');
+
+    // Wait for Connecting bar element to disappear
+    await browser.wait(until.invisibilityOf(vncConnectingBar));
+    await browser.wait(until.presenceOf(vncSendKeyButton), PAGE_LOAD_TIMEOUT_SECS);
   });
 });
