@@ -12,6 +12,7 @@ import {
   removeLeakedResources,
   removeLeakableResource,
   waitForCount,
+  click,
 } from '@console/shared/src/test-utils/utils';
 import { getVMManifest } from './utils/mocks';
 import { fillInput, pauseVM } from './utils/utils';
@@ -25,6 +26,7 @@ import {
   VM_STATUS,
 } from './utils/consts';
 import { VirtualMachine } from './models/virtualMachine';
+import { unpauseButton } from '../views/editStatusView';
 
 describe('Test VM actions', () => {
   const leakedResources = new Set<string>();
@@ -129,6 +131,15 @@ describe('Test VM actions', () => {
       },
       VM_ACTIONS_TIMEOUT_SECS,
     );
+
+    it('Unpauses VM via modal dialog', async () => {
+      await vm.waitForStatus(VM_STATUS.Running);
+      pauseVM(vmName, testName);
+      await vm.waitForStatus(VM_STATUS.Paused);
+      await vm.modalEditStatus();
+      await click(unpauseButton);
+      await vm.waitForStatus(VM_STATUS.Running);
+    });
 
     it('Stops VM', async () => {
       await vm.action(VM_ACTION.Stop);

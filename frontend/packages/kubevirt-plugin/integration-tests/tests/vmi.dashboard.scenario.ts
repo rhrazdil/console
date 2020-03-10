@@ -55,7 +55,7 @@ describe('Test VMI dashboard', () => {
     expect(vmStatus.getText()).toEqual(VM_STATUS.Running);
   });
 
-  it('Details card', async () => {
+  it('BZ(1807911) Details card', async () => {
     expect(vmDetailsName.getText()).toEqual(vm.name);
     expect(vmDetailsNamespace.getText()).toEqual(vm.namespace);
     expect(vmDetailsNode.getText()).not.toEqual(NOT_AVAILABLE);

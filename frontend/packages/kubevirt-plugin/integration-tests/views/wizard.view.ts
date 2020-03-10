@@ -44,7 +44,7 @@ export const diskWarning = (resourceName) =>
   $(`[data-id="${resourceName}"]`).$('.kubevirt-validation-cell__cell--warning');
 
 // Virtual Hardware tab
-export const addCDButton = $('#attach-cdrom');
+export const addCDButton = $('#vm-cd-add-btn');
 
 // Advanced -- Cloud-init
 export const cloudInitFormCheckbox = $('#cloud-init-edit-mode-first-option');
@@ -55,8 +55,9 @@ export const cloudInitHostname = $('#cloudinit-hostname');
 export const cloudInitSSHKey = (rowNumber) => $(`#cloudinit-ssh-authorized-keys-key-${rowNumber}`);
 
 // Result tab
-export const creationSuccessResult = $('[data-test-id="kubevirt-wizard-success-result"]');
-export const creationErrorResult = $('[data-test-id="kubevirt-wizard-error-result"]');
+export const creationSuccessResult = $(
+  '.kubevirt-create-vm-modal__result-tab-inner-container h5.pf-c-title',
+);
 
 export const waitForNoLoaders = async () => {
   await browser.wait(waitForNone($$('.co-m-loader')));
