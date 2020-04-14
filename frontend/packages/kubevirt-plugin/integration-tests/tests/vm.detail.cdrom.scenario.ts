@@ -38,8 +38,8 @@ describe('KubeVirt VM detail - edit cdroms', () => {
     deleteResource(vm.asResource());
   });
 
-  it(
-    'creates new container CD, then removes it',
+  xit(
+    'BZ(1813198) creates new container CD, then removes it',
     async () => {
       await vm.navigateToDetail();
       await vm.modalEditCDRoms();
@@ -61,8 +61,8 @@ describe('KubeVirt VM detail - edit cdroms', () => {
     VM_CREATE_AND_EDIT_TIMEOUT_SECS,
   );
 
-  it(
-    'creates two new container CDs, then ejects and changes them to URL, PVC',
+  xit(
+    'BZ(1813198) creates two new container CDs, then ejects and changes them to URL, PVC',
     async () => {
       await vm.navigateToDetail();
       await vm.modalEditCDRoms();

@@ -94,15 +94,13 @@ describe('Test VM overview', () => {
       expect(
         await vmView
           .vmDetailPod(testName, vmName)
-          .$('a')
           .getText(),
       ).toContain('virt-launcher');
       expect(
         await vmView
           .vmDetailNode(testName, vmName)
-          .$('a')
           .getText(),
-      ).not.toEqual(NOT_AVAILABLE);
+      ).not.toContain(NOT_AVAILABLE);
     },
     VM_BOOTUP_TIMEOUT_SECS,
   );

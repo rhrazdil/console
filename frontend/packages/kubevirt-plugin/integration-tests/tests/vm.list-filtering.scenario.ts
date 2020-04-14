@@ -17,8 +17,7 @@ describe('Test List View Filtering', () => {
     deleteResource(testVM);
   });
 
-  it('Displays correct count of Other VMs', async () => {
-    await vm.waitForStatus(VM_STATUS.Importing);
+  it('Displays correct count of Importing VMs', async () => {
     await vm.navigateToListView();
     const importingCount = await filterBoxCount(VM_STATUS.Importing);
     expect(importingCount).toEqual(1);

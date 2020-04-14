@@ -68,7 +68,7 @@ describe('Kubevirt create VM using wizard', () => {
     );
   });
 
-  it('Creates VM with CD ROM added in Wizard', async () => {
+  xit('BZ(1813198) Creates VM with CD ROM added in Wizard', async () => {
     const vmName = 'vm-with-cdrom';
     const provisionConfig = provisionConfigs.get(ProvisionConfigName.CONTAINER);
     provisionConfig.CDRoms = [cdGuestTools];
@@ -117,7 +117,7 @@ describe('Kubevirt create VM using wizard', () => {
           [`os.template.kubevirt.io/${osID}`]: 'true',
           'vm.kubevirt.io/template': `windows-${testVMConfig.workloadProfile}-${
             testVMConfig.flavorConfig.flavor
-          }-${commonTemplateVersion()}`,
+            }-${commonTemplateVersion()}`,
           'vm.kubevirt.io/template.revision': COMMON_TEMPLATES_REVISION,
           'vm.kubevirt.io/template.version': INNER_TEMPLATE_VERSION,
         };

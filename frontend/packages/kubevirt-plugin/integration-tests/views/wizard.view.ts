@@ -55,8 +55,7 @@ export const cloudInitHostname = $('#cloudinit-hostname');
 export const cloudInitSSHKey = (rowNumber) => $(`#cloudinit-ssh-authorized-keys-key-${rowNumber}`);
 
 // Result tab
-export const creationSuccessResult = $('[data-test-id="kubevirt-wizard-success-result"]');
-export const creationErrorResult = $('[data-test-id="kubevirt-wizard-error-result"]');
+export const creationSuccessResult = $('.kubevirt-create-vm-modal___result-tab-spacing h5.pf-c-title');
 
 export const waitForNoLoaders = async () => {
   await browser.wait(waitForNone($$('.co-m-loader')));
