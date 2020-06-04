@@ -75,7 +75,7 @@ describe('KubeVirt VM console - RDP', () => {
         windowsVMConfig,
         true, // startOnCreation
       );
-      windowsConfig.flavorConfig = { flavor: Flavor.CUSTOM, cpu: '1', memory: '2' };
+      windowsConfig.flavorConfig = { flavor: Flavor.CUSTOM, cpu: '1', memory: '1' };
       const vm = await wizard.createVirtualMachine(windowsConfig);
       await withResource(leakedResources, vm.asResource(), async () => {
         await vm.navigateToConsoles();
