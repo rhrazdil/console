@@ -52,6 +52,7 @@ describe('Test clone VM.', () => {
 
   beforeAll(async () => {
     await createProject(testCloningNamespace);
+    await browser.get(`${appHost}/k8s/ns/${testName}/virtualization`);
   });
 
   afterAll(() => {
@@ -259,17 +260,17 @@ describe('Test clone VM.', () => {
             await clonedVM.action(VM_ACTION.Start, true, CLONED_VM_BOOTUP_TIMEOUT_SECS);
 
             // Check cloned PVC exists
-            const clonedVMDiskName = `${clonedVM.name}-${urlVM.name}-rootdisk-clone`;
+            const clonedVMDiskPrefix = `${clonedVM.name}-rootdisk`;
             await browser.get(`${appHost}/k8s/ns/${testName}/persistentvolumeclaims`);
             await isLoaded();
-            await filterForName(clonedVMDiskName);
+            await filterForName(clonedVMDiskPrefix);
             await resourceRowsPresent();
 
             // Verify cloned disk dataVolumeTemplate is present in cloned VM manifest
             const clonedDataVolumeTemplate = getDataVolumeTemplates(clonedVM.getResource());
             const result = _.find(
               clonedDataVolumeTemplate,
-              (o) => o.metadata.name === clonedVMDiskName,
+              (o) => o.metadata.name.includes(clonedVMDiskPrefix),
             );
             expect(_.get(result, 'spec.source.pvc.name')).toEqual(`${urlVM.name}-rootdisk`);
           });

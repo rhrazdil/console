@@ -63,7 +63,7 @@ export const basicVMConfig: BaseVMConfig = {
   flavorConfig: { flavor: Flavor.TINY },
   workloadProfile: WorkloadProfile.DESKTOP,
   sourceURL:
-    'http://cnv-qe-server.rhevdev.lab.eng.rdu2.redhat.com/files/files-https/cirros/cirros-qcow2.img',
+    'http://cnv-qe-server.rhevdev.lab.eng.rdu2.redhat.com/files/cnv-tests/cirros-images/cirros-0.4.0-x86_64-disk.raw',
   sourceContainer: 'kubevirt/cirros-registry-disk-demo',
   cloudInitScript: `#cloud-config\nuser: cloud-user\npassword: atomic\nchpasswd: {expire: False}\nhostname: vm-${testName}`,
 };
@@ -92,7 +92,7 @@ export const windowsVMConfig: BaseVMConfig = {
   flavorConfig: { flavor: Flavor.MEDIUM },
   workloadProfile: WorkloadProfile.DESKTOP,
   sourceURL:
-    'http://cnv-qe-server.rhevdev.lab.eng.rdu2.redhat.com/files/files-https/cirros/cirros-qcow2.img',
+    'http://cnv-qe-server.rhevdev.lab.eng.rdu2.redhat.com/files/cnv-tests/cirros-images/cirros-0.4.0-x86_64-disk.raw',
   sourceContainer: 'kubevirt/cirros-registry-disk-demo',
   cloudInitScript: `#cloud-config\nuser: cloud-user\npassword: atomic\nchpasswd: {expire: False}\nhostname: vm-${testName}`, // reusing cirros
 };
@@ -222,7 +222,6 @@ function getMetadata(
       pvc: {
         accessModes: [resolveStorageDataAttribute(kubevirtStorage, 'accessMode')],
         volumeMode: resolveStorageDataAttribute(kubevirtStorage, 'volumeMode'),
-        dataSource: null,
         resources: {
           requests: {
             storage: '1Gi',
@@ -395,7 +394,6 @@ export function getVMManifest(
       },
     },
   };
-
   return vmResource;
 }
 
