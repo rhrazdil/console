@@ -260,17 +260,16 @@ describe('Test clone VM.', () => {
             await clonedVM.action(VM_ACTION.Start, true, CLONED_VM_BOOTUP_TIMEOUT_SECS);
 
             // Check cloned PVC exists
-            const clonedVMDiskPrefix = `${clonedVM.name}-rootdisk`;
             await browser.get(`${appHost}/k8s/ns/${testName}/persistentvolumeclaims`);
             await isLoaded();
-            await filterForName(clonedVMDiskPrefix);
+            await filterForName(clonedVM.name);
             await resourceRowsPresent();
 
             // Verify cloned disk dataVolumeTemplate is present in cloned VM manifest
             const clonedDataVolumeTemplate = getDataVolumeTemplates(clonedVM.getResource());
             const result = _.find(
               clonedDataVolumeTemplate,
-              (o) => o.metadata.name.includes(clonedVMDiskPrefix),
+              (o) => o.metadata.name.includes(clonedVM.name),
             );
             expect(_.get(result, 'spec.source.pvc.name')).toEqual(`${urlVM.name}-rootdisk`);
           });

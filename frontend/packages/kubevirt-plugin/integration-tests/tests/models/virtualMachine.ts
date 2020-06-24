@@ -1,11 +1,12 @@
 /* eslint-disable no-await-in-loop, no-console */
-import { browser } from 'protractor';
+import { browser, ExpectedConditions as until } from 'protractor';
 import { waitForStringNotInElement } from '@console/shared/src/test-utils/utils';
 import { detailViewAction, listViewAction } from '@console/shared/src/test-utils/actions.view';
 import { VirtualMachineModel } from '@console/kubevirt-plugin/src/models';
 import * as vmView from '../../views/virtualMachine.view';
-import { VM_MIGRATION_TIMEOUT_SECS, VM_ACTION, TAB, VM_STATUS } from '../utils/consts';
+import { VM_MIGRATION_TIMEOUT_SECS, VM_ACTION, TAB, VM_STATUS, PAGE_LOAD_TIMEOUT_SECS } from '../utils/consts';
 import { BaseVirtualMachine } from './baseVirtualMachine';
+import { resourceTitle } from '@console/internal-integration-tests/views/crud.view';
 
 const noConfirmDialogActions: VM_ACTION[] = [VM_ACTION.Start, VM_ACTION.Clone];
 
@@ -34,6 +35,8 @@ export class VirtualMachine extends BaseVirtualMachine {
 
   async waitForMigrationComplete(fromNode: string, timeout: number) {
     await this.waitForStatus(VM_STATUS.Running, VM_MIGRATION_TIMEOUT_SECS);
+    await browser.refresh(); // Force refresh to update the node value
+    await browser.wait(until.visibilityOf(resourceTitle), PAGE_LOAD_TIMEOUT_SECS);
     await browser.wait(
       waitForStringNotInElement(vmView.vmDetailNode(this.namespace, this.name), fromNode),
       timeout,
