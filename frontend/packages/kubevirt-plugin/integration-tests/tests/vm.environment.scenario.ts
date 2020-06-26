@@ -62,12 +62,18 @@ describe('Test VM enviromnet tab', () => {
     'ID(CNV-4185) Verify all sources are readable inside the VM',
     async () => {
       await vm.action(VM_ACTION.Start);
-      const out = execSync(
-        `expect ${environmentExpecScriptPath} ${vm.name} ${vm.namespace}`,
-      ).toString();
+      let out: string;
+      try {
+        out = execSync(
+          `expect ${environmentExpecScriptPath} ${vm.name} ${vm.namespace}`,
+        ).toString();
+      } catch (e) {
+        console.error(e.message);
+      } finally {
+        await vm.action(VM_ACTION.Stop);
+      }
       const isFailedTest = out.split('\n').find((line) => line === 'FAILED');
       expect(!isFailedTest).toBeTruthy();
-      await vm.action(VM_ACTION.Stop);
     },
     VM_BOOTUP_TIMEOUT_SECS * 2, // VM boot time + test sources time
   );
