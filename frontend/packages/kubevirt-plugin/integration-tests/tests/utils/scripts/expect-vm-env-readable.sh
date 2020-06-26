@@ -10,7 +10,7 @@ set login_prompt "$hostname login: "
 set password_prompt "Password: "
 set prompt "$"
 
-set response_delay 3
+set response_delay 6
 set send_human {.1 .3 1 .05 2}
 
 set source_path1 "/home/fedora/source1"
