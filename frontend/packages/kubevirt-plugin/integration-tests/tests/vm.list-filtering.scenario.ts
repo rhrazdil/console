@@ -11,14 +11,17 @@ describe('Test List View Filtering', () => {
   const testVM = getVMManifest('URL', testName);
   const vm = new VirtualMachine(testVM.metadata);
 
+  beforeAll(() => {
+    createResource(testVM);
+  });
+
   afterAll(() => {
     deleteResource(testVM);
   });
 
-  it('ID(CNV-3614) Displays correct count of Importing VMs', async () => {
+  xit('BZ(1843532) ID(CNV-3614) Displays correct count of Importing VMs', async () => {
     await vm.navigateToListView();
     // Create the VM after navigating to the list view because importing phase is very short
-    createResource(testVM);
     await browser.wait(waitForFilterCount(VM_STATUS.Importing, 1), PAGE_LOAD_TIMEOUT_SECS);
     const importingCount = await filterCount(VM_STATUS.Importing);
     expect(importingCount).toEqual(1);
