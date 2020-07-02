@@ -137,7 +137,7 @@ describe('Test network type presets and options', () => {
   it('ID(CNV-2073) Test NIC default type in VM Wizard', async () => {
     await browser.get(`${appHost}/k8s/ns/${testName}/virtualization`);
     await isLoaded();
-    await wizard.openWizard(VirtualMachineModel);
+    await wizard.openWizard(VirtualMachineModel, testName);
 
     await wizard.fillName(getRandStr(5));
     await wizard.fillDescription(testName);

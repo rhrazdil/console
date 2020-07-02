@@ -22,6 +22,7 @@ import { getRandStr } from './utils/utils';
 import { diskInterfaceHelper } from '../views/dialogs/diskDialog.view';
 import { DiskDialog } from './dialogs/diskDialog';
 import { saveButton } from '../views/kubevirtUIResource.view';
+import { testName } from '@console/internal-integration-tests/protractor.conf';
 
 describe('Wizard validation', () => {
   const wizard = new Wizard();
@@ -47,7 +48,7 @@ describe('Wizard validation', () => {
   });
 
   beforeEach(async () => {
-    await wizard.openWizard(VirtualMachineModel);
+    await wizard.openWizard(VirtualMachineModel, testName);
   });
 
   afterEach(async () => {
