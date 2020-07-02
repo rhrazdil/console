@@ -8,7 +8,7 @@ yarn install
 if [ -z "${CHROME_VERSION-}" ]; then
  yarn run webdriver-update
 else
- yarn run webdriver-update --versions.chrome="$CHROME_VERSION"
+ yarn run webdriver-update --versions.chrome="$CHROME_VERSION" --gecko=false
 fi
 
 if [ $# -gt 0 ] && [ -n "$1" ]; then
