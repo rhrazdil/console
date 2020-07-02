@@ -267,9 +267,8 @@ describe('Test clone VM.', () => {
 
             // Verify cloned disk dataVolumeTemplate is present in cloned VM manifest
             const clonedDataVolumeTemplate = getDataVolumeTemplates(clonedVM.getResource());
-            const result = _.find(
-              clonedDataVolumeTemplate,
-              (o) => o.metadata.name.includes(clonedVM.name),
+            const result = _.find(clonedDataVolumeTemplate, (o) =>
+              o.metadata.name.includes(clonedVM.name),
             );
             expect(_.get(result, 'spec.source.pvc.name')).toEqual(`${urlVM.name}-rootdisk`);
           });

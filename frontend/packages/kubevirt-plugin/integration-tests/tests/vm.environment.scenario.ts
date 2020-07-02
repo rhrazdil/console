@@ -68,6 +68,7 @@ describe('Test VM enviromnet tab', () => {
           `expect ${environmentExpecScriptPath} ${vm.name} ${vm.namespace}`,
         ).toString();
       } catch (e) {
+        // eslint-disable-next-line no-console
         console.error(e.message);
       } finally {
         await vm.action(VM_ACTION.Stop);

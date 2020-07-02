@@ -1,6 +1,5 @@
 /* eslint-disable no-await-in-loop */
 import { browser, ExpectedConditions as until } from 'protractor';
-import { testName } from '@console/internal-integration-tests/protractor.conf';
 import { createItemButton, isLoaded } from '@console/internal-integration-tests/views/crud.view';
 import { clickNavLink } from '@console/internal-integration-tests/views/sidenav.view';
 import {
@@ -34,14 +33,18 @@ import * as wizardView from '../../views/wizard.view';
 import { NetworkInterfaceDialog } from '../dialogs/networkInterfaceDialog';
 import { DiskDialog } from '../dialogs/diskDialog';
 import { Flavor, ProvisionConfigName } from '../utils/constants/wizard';
-import { resourceHorizontalTab } from '../../views/uiResource.view';
+import {
+  resourceHorizontalTab,
+  getClusterNamespace,
+  switchClusterNamespace,
+} from '../../views/uiResource.view';
 import { virtualizationTitle } from '../../views/vms.list.view';
 import { VirtualMachine } from './virtualMachine';
 import { vmDetailStatus } from '../../views/virtualMachine.view';
 import { VirtualMachineTemplate } from './virtualMachineTemplate';
 
 export class Wizard {
-  async openWizard(model: K8sKind) {
+  async openWizard(model: K8sKind, namespace: string) {
     if (
       !(await virtualizationTitle.isPresent()) ||
       (await virtualizationTitle.getText()) !== VIRTUALIZATION_TITLE
@@ -52,6 +55,9 @@ export class Wizard {
         await click(resourceHorizontalTab(VirtualMachineTemplateModel));
         await isLoaded();
       }
+    }
+    if ((await getClusterNamespace()) !== namespace) {
+      await switchClusterNamespace(namespace);
     }
     await click(createItemButton);
     await click(wizardView.createWithWizardButton);
@@ -316,10 +322,10 @@ export class Wizard {
   }
 
   async createVirtualMachine(config: KubevirtResourceConfig): Promise<VirtualMachine> {
-    await this.openWizard(VirtualMachineModel);
+    await this.openWizard(VirtualMachineModel, config.namespace);
     await this.processWizard(config);
 
-    const vm = new VirtualMachine({ name: config.name, namespace: testName });
+    const vm = new VirtualMachine({ name: config.name, namespace: config.namespace });
     await vm.navigateToDetail();
 
     if (config.waitForDiskImport) {
@@ -340,10 +346,10 @@ export class Wizard {
   async createVirtualMachineTemplate(
     config: KubevirtResourceConfig,
   ): Promise<VirtualMachineTemplate> {
-    await this.openWizard(VirtualMachineTemplateModel);
+    await this.openWizard(VirtualMachineTemplateModel, config.namespace);
     await this.processWizard(config);
 
-    const vmt = new VirtualMachineTemplate({ name: config.name, namespace: testName });
+    const vmt = new VirtualMachineTemplate({ name: config.name, namespace: config.namespace });
     await vmt.navigateToDetail();
     return vmt;
   }

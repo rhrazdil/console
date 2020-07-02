@@ -62,6 +62,7 @@ export type NodePortService = {
 
 export type KubevirtResourceConfig = {
   name: string;
+  namespace: string;
   description?: string;
   flavorConfig: FlavorConfig;
   template?: string;

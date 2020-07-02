@@ -4,7 +4,13 @@ import { waitForStringNotInElement } from '@console/shared/src/test-utils/utils'
 import { detailViewAction, listViewAction } from '@console/shared/src/test-utils/actions.view';
 import { VirtualMachineModel } from '@console/kubevirt-plugin/src/models';
 import * as vmView from '../../views/virtualMachine.view';
-import { VM_MIGRATION_TIMEOUT_SECS, VM_ACTION, TAB, VM_STATUS, PAGE_LOAD_TIMEOUT_SECS } from '../utils/consts';
+import {
+  VM_MIGRATION_TIMEOUT_SECS,
+  VM_ACTION,
+  TAB,
+  VM_STATUS,
+  PAGE_LOAD_TIMEOUT_SECS,
+} from '../utils/consts';
 import { BaseVirtualMachine } from './baseVirtualMachine';
 import { resourceTitle } from '@console/internal-integration-tests/views/crud.view';
 

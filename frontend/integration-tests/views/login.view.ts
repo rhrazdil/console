@@ -1,5 +1,6 @@
 import { $, browser, ExpectedConditions as until, by, element } from 'protractor';
 import { appHost } from '../protractor.conf';
+import { click } from '@console/shared/src/test-utils/utils';
 
 export const nameInput = $('#inputUsername');
 export const passwordInput = $('#inputPassword');
@@ -30,9 +31,7 @@ export const login = async (providerName: string, username: string, password: st
 };
 
 export const logout = async () => {
-  await browser.wait(until.presenceOf(userDropdown));
-  await userDropdown.click();
-  await browser.wait(until.presenceOf(logOutButton));
-  await logOutButton.click();
+  await click(userDropdown);
+  await click(logOutButton);
   await browser.wait(until.or(pf3Login, pf4Login));
 };

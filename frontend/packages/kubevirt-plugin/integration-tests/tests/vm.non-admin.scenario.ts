@@ -4,16 +4,11 @@ import { appHost, testName } from '@console/internal-integration-tests/protracto
 import * as loginView from '@console/internal-integration-tests/views/login.view';
 import {
   withResource,
-  fillInput,
   removeLeakedResources,
   waitForCount,
   removeLeakableResource,
 } from '@console/shared/src/test-utils/utils';
-import {
-  isLoaded,
-  textFilter,
-  resourceRows,
-} from '@console/internal-integration-tests/views/crud.view';
+import { isLoaded, resourceRows } from '@console/internal-integration-tests/views/crud.view';
 import { restrictedAccessBlock } from '../views/vms.list.view';
 import { createProject } from './utils/utils';
 import { vmConfig, getProvisionConfigs } from './vm.wizard.configs';
@@ -72,7 +67,6 @@ describe('Kubevirt non-admin Flow', () => {
           await vm.waitForStatus(VM_STATUS.Starting); // Just to make sure it is actually starting,
           await vm.action(VM_ACTION.Delete, false);
           await vm.navigateToListView();
-          await fillInput(textFilter, vm.name);
           await isLoaded();
           await browser.wait(until.and(waitForCount(resourceRows, 0)), PAGE_LOAD_TIMEOUT_SECS);
         },
