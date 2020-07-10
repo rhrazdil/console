@@ -33,6 +33,8 @@ expect $login_prompt {
     send -h "$username\n"
 }
 
+sleep 3
+
 # Enter Password
 expect $password_prompt {
     sleep $response_delay
