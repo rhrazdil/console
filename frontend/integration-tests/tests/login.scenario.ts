@@ -16,7 +16,7 @@ const {
   BRIDGE_KUBEADMIN_PASSWORD,
 } = process.env;
 
-describe('Auth test', () => {
+fdescribe('Auth test', () => {
   beforeAll(async () => {
     await browser.get(appHost);
     await browser.sleep(3000); // Wait long enough for the login redirect to complete

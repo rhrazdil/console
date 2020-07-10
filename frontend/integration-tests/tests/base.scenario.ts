@@ -5,7 +5,7 @@ import * as crudView from '../views/crud.view';
 
 const BROWSER_TIMEOUT = 15000;
 
-describe('Create a test namespace', () => {
+fdescribe('Create a test namespace', () => {
   it(`creates test namespace ${testName} if necessary`, async () => {
     // Use projects if OpenShift so non-admin users can run tests.
     const resource = browser.params.openshift === 'true' ? 'projects' : 'namespaces';
