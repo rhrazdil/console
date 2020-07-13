@@ -21,8 +21,8 @@ describe('KubeVirt VM detail - edit Affinity', () => {
     deleteResource(testVM);
   });
 
-  it(
-    'ID(CNV-4159) Adds an Affinity, then removes it',
+  xit(
+    'BZ(1848425) ID(CNV-4159) Adds an Affinity, then removes it',
     async () => {
       await vm.navigateToDetail();
       await vm.modalEditAffinity();
