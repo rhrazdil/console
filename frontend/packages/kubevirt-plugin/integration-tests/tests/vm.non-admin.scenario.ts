@@ -43,6 +43,8 @@ describe('Kubevirt non-admin Flow', () => {
   vm1Config.startOnCreation = false;
 
   beforeAll(async () => {
+    await browser.get(`${appHost}/k8s/ns/${testName}/virtualization`);
+    await isLoaded();
     await loginView.logout();
     await loginView.login(BRIDGE_HTPASSWD_IDP, BRIDGE_HTPASSWD_USERNAME, BRIDGE_HTPASSWD_PASSWORD);
     await createProject(testNonAdminNamespace);
