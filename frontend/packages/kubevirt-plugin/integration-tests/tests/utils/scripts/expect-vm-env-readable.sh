@@ -21,7 +21,7 @@ spawn virtctl console $vm_name -n $vm_namespace --timeout 7
 
 send -h "\n"
 
-sleep 3
+sleep 60
 
 send -h \004
 
