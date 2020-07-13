@@ -21,11 +21,11 @@ spawn virtctl console $vm_name -n $vm_namespace --timeout 7
 
 send -h "\n"
 
-sleep 3
+sleep 60
 
 send -h \004
 
-set timeout 400
+set timeout 300
 
 # Enter username
 expect $login_prompt {
